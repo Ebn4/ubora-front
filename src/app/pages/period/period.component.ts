@@ -4,71 +4,57 @@ import { PeriodService } from './../../services/period.service';
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { BaseListWidget } from '../../widgets/base-list-widget';
+import { PeriodModalComponent } from './period-modal/period-modal.component';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-period',
-  imports: [NgFor, FormsModule, RouterLink, NgIf, NgClass, ReactiveFormsModule],
+  imports: [NgFor, FormsModule, RouterLink, NgClass, ReactiveFormsModule],
   templateUrl: './period.component.html',
-  styleUrl: './period.component.css'
 })
-export class PeriodComponent {
+export class PeriodComponent extends BaseListWidget{
+
+    periodService:PeriodService = inject(PeriodService);
   periods: Period[] = [];
-  currentPage: number = 1;
-  lastPage: number = 1;
-  search: string = '';
-  status: string = '';
-  periodService:PeriodService = inject(PeriodService);
+
   router:Router = inject(Router);
   showModal = false;
 
-  constructor() {}
-
-  ngOnInit(): void {
-    this.loadPeriods();
+  constructor(
+    private _matDialog: MatDialog
+  ) {
+    super();
   }
 
-  loadPeriods(page: number = 1) {
-    this.periodService.getPeriod(page, this.search, this.status).then(response => {
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  override loadData() {
+    this.periodService.getPeriod(this.currentPage, this.search, this.status, this.per_page).then(response => {
       this.periods = response.data;
       this.currentPage = response.current_page;
       this.lastPage = response.last_page;
     });
   }
 
-  onSearchChange() {
-    this.currentPage = 1;
-    this.loadPeriods();
-  }
-
-  changePage(page: number) {
-    if (page >= 1 && page <= this.lastPage) {
-      this.loadPeriods(page);
-    }
-  }
-
   openModal() {
-    this.showModal = true;
+    const dialogConfig = new MatDialogConfig()
+    dialogConfig.disableClose = true;
+    dialogConfig.data = {}
+
+    const dialogRef = this._matDialog.open(PeriodModalComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadData()
+      }
+    });
   }
 
   closeModal() {
     this.showModal = false;
   }
 
-  applyForm = new FormGroup({
-    year: new FormControl(new Date().getFullYear()),
-  })
-
-  createPeriod(){
-    this.periodService.createPeriod(
-      this.applyForm.value.year?? new Date().getFullYear()
-    )
-
-
-    this.applyForm = new FormGroup({
-      year:new FormControl(new Date().getFullYear()),
-    });
-    this.ngOnInit();
-    this.closeModal();
-  }
 }
 
