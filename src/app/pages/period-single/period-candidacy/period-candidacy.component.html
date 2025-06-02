@@ -1,1 +1,164 @@
 <!-- Candidatures Section -->
+<div>
+  <div class="flex flex-col md:flex-row justify-between items-center mb-5">
+    <h2 class="text-2xl font-bold mb-4 md:mb-0">Gestion des Candidats</h2>
+  </div>
+
+  <div class="flex items-center justify-between mb-3">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div>
+        <label for="search" class="block text-gray-700 font-medium"
+          >Rechercher</label
+        >
+        <input
+          type="text"
+          id="search"
+          [(ngModel)]="search"
+          (input)="onSearchChange()"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          placeholder="recherche..."
+        />
+      </div>
+      <div>
+        <label for="ville" class="block text-gray-700 font-medium mb-1"
+          >Filtrer par ville</label
+        >
+        <select
+          id="ville"
+          [(ngModel)]="ville"
+          (change)="onSearchChange()"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+        >
+          <option value="">Tous les statuts</option>
+          <option value="kinshasa">kinshasa</option>
+          <option value="Test">Test</option>
+          <option value="lualaba">lualaba</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button
+        (click)="loadData()"
+        class="bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582M20 20v-5h-.581M5.419 19A9 9 0 0021 12.082M18.364 5.636A9 9 0 003 11.918"
+          />
+        </svg>
+        Actualiser
+      </button>
+
+      <span class="mr-2">Afficher</span>
+      <select
+        id="per_page"
+        [(ngModel)]="per_page"
+        (change)="paginationChange()"
+        class="border rounded px-2 py-1"
+      >
+        @for(option of countPerPageList; track option) {
+        <option [value]="option.value" [selected]="option.value === per_page">
+          {{ option.label }}
+        </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="bg-gray-50 p-4 rounded-lg mb-5">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div>
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Candidats</h3>
+        <p class="font-semibold">18</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Villes</h3>
+        <p class="font-semibold">10</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Université</h3>
+        <p class="font-semibold">320</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Sections</h3>
+        <p class="font-semibold">156</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Sélectionnés</h3>
+        <p class="font-semibold">50</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="py-2 px-4 text-left">Noms du candidat</th>
+          <th class="py-2 px-4 text-left">Ville</th>
+          <th class="py-2 px-4 text-left">Moyenne</th>
+          <th class="py-2 px-4 text-left">Section</th>
+          <th class="py-2 px-4 text-left">Pourcentage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let candidacy of candidacies"
+          class="border-b hover:bg-gray-50"
+        >
+          <td class="py-2 px-4">{{ candidacy.etn_nom }}</td>
+          <td class="py-2 px-4">{{ candidacy.ville }}</td>
+          <td class="py-2 px-4">{{ candidacy.montant_frais }}</td>
+          <td class="py-2 px-4">{{ candidacy.section_option }}</td>
+          <td class="py-2 px-4">{{ candidacy.pourcentage_obtenu }}%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-4 flex flex-col sm:flex-row justify-between items-center">
+    <div class="mb-4 sm:mb-0">
+      <p class="text-sm text-gray-600">Affichage de 1 à 3 sur 3 entrées</p>
+    </div>
+    <div class="flex">
+      <button
+        (click)="changePage(currentPage - 1)"
+        [disabled]="currentPage === 1"
+        class="px-3 py-1 border border-gray-300 rounded-l bg-gray-100 hover:bg-gray-200"
+      >
+        Précédente
+      </button>
+      <span *ngFor="let page of [].constructor(lastPage); let i = index">
+        <button
+          (click)="changePage(i + 1)"
+          class="px-3 py-1 border-t border-b border-gray-300 bg-primary text-white"
+          [class.bg-primary]="currentPage === i + 1"
+          [class.text-white]="currentPage === i + 1"
+          [class.border-red-600]="currentPage === i + 1"
+          [class.bg-white]="currentPage !== i + 1"
+          [class.text-gray-700]="currentPage !== i + 1"
+          [class.border-gray-300]="currentPage !== i + 1"
+          [class.hover:bg-gray-100]="currentPage !== i + 1"
+        >
+          {{ i + 1 }}
+        </button>
+      </span>
+      <button
+        (click)="changePage(currentPage + 1)"
+        [disabled]="currentPage === lastPage"
+        class="px-3 py-1 border border-gray-300 rounded-r bg-gray-100 hover:bg-gray-200"
+      >
+        Suivante
+      </button>
+    </div>
+  </div>
+</div>
