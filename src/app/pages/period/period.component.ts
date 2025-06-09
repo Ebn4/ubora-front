@@ -2,7 +2,7 @@ import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Period } from '../../models/period';
 import { PeriodService } from './../../services/period.service';
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { BaseListWidget } from '../../widgets/base-list-widget';
 import { PeriodModalComponent } from './period-modal/period-modal.component';
@@ -15,7 +15,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 })
 export class PeriodComponent extends BaseListWidget{
 
-    periodService:PeriodService = inject(PeriodService);
+  periodService:PeriodService = inject(PeriodService);
   periods: Period[] = [];
 
   router:Router = inject(Router);
@@ -57,4 +57,3 @@ export class PeriodComponent extends BaseListWidget{
   }
 
 }
-
