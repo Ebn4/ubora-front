@@ -1,31 +1,43 @@
-<div class="flex flex-col min-h-screen bg-secondary">
-  <header class="bg-dark text-white p-4 shadow-md">
-    <div class="container mx-auto flex items-center justify-between">
-      <div class="flex items-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-8 w-8 mr-2"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <circle cx="12" cy="12" r="10" fill="#FF8C00" />
-          <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" />
-        </svg>
-        <h1 class="text-xl font-bold">Ubora Assessments</h1>
+<main class="flex-1 p-4">
+  <div
+    class="bg-white rounded-lg shadow-md p-6 mb-6"
+    [ngClass]="{ 'opacity-10 bg-dark': showModal }"
+  >
+    <div class="flex flex-col md:flex-row justify-between items-start mb-6">
+      <div>
+        <div class="flex items-center mb-2">
+          <a
+            [routerLink]="['/period']"
+            class="text-gray-500 hover:text-gray-700 mr-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </a>
+          <h2 class="text-2xl font-bold">Bourses {{ period?.year }}</h2>
+        </div>
+        <p class="text-gray-600 mb-4">
+          Programme de bourses d'études {{ period?.year }}
+        </p>
       </div>
-    </div>
-  </header>
-
-  <div class="flex flex-col md:flex-row flex-1">
-    <!-- Sidebar -->
-    <aside class="w-full md:w-64 bg-white shadow-md">
-      <div class="p-4 border-b flex flex-col items-center">
-        <div
-          class="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-2"
+      <div class="mt-4 md:mt-0 flex space-x-2">
+        <a [routerLink]="['/import']"
+          class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-8 w-8 text-gray-600"
+            class="h-5 w-5 mr-2"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -34,508 +46,284 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 10l-4-4m0 0l-4 4m4-4v12"
             />
           </svg>
-        </div>
-        <p class="font-medium">Admin</p>
+          Importer
+        </a>
+        <p
+          class="bg-green-300 hover:bg-green-200 text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
+        >
+          Status : {{ period?.status }}
+        </p>
       </div>
-      <nav class="p-2">
-        <ul>
-          <li class="mb-1">
-            <a
-              href="candidatures.html"
-              class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              Candidatures
-            </a>
-          </li>
-          <li class="mb-1">
-            <a
-              [routerLink]="['/']"
-              class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                />
-              </svg>
-              Importer
-            </a>
-          </li>
-          <li class="mb-1">
-            <a
-              [routerLink]="['candidacies']"
-              class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-              Toutes les candidatures
-            </a>
-          </li>
-          <li class="mb-1">
-            <a
-              href="preselections.html"
-              class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                />
-              </svg>
-              Présélections
-            </a>
-          </li>
-          <li class="mb-1">
-            <a
-              [routerLink]="['period']"
-              class="flex items-center p-3 bg-primary text-white rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              Périodes
-            </a>
-          </li>
-          <li class="mb-1">
-            <a
-              href="criteres.html"
-              class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-              Critères
-            </a>
-          </li>
-          <li class="mb-1">
-            <a
-              href="utilisateurs.html"
-              class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-              Utilisateurs
-            </a>
-          </li>
-          <li class="mt-4">
-            <a
-              href="login.html"
-              class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-              Se déconnecter
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+    </div>
 
-    <!-- Main content -->
-    <main class="flex-1 p-4">
-      <div
-        class="bg-white rounded-lg shadow-md p-6 mb-6"
-        [ngClass]="{ 'opacity-10 bg-dark': showModal }"
-      >
-        <div class="flex flex-col md:flex-row justify-between items-start mb-6">
-          <div>
-            <div class="flex items-center mb-2">
-              <a
-                [routerLink]="['period']"
-                class="text-gray-500 hover:text-gray-700 mr-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                  />
-                </svg>
-              </a>
-              <h2 class="text-2xl font-bold">Bourses {{ period?.year }}</h2>
-            </div>
-            <p class="text-gray-600 mb-4">
-              Programme de bourses d'études {{ period?.year }}
-            </p>
-          </div>
-          <div class="mt-4 md:mt-0 flex space-x-2">
-            <button
-              class="bg-green-300 hover:bg-green-200 text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
+    <div class="bg-gray-50 p-4 rounded-lg mb-3">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div class="flex flex-col items-start">
+          <div class="flex items-center mb-1">
+            <svg
+              class="h-5 w-5 text-blue-500 mr-1"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
             >
-              Status : {{ period?.status }}
-            </button>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+            <h3 class="text-sm font-medium text-gray-500">Évaluateurs</h3>
           </div>
+          <p class="font-semibold">18</p>
         </div>
-
-        <div class="bg-gray-50 p-4 rounded-lg mb-3">
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div class="flex flex-col items-start">
-              <div class="flex items-center mb-1">
-                <svg
-                  class="h-5 w-5 text-blue-500 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-                <h3 class="text-sm font-medium text-gray-500">Évaluateurs</h3>
-              </div>
-              <p class="font-semibold">18</p>
-            </div>
-            <div class="flex flex-col items-start">
-              <div class="flex items-center mb-1">
-                <svg
-                  class="h-5 w-5 text-yellow-500 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 14l9-5-9-5-9 5 9 5zm0 0v6"
-                  />
-                </svg>
-                <h3 class="text-sm font-medium text-gray-500">Lecteurs</h3>
-              </div>
-              <p class="font-semibold">10</p>
-            </div>
-            <div class="flex flex-col items-start">
-              <div class="flex items-center mb-1">
-                <svg
-                  class="h-5 w-5 text-green-500 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <h3 class="text-sm font-medium text-gray-500">Candidatures</h3>
-              </div>
-              <p class="font-semibold">320</p>
-            </div>
-            <div class="flex flex-col items-start">
-              <div class="flex items-center mb-1">
-                <svg
-                  class="h-5 w-5 text-purple-500 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 17v-2a4 4 0 018 0v2M12 12a4 4 0 100-8 4 4 0 000 8z"
-                  />
-                </svg>
-                <h3 class="text-sm font-medium text-gray-500">
-                  Pré sélectionnés
-                </h3>
-              </div>
-              <p class="font-semibold">156</p>
-            </div>
-            <div class="flex flex-col items-start">
-              <div class="flex items-center mb-1">
-                <svg
-                  class="h-5 w-5 text-pink-500 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <h3 class="text-sm font-medium text-gray-500">Sélectionnés</h3>
-              </div>
-              <p class="font-semibold">50</p>
-            </div>
+        <div class="flex flex-col items-start">
+          <div class="flex items-center mb-1">
+            <svg
+              class="h-5 w-5 text-yellow-500 mr-1"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 14l9-5-9-5-9 5 9 5zm0 0v6"
+              />
+            </svg>
+            <h3 class="text-sm font-medium text-gray-500">Lecteurs</h3>
           </div>
+          <p class="font-semibold">10</p>
         </div>
-
-        <!-- Tabs -->
-        <div class="mb-6 border-b">
-          <nav class="flex -mb-px">
-            <button
-              (click)="setActiveTab('criteria')"
-              class="py-2 px-4 font-medium"
-              [ngClass]="{
-                'text-primary border-b-2 border-primary':
-                  activeTab === 'criteria',
-                'text-gray-500 hover:text-gray-700': activeTab !== 'criteria'
-              }"
+        <div class="flex flex-col items-start">
+          <div class="flex items-center mb-1">
+            <svg
+              class="h-5 w-5 text-green-500 mr-1"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
             >
-              Critères
-            </button>
-
-            <button
-              (click)="setActiveTab('candidacy')"
-              class="py-2 px-4 font-medium"
-              [ngClass]="{
-                'text-primary border-b-2 border-primary':
-                  activeTab === 'candidacy',
-                'text-gray-500 hover:text-gray-700': activeTab !== 'candidacy'
-              }"
-            >
-              Candidatures
-            </button>
-            <button
-              (click)="setActiveTab('evaluateur')"
-              class="py-2 px-4 font-medium"
-              [ngClass]="{
-                'text-primary border-b-2 border-primary':
-                  activeTab === 'evaluateur',
-                'text-gray-500 hover:text-gray-700': activeTab !== 'evaluateur'
-              }"
-            >
-              Évaluateurs
-            </button>
-            <button
-              (click)="setActiveTab('lecteur')"
-              class="py-2 px-4 font-medium"
-              [ngClass]="{
-                'text-primary border-b-2 border-primary':
-                  activeTab === 'lecteur',
-                'text-gray-500 hover:text-gray-700': activeTab !== 'lecteur'
-              }"
-            >
-              Lectteurs
-            </button>
-          </nav>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            <h3 class="text-sm font-medium text-gray-500">Candidatures</h3>
+          </div>
+          <p class="font-semibold">320</p>
         </div>
-
-        <app-period-criteria
-          *ngIf="activeTab === 'criteria'"
-        ></app-period-criteria>
-        <app-period-candidacy
-          *ngIf="activeTab === 'candidacy'"
-        ></app-period-candidacy>
-        <app-period-evaluateur
-          *ngIf="activeTab === 'evaluateur'"
-        ></app-period-evaluateur>
-        <app-period-lecteur
-          *ngIf="activeTab === 'lecteur'"
-        ></app-period-lecteur>
-      </div>
-
-      <!-- Modal pour attacher des critères -->
-      <div
-        *ngIf="showModal"
-        class="fixed inset-0 flex items-center justify-center"
-        id="attachCriteriaModal"
-      >
-        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">Attacher des critères</h3>
-            <button
-              (click)="closeModal()"
-              class="text-gray-500 hover:text-gray-700"
+        <div class="flex flex-col items-start">
+          <div class="flex items-center mb-1">
+            <svg
+              class="h-5 w-5 text-purple-500 mr-1"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 17v-2a4 4 0 018 0v2M12 12a4 4 0 100-8 4 4 0 000 8z"
+              />
+            </svg>
+            <h3 class="text-sm font-medium text-gray-500">Pré sélectionnés</h3>
           </div>
-
-          <div class="mb-4">
-            <label for="search" class="block text-gray-700 font-medium mb-2"
-              >Rechercher un critère</label
+          <p class="font-semibold">156</p>
+        </div>
+        <div class="flex flex-col items-start">
+          <div class="flex items-center mb-1">
+            <svg
+              class="h-5 w-5 text-pink-500 mr-1"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
             >
-            <input
-              type="text"
-              id="search"
-              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Nom du critère..."
-            />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <h3 class="text-sm font-medium text-gray-500">Sélectionnés</h3>
           </div>
-
-          <div class="mb-4 max-h-60 overflow-y-auto">
-            <div class="border-b pb-2 mb-2">
-              <label class="flex items-center">
-                <input
-                  type="checkbox"
-                  class="form-checkbox h-5 w-5 text-primary"
-                />
-                <span class="ml-2">
-                  <span class="font-medium">Publications scientifiques</span>
-                  <span class="block text-sm text-gray-500"
-                    >Catégorie: Académique</span
-                  >
-                </span>
-              </label>
-            </div>
-            <div class="border-b pb-2 mb-2">
-              <label class="flex items-center">
-                <input
-                  type="checkbox"
-                  class="form-checkbox h-5 w-5 text-primary"
-                />
-                <span class="ml-2">
-                  <span class="font-medium">Compétences en leadership</span>
-                  <span class="block text-sm text-gray-500"
-                    >Catégorie: Compétences</span
-                  >
-                </span>
-              </label>
-            </div>
-            <div class="border-b pb-2 mb-2">
-              <label class="flex items-center">
-                <input
-                  type="checkbox"
-                  class="form-checkbox h-5 w-5 text-primary"
-                />
-                <span class="ml-2">
-                  <span class="font-medium">Participation communautaire</span>
-                  <span class="block text-sm text-gray-500"
-                    >Catégorie: Expérience</span
-                  >
-                </span>
-              </label>
-            </div>
-          </div>
-
-          <div class="flex justify-end space-x-2">
-            <button
-              (click)="closeModal()"
-              type="button"
-              class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              class="bg-primary hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
-            >
-              Attacher
-            </button>
-          </div>
+          <p class="font-semibold">50</p>
         </div>
       </div>
-    </main>
+    </div>
+
+    <!-- Tabs -->
+    <mat-tab-group
+      class="mb-6 border-b"
+      [(selectedIndex)]="tabIndex"
+      (selectedIndexChange)="onTabChange($event)"
+    >
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span
+            [ngClass]="{
+              'text-primary border-b-2 border-primary':
+                selectedTab === 'criteria',
+              'text-gray-500 hover:text-gray-700': selectedTab !== 'criteria'
+            }"
+            class="py-2 px-4 font-medium inline-block"
+          >
+            Critères
+          </span>
+        </ng-template>
+        <app-period-criteria></app-period-criteria>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span
+            [ngClass]="{
+              'text-primary border-b-2 border-primary':
+                selectedTab === 'candidacy',
+              'text-gray-500 hover:text-gray-700': selectedTab !== 'candidacy'
+            }"
+            class="py-2 px-4 font-medium inline-block"
+          >
+            Candidatures
+          </span>
+        </ng-template>
+        <app-period-candidacy [period]="period"></app-period-candidacy>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span
+            [ngClass]="{
+              'text-primary border-b-2 border-primary':
+                selectedTab === 'evaluateur',
+              'text-gray-500 hover:text-gray-700': selectedTab !== 'evaluateur'
+            }"
+            class="py-2 px-4 font-medium inline-block"
+          >
+            Évaluateurs
+          </span>
+        </ng-template>
+        <app-period-evaluateur></app-period-evaluateur>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span
+            [ngClass]="{
+              'text-primary border-b-2 border-primary':
+                selectedTab === 'lecteur',
+              'text-gray-500 hover:text-gray-700': selectedTab !== 'lecteur'
+            }"
+            class="py-2 px-4 font-medium inline-block"
+          >
+            Lecteurs
+          </span>
+        </ng-template>
+        <app-period-lecteur></app-period-lecteur>
+      </mat-tab>
+    </mat-tab-group>
   </div>
-</div>
+
+  <!-- Modal pour attacher des critères -->
+  <div
+    *ngIf="showModal"
+    class="fixed inset-0 flex items-center justify-center"
+    id="attachCriteriaModal"
+  >
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold">Attacher des critères</h3>
+        <button
+          (click)="closeModal()"
+          class="text-gray-500 hover:text-gray-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="mb-4">
+        <label for="search" class="block text-gray-700 font-medium mb-2"
+          >Rechercher un critère</label
+        >
+        <input
+          type="text"
+          id="search"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          placeholder="Nom du critère..."
+        />
+      </div>
+
+      <div class="mb-4 max-h-60 overflow-y-auto">
+        <div class="border-b pb-2 mb-2">
+          <label class="flex items-center">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary" />
+            <span class="ml-2">
+              <span class="font-medium">Publications scientifiques</span>
+              <span class="block text-sm text-gray-500"
+                >Catégorie: Académique</span
+              >
+            </span>
+          </label>
+        </div>
+        <div class="border-b pb-2 mb-2">
+          <label class="flex items-center">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary" />
+            <span class="ml-2">
+              <span class="font-medium">Compétences en leadership</span>
+              <span class="block text-sm text-gray-500"
+                >Catégorie: Compétences</span
+              >
+            </span>
+          </label>
+        </div>
+        <div class="border-b pb-2 mb-2">
+          <label class="flex items-center">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary" />
+            <span class="ml-2">
+              <span class="font-medium">Participation communautaire</span>
+              <span class="block text-sm text-gray-500"
+                >Catégorie: Expérience</span
+              >
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2">
+        <button
+          (click)="closeModal()"
+          type="button"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300"
+        >
+          Annuler
+        </button>
+        <button
+          type="submit"
+          class="bg-primary hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+        >
+          Attacher
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
