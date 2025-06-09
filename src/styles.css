@@ -1,3 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 @import "flowbite/src/themes/default";
+
+@theme {
+  --color-primary: #FF8C00;
+  --color-secondary: #F5E6D8;
+  --color-dark: #1A1A1A;
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Masquer la barre d'onglet Material et le soulignement par défaut */
+.mat-mdc-tab-group .mdc-tab-indicator,
+.mat-mdc-tab-group .mdc-tab__ripple,
+.mat-mdc-tab-group .mdc-tab__text-label,
+.mat-mdc-tab-group .mdc-tab--active .mdc-tab__text-label,
+.mat-mdc-tab-group .mdc-tab {
+  box-shadow: none !important;
+  border-bottom: none !important;
+  background: transparent !important;
+}
+
+.mat-mdc-tab-group .mdc-tab-indicator__content--underline {
+  display: none !important;
+}
+
+.mat-mdc-tab-group .mdc-tab__text-label {
+  color: inherit !important;
+  font-weight: inherit !important;
+  border-bottom: none !important;
+}
+
+/* Optionnel : enlever la couleur d'arrière-plan sur l'onglet actif */
+.mat-mdc-tab-group .mdc-tab--active {
+  background: transparent !important;
+}
