@@ -1,6 +1,6 @@
 <!-- Candidatures Section -->
-<div>
-  <div class="flex flex-col md:flex-row justify-between items-center mb-5">
+<div class="flex-1 p-4 rounded-lg bg-white m-4">
+  <div class=" flex flex-col md:flex-row justify-between items-center mb-5">
     <h2 class="text-2xl font-bold mb-4 md:mb-0">Gestion des Candidats</h2>
   </div>
 
@@ -101,30 +101,62 @@
   </div>
 
   <div class="overflow-x-auto">
-    <table class="min-w-full bg-white">
-      <thead>
-        <tr class="bg-gray-100">
-          <th class="py-2 px-4 text-left">Noms du candidat</th>
-          <th class="py-2 px-4 text-left">Ville</th>
-          <th class="py-2 px-4 text-left">Moyenne</th>
-          <th class="py-2 px-4 text-left">Section</th>
-          <th class="py-2 px-4 text-left">Pourcentage</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          *ngFor="let candidacy of candidacies"
-          class="border-b hover:bg-gray-50"
-        >
-          <td class="py-2 px-4">{{ candidacy.etn_nom }}</td>
-          <td class="py-2 px-4">{{ candidacy.ville }}</td>
-          <td class="py-2 px-4">{{ candidacy.montant_frais }}</td>
-          <td class="py-2 px-4">{{ candidacy.section_option }}</td>
-          <td class="py-2 px-4">{{ candidacy.pourcentage_obtenu }}%</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+      <table class="min-w-full bg-white">
+        <thead>
+          <tr class="bg-gray-800 text-white">
+            <th class="py-2 px-4 text-left">REFERENCE</th>
+            <th class="py-2 px-4 text-left">NOMS</th>
+            <th class="py-2 px-4 text-left">VILLE</th>
+            <th class="py-2 px-4 text-left">DATE SOUMISSION</th>
+            <th class="py-2 px-4 text-left">PRESELECTION</th>
+            <th class="py-2 px-4 text-left">MOYENNE</th>
+            <th class="py-2 px-4 text-left">NBR D'EVALUATIONS</th>
+            <th class="py-2 px-4 text-left">DETAILS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let candidacie of candidacies"
+            class="border-b hover:bg-gray-50"
+          >
+            <td class="py-2 px-4">{{ candidacie.id }}</td>
+            <td class="py-2 px-4">
+              {{ candidacie.etn_nom }} {{ candidacie.etn_postnom }}
+              {{ candidacie.etn_prenom }}
+            </td>
+            <td class="py-2 px-4">{{ candidacie.ville }}</td>
+            <td class="py-2 px-4">{{ candidacie.form_submited_at }}</td>
+            <td class="py-2 px-4">
+              <span class="flex items-center">
+                En attente
+                <span class="ml-1 h-3 w-3 bg-yellow-400 rounded-full"></span>
+              </span>
+            </td>
+            <td class="py-2 px-4">{{ candidacie.pourcentage_obtenu }}</td>
+            <td class="py-2 px-4">0</td>
+            <td class="py-2 px-4">
+              <a [routerLink]="['/candidacy-single', candidacie.id]" class="text-blue-500">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
   <div class="mt-4 flex flex-col sm:flex-row justify-between items-center">
     <div class="mb-4 sm:mb-0">
       <p class="text-sm text-gray-600">Affichage de 1 à 3 sur 3 entrées</p>
