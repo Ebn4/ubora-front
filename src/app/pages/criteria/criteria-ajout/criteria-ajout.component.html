@@ -1,0 +1,103 @@
+<div
+  class="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50"
+  id="criteriaModal"
+>
+  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">Ajouter un critère</h3>
+      <button
+        (click)="closeModal()"
+        class="text-gray-500 cursor-pointer hover:text-gray-700"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700 font-medium mb-2"
+          >Nom du critère</label
+        >
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="description" class="block text-gray-700 font-medium mb-2"
+          >Description</label
+        >
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="3"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          required
+        ></textarea>
+      </div>
+
+      <div class="mb-4 max-h-60 overflow-y-auto">
+        <div class="pb-2 mb-2">
+          <label class="flex items-center">
+            <input
+              type="checkbox"
+              (click)="isCheck($event)"
+              class="form-checkbox h-5 w-5 text-primary"
+            />
+            <span class="ml-2">
+              <span class="font-medium"
+                >Cocher cette case si le critère est de sélection</span
+              >
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Ce bloc ne s'affiche que si la case est cochée -->
+      <div class="mb-4" *ngIf="isChecked">
+        <label for="weight" class="block text-gray-700 font-medium mb-2">
+          Pondération (%)
+        </label>
+        <input
+          type="number"
+          id="weight"
+          min="0"
+          max="100"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          required
+        />
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button
+          (click)="closeModal()"
+          type="button"
+          class="bg-gray-300 hover:bg-gray-400 cursor-pointer text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300"
+        >
+          Annuler
+        </button>
+        <button
+          type="submit"
+          class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+        >
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
