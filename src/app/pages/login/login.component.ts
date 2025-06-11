@@ -18,7 +18,7 @@ import {AuthServices} from '../../services/auth.service';
   ],
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export default class LoginComponent {
 
   isLoading = false;
   errorMessage = '';
