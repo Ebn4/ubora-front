@@ -1,23 +1,31 @@
-import {Component, inject, Input, signal} from '@angular/core';
+import {Component, inject, Input, OnChanges, signal, SimpleChanges} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {AddEvaluatorDialogComponent} from '../add-evaluator-dialog/add-evaluator-dialog.component';
 import {EvaluatorService} from '../../../services/evaluator.service';
 import {Evaluator} from '../../../models/evaluator.model';
 import {RouterLink} from '@angular/router';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {BaseListWidget} from '../../../widgets/base-list-widget';
+import {NgForOf} from '@angular/common';
 
 @Component({
   selector: 'app-period-evaluateur',
   imports: [
-    RouterLink
+    RouterLink,
+    FormsModule,
+    NgForOf,
+    ReactiveFormsModule
   ],
   templateUrl: './period-evaluateur.component.html',
   standalone: true
 })
-export class PeriodEvaluateurComponent {
+export class PeriodEvaluateurComponent extends BaseListWidget {
 
   readonly dialog = inject(MatDialog);
   evaluators = signal<Evaluator[]>([])
   @Input() periodId: number = -1
+  perPage = signal(10)
+  typeForm = new FormControl('')
 
   evaluatorService = inject(EvaluatorService)
 
@@ -33,7 +41,14 @@ export class PeriodEvaluateurComponent {
     ]
   )
 
-  ngOnInit(){
+  ngOnInit() {
+    this.getEvaluators()
+    this.typeForm.valueChanges.subscribe(value => {
+      this.loadData()
+    })
+  }
+
+  override loadData() {
     this.getEvaluators()
   }
 
@@ -48,7 +63,13 @@ export class PeriodEvaluateurComponent {
   }
 
   getEvaluators() {
-    this.evaluatorService.getEvaluators(this.periodId)
+    this.evaluatorService.getEvaluators(
+      this.periodId,
+      this.currentPage,
+      this.per_page,
+      this.search,
+      this.typeForm.value
+    )
       .subscribe({
         next: value => {
           this.evaluators.set(value.data)
