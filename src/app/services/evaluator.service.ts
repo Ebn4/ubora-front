@@ -11,7 +11,7 @@ export class EvaluatorService {
   http: HttpClient = inject(HttpClient)
   baseUrl = inject(BASE_URL)
 
-  getEvaluators(page = 1, perPage = 10, type: string | null = null, periodId: number | null) {
+  getEvaluators(periodId: number | null, page = 1, perPage = 10, type: string | null = null) {
     let uriParameters = `?page=${page}&perPage=${perPage}`;
 
     if (type != null)
@@ -25,5 +25,9 @@ export class EvaluatorService {
 
   getEvaluator(id: string) {
     return this.http.get<ResponseInterface<Evaluator>>(`${this.baseUrl}/evaluators/${id}`)
+  }
+
+  addEvaluator(data: { periodId: number, cuid: string, type: string }) {
+    return this.http.post(`${this.baseUrl}/evaluators`, data)
   }
 }
