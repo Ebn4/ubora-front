@@ -33,7 +33,7 @@
       </div>
       <div class="mt-4 md:mt-0 flex space-x-2">
         <a [routerLink]="['/import']"
-          class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
+           class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -210,7 +210,7 @@
             Évaluateurs
           </span>
         </ng-template>
-        <app-period-evaluateur></app-period-evaluateur>
+        <app-period-evaluateur [periodId]="periodId"></app-period-evaluateur>
       </mat-tab>
 
       <mat-tab>
@@ -263,7 +263,7 @@
 
       <div class="mb-4">
         <label for="search" class="block text-gray-700 font-medium mb-2"
-          >Rechercher un critère</label
+        >Rechercher un critère</label
         >
         <input
           type="text"
@@ -276,33 +276,33 @@
       <div class="mb-4 max-h-60 overflow-y-auto">
         <div class="border-b pb-2 mb-2">
           <label class="flex items-center">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary" />
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary"/>
             <span class="ml-2">
               <span class="font-medium">Publications scientifiques</span>
               <span class="block text-sm text-gray-500"
-                >Catégorie: Académique</span
+              >Catégorie: Académique</span
               >
             </span>
           </label>
         </div>
         <div class="border-b pb-2 mb-2">
           <label class="flex items-center">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary" />
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary"/>
             <span class="ml-2">
               <span class="font-medium">Compétences en leadership</span>
               <span class="block text-sm text-gray-500"
-                >Catégorie: Compétences</span
+              >Catégorie: Compétences</span
               >
             </span>
           </label>
         </div>
         <div class="border-b pb-2 mb-2">
           <label class="flex items-center">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary" />
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary"/>
             <span class="ml-2">
               <span class="font-medium">Participation communautaire</span>
               <span class="block text-sm text-gray-500"
-                >Catégorie: Expérience</span
+              >Catégorie: Expérience</span
               >
             </span>
           </label>

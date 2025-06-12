@@ -1,0 +1,56 @@
+<div class="fixed inset-0 bg-opacity-50  flex items-center  justify-center" id="userModal">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">Ajouter un evaluateur</h3>
+      <button class="text-gray-500 hover:text-gray-700" (click)="onClose()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="mb-4">
+        <label for="user" class="block text-gray-700 font-medium mb-2">Utilisateur</label>
+        <input type="text"
+               aria-label="cuid"
+               matInput
+               id="user"
+               placeholder="Recherche par nom,cuid ou email"
+               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+               [formControl]="query"
+               [matAutocomplete]="auto">
+        <mat-autocomplete
+          (optionSelected)="onSelectedUser($event.option.value)"
+          autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn">
+          @for (option of filteredUsers | async; track option) {
+            <mat-option [value]="option">{{ option.name }}</mat-option>
+          }
+        </mat-autocomplete>
+      </div>
+
+      <div class="mb-4">
+        <label for="evaluator_type" class="block text-gray-700 font-medium mb-2">Type</label>
+        <select id="evaluator_type" formControlName="evaluatorType"
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+          @for (evaluatorType of evaluatorTypes(); track evaluatorType.type) {
+            <option [value]="evaluatorType.type">{{ evaluatorType.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="flex justify-end space-x-2">
+        <button type="button" (click)="onClose()"
+                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300">
+          Annuler
+        </button>
+        <button type="submit"
+                class="bg-primary hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

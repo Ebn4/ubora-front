@@ -1,1 +1,164 @@
-<!-- Évaluateurs Section -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+  <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold mb-4 md:mb-0">Gestion des Evaluateurs</h2>
+    <button (click)="onOpenDialog()"
+            class="bg-orange-600 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+           stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      Ajouter un evaluateur
+    </button>
+  </div>
+
+  <div class="flex items-center justify-between mb-3">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div>
+        <label for="search" class="block text-gray-700 font-medium"
+        >Rechercher</label
+        >
+        <input
+          type="text"
+          id="search"
+          [(ngModel)]="search"
+          (input)="onSearchChange()"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          placeholder="recherche..."
+        />
+      </div>
+      <div>
+        <label for="type" class="block text-gray-700 font-medium">Filtrer par type</label>
+        <select
+          id="type"
+          [formControl]="typeForm"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+        >
+          <option value="">Tous les types</option>
+          @for (evaluatorType of evaluatorTypes(); track evaluatorType.type) {
+            <option [value]="evaluatorType.type">{{ evaluatorType.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button
+        (click)="loadData()"
+        class="bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582M20 20v-5h-.581M5.419 19A9 9 0 0021 12.082M18.364 5.636A9 9 0 003 11.918"
+          />
+        </svg>
+        Actualiser
+      </button>
+
+      <span class="mr-2">Afficher</span>
+      <select
+        id="per_page"
+        [(ngModel)]="perPage"
+        (change)="paginationChange()"
+        class="border rounded px-2 py-1"
+      >
+        @for (option of countPerPageList; track option) {
+          <option [value]="option.value" [selected]="option.value === per_page">
+            {{ option.label }}
+          </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white">
+      <thead>
+      <tr class="bg-gray-800 text-white">
+        <th class="py-2 px-4 text-left">Nom</th>
+        <th class="py-2 px-4 text-left">Email</th>
+        <th class="py-2 px-4 text-left">Type</th>
+        <th class="py-2 px-4 text-left">Periode</th>
+        <th class="py-2 px-4 text-left">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (evaluator of evaluators(); track evaluator.id) {
+          <tr class="border-b hover:bg-gray-50">
+            <td class="py-2 px-4">{{ evaluator.name }}</td>
+            <td class="py-2 px-4">{{ evaluator.email }}</td>
+            <td class="py-2 px-4">{{ evaluator.type }}</td>
+            <td class="py-2 px-4">
+                    <span
+                      class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">{{ evaluator.period }}</span>
+            </td>
+            <td class="py-2 px-4">
+              <div class="flex space-x-2">
+                <a class="text-blue-500 hover:text-blue-700" [routerLink]="['/evaluators', evaluator.id]">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                </a>
+                <button class="text-red-500 hover:text-red-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4 flex flex-col sm:flex-row justify-between items-center">
+    <div class="mb-4 sm:mb-0">
+      <p class="text-sm text-gray-600">Affichage de 1 à 3 sur 3 entrées</p>
+    </div>
+    <div class="flex">
+      <button
+        (click)="changePage(currentPage - 1)"
+        [disabled]="currentPage === 1"
+        class="px-3 py-1 border border-gray-300 rounded-l bg-gray-100 hover:bg-gray-200"
+      >
+        Précédente
+      </button>
+      <span *ngFor="let page of [].constructor(lastPage); let i = index">
+        <button
+          (click)="changePage(i + 1)"
+          class="px-3 py-1 border-t border-b border-gray-300 bg-primary text-white"
+          [class.bg-primary]="currentPage === i + 1"
+          [class.text-white]="currentPage === i + 1"
+          [class.border-red-600]="currentPage === i + 1"
+          [class.bg-white]="currentPage !== i + 1"
+          [class.text-gray-700]="currentPage !== i + 1"
+          [class.border-gray-300]="currentPage !== i + 1"
+          [class.hover:bg-gray-100]="currentPage !== i + 1"
+        >
+          {{ i + 1 }}
+        </button>
+      </span>
+      <button
+        (click)="changePage(currentPage + 1)"
+        [disabled]="currentPage === lastPage"
+        class="px-3 py-1 border border-gray-300 rounded-r bg-gray-100 hover:bg-gray-200"
+      >
+        Suivante
+      </button>
+    </div>
+  </div>
+
+</div>
