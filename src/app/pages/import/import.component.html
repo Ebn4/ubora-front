@@ -132,8 +132,8 @@
           (click)="onSubmit()"
           [disabled]="!selectedDocFile"
         >
-          <span *ngIf="!isLoading">Soumettre</span>
-          <span *ngIf="isLoading">Soumettre</span>
+          <span *ngIf="!isLoadingDoc">Soumettre</span>
+          <span *ngIf="isLoadingDoc">Soumettre...</span>
         </button>
       </div>
     </div>

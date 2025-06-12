@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ImportService } from '../../services/import.service';
 import { NgIf } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -15,10 +15,10 @@ export class ImportComponent {
   isLoading = false;
   isLoadingDoc = false;
   importService: ImportService = inject(ImportService);
+  router: Router = inject(Router);
 
   selectedFile: File | null = null;
   selectedDocFile: File | null = null;
-
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -46,6 +46,7 @@ export class ImportComponent {
       this.selectedDocFile
     );
     alert(result.message);
+    this.router.navigate(['/candidacy']);
   }
 
   async onImportClick() {
@@ -61,6 +62,7 @@ export class ImportComponent {
       );
       this.message = result.message;
       alert('Le fichier a été envoyé avec succès.');
+      this.router.navigate(['/period']);
     } catch (error) {
       console.error(error);
       alert("Une erreur est survenue lors de l'envoi du fichier.");
