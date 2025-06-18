@@ -37,4 +37,10 @@ export class EvaluatorService {
   addEvaluator(data: { periodId: number, cuid: string, type: string }) {
     return this.http.post(`${this.baseUrl}/evaluators`, data)
   }
+
+  dispatchEvaluators(periodId: string) {
+    return this.http.post(`${this.baseUrl}/evaluators/${periodId}/dispatch`, {
+      periodId: periodId
+    })
+  }
 }

@@ -1,13 +1,13 @@
-import { Period } from './../../models/period';
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { PeriodService } from '../../services/period.service';
-import { NgClass, NgIf } from '@angular/common';
-import { PeriodCriteriaComponent } from './period-criteria/period-criteria.component';
-import { PeriodCandidacyComponent } from './period-candidacy/period-candidacy.component';
-import { PeriodEvaluateurComponent } from './period-evaluateur/period-evaluateur.component';
-import { PeriodLecteurComponent } from './period-lecteur/period-lecteur.component';
-import { MatTabsModule } from "@angular/material/tabs";
+import {Period} from './../../models/period';
+import {Component, inject, signal} from '@angular/core';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {PeriodService} from '../../services/period.service';
+import {NgClass, NgIf} from '@angular/common';
+import {PeriodCriteriaComponent} from './period-criteria/period-criteria.component';
+import {PeriodCandidacyComponent} from './period-candidacy/period-candidacy.component';
+import {PeriodEvaluateurComponent} from './period-evaluateur/period-evaluateur.component';
+import {PeriodLecteurComponent} from './period-lecteur/period-lecteur.component';
+import {MatTabsModule} from "@angular/material/tabs";
 
 
 @Component({
@@ -25,6 +25,7 @@ import { MatTabsModule } from "@angular/material/tabs";
   templateUrl: './period-single.component.html',
 })
 export class PeriodSingleComponent {
+  canDispatch = signal(false)
   periodService: PeriodService = inject(PeriodService);
   route: ActivatedRoute = inject(ActivatedRoute);
   period!: Period | undefined;
@@ -34,7 +35,8 @@ export class PeriodSingleComponent {
   showModal = false;
   activeTab: 'criteria' | 'candidacy' | 'evaluateur' | 'lecteur' = 'criteria';
 
-  constructor(private router: Router){}
+  constructor(private router: Router) {
+  }
 
   ngOnInit() {
     this.periodId = Number(this.route.snapshot.paramMap.get('id'));
@@ -81,15 +83,20 @@ export class PeriodSingleComponent {
     this.selectedTab = this.getTabName(index);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: this.selectedTab },
+      queryParams: {tab: this.selectedTab},
       queryParamsHandling: "merge",
     });
   }
 
 
-  openModal() {}
+  openModal() {
+  }
 
   closeModal() {
     this.showModal = false;
+  }
+
+  canValidateDispatch(canDispatch: boolean) {
+    this.canDispatch.set(canDispatch)
   }
 }

@@ -1,4 +1,4 @@
-import {Component, inject, Input, OnChanges, signal, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnChanges, Output, signal, SimpleChanges} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {AddEvaluatorDialogComponent} from '../add-evaluator-dialog/add-evaluator-dialog.component';
 import {EvaluatorService} from '../../../services/evaluator.service';
@@ -7,6 +7,8 @@ import {RouterLink} from '@angular/router';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BaseListWidget} from '../../../widgets/base-list-widget';
 import {NgForOf} from '@angular/common';
+import {Period} from '../../../models/period';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-period-evaluateur',
@@ -19,16 +21,18 @@ import {NgForOf} from '@angular/common';
   templateUrl: './period-evaluateur.component.html',
   standalone: true
 })
-export class PeriodEvaluateurComponent extends BaseListWidget {
+export class PeriodEvaluateurComponent extends BaseListWidget implements OnChanges {
 
+  private _snackBar = inject(MatSnackBar);
+  canDispatch = signal(true)
+  @Input() period?: Period
+  @Output() canValidateDispatch = new EventEmitter<boolean>()
   readonly dialog = inject(MatDialog);
+
   evaluators = signal<Evaluator[]>([])
-  @Input() periodId: number = -1
   perPage = signal(10)
+  dispatchStatus = signal("dispatche")
   typeForm = new FormControl('')
-
-  evaluatorService = inject(EvaluatorService)
-
   evaluatorTypes = signal<{ name: string, type: string }[]>(
     [
       {
@@ -41,11 +45,22 @@ export class PeriodEvaluateurComponent extends BaseListWidget {
     ]
   )
 
+  evaluatorService = inject(EvaluatorService)
+
   ngOnInit() {
+    console.log('once')
     this.getEvaluators()
     this.typeForm.valueChanges.subscribe(value => {
       this.loadData()
     })
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['period']) {
+      const current = changes['period'].currentValue;
+      this.period = current;
+      if (current) this.loadData();
+    }
   }
 
   override loadData() {
@@ -54,7 +69,7 @@ export class PeriodEvaluateurComponent extends BaseListWidget {
 
   onOpenDialog() {
     const dialogRef = this.dialog.open(AddEvaluatorDialogComponent, {
-      data: {periodId: this.periodId}
+      data: {periodId: this.period?.id}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -62,9 +77,48 @@ export class PeriodEvaluateurComponent extends BaseListWidget {
     });
   }
 
+  onDispatchEvaluator() {
+    if (this.period?.id != null) {
+      this.evaluatorService
+        .dispatchEvaluators(this.period.id.toString())
+        .subscribe({
+          next: value => {
+            this.canDispatch.set(false)
+            this.canValidateDispatch.emit(true)
+            this._snackBar.open('Candidats dispatchés', 'fermer', {
+              duration: 3000
+            });
+          },
+          error: err => {
+            console.log(err)
+          }
+        })
+    }
+  }
+
+  onCancelDispatch() {
+    if (this.period?.id != null) {
+      this.evaluatorService
+        .dispatchEvaluators(this.period.id.toString())
+        .subscribe({
+          next: value => {
+            this.canDispatch.set(true)
+            this.canValidateDispatch.emit(false)
+            this._snackBar.open('Dispatches annuler', 'fermer', {
+              duration: 3000
+            });
+          },
+          error: err => {
+            console.log(err)
+          }
+        })
+    }
+  }
+
   getEvaluators() {
+
     this.evaluatorService.getEvaluators(
-      this.periodId,
+      this.period?.id ?? null,
       this.currentPage,
       this.per_page,
       this.search,
@@ -78,5 +132,7 @@ export class PeriodEvaluateurComponent extends BaseListWidget {
           console.log(err)
         }
       })
+
+
   }
 }
