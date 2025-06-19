@@ -1,13 +1,15 @@
-import {Period} from './../../models/period';
-import {Component, inject, signal} from '@angular/core';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {PeriodService} from '../../services/period.service';
-import {NgClass, NgIf} from '@angular/common';
-import {PeriodCriteriaComponent} from './period-criteria/period-criteria.component';
-import {PeriodCandidacyComponent} from './period-candidacy/period-candidacy.component';
-import {PeriodEvaluateurComponent} from './period-evaluateur/period-evaluateur.component';
-import {PeriodLecteurComponent} from './period-lecteur/period-lecteur.component';
-import {MatTabsModule} from "@angular/material/tabs";
+import { Period } from './../../models/period';
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { PeriodService } from '../../services/period.service';
+import { NgClass, NgIf } from '@angular/common';
+import { PeriodCriteriaComponent } from './period-criteria/period-criteria.component';
+import { PeriodCandidacyComponent } from './period-candidacy/period-candidacy.component';
+import { PeriodEvaluateurComponent } from './period-evaluateur/period-evaluateur.component';
+import { PeriodLecteurComponent } from './period-lecteur/period-lecteur.component';
+import { MatTabsModule } from "@angular/material/tabs";
+import { PeriodStatus } from '../../enum/period-status.enum';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -34,18 +36,25 @@ export class PeriodSingleComponent {
   periodId = -1;
   showModal = false;
   activeTab: 'criteria' | 'candidacy' | 'evaluateur' | 'lecteur' = 'criteria';
+  snackBar = inject(MatSnackBar);
+  dispatchPeriodStatus = PeriodStatus.STATUS_DISPATCH
+
 
   constructor(private router: Router) {
   }
 
   ngOnInit() {
     this.periodId = Number(this.route.snapshot.paramMap.get('id'));
-    this.periodService.getOnePeriod(this.periodId).then((period) => {
-      this.period = period;
-    });
+    this.getPeriod();
     this.route.queryParams.subscribe((params) => {
       this.selectedTab = params["tab"] || "criteria";
       this.tabIndex = this.getTabIndex(this.selectedTab);
+    });
+  }
+
+  getPeriod() {
+    this.periodService.getOnePeriod(this.periodId).then((period) => {
+      this.period = period;
     });
   }
 
@@ -83,7 +92,7 @@ export class PeriodSingleComponent {
     this.selectedTab = this.getTabName(index);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: {tab: this.selectedTab},
+      queryParams: { tab: this.selectedTab },
       queryParamsHandling: "merge",
     });
   }
@@ -98,5 +107,23 @@ export class PeriodSingleComponent {
 
   canValidateDispatch(canDispatch: boolean) {
     this.canDispatch.set(canDispatch)
+  }
+
+  validateStatus() {
+    this.periodService
+      .changePeriodStatus(this.periodId, { status: PeriodStatus.STATUS_PRESELECTION })
+      .subscribe({
+        next: value => {
+          this.snackBar.open("Le statut de la période a été mis à jour avec succès.", "Fermer", {
+            duration: 3000,
+          });
+          this.canDispatch.set(false);
+          this.getPeriod();
+        },
+        error: err => {
+          console.log(err);
+
+        }
+      })
   }
 }
