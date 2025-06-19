@@ -9,6 +9,7 @@ import {BaseListWidget} from '../../../widgets/base-list-widget';
 import {NgForOf} from '@angular/common';
 import {Period} from '../../../models/period';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import { PeriodStatus } from '../../../enum/period-status.enum';
 
 @Component({
   selector: 'app-period-evaluateur',
@@ -31,7 +32,7 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
 
   evaluators = signal<Evaluator[]>([])
   perPage = signal(10)
-  dispatchStatus = signal("dispatche")
+  dispatchStatus = signal(PeriodStatus.STATUS_DISPATCH);
   typeForm = new FormControl('')
   evaluatorTypes = signal<{ name: string, type: string }[]>(
     [
