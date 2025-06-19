@@ -43,4 +43,8 @@ export class EvaluatorService {
       periodId: periodId
     })
   }
+
+  hasEvaluatorBeenDispatched(periodId: string) {
+    return this.http.get<{isDispatch: boolean}>(`${this.baseUrl}/evaluators/${periodId}/is-dispatched`)
+  }
 }
