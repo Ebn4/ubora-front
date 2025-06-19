@@ -1,14 +1,14 @@
-import {Component, EventEmitter, inject, Input, OnChanges, Output, signal, SimpleChanges} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {AddEvaluatorDialogComponent} from '../add-evaluator-dialog/add-evaluator-dialog.component';
-import {EvaluatorService} from '../../../services/evaluator.service';
-import {Evaluator} from '../../../models/evaluator.model';
-import {RouterLink} from '@angular/router';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {BaseListWidget} from '../../../widgets/base-list-widget';
-import {NgForOf} from '@angular/common';
-import {Period} from '../../../models/period';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { Component, EventEmitter, inject, Input, OnChanges, Output, signal, SimpleChanges } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { AddEvaluatorDialogComponent } from '../add-evaluator-dialog/add-evaluator-dialog.component';
+import { EvaluatorService } from '../../../services/evaluator.service';
+import { Evaluator } from '../../../models/evaluator.model';
+import { RouterLink } from '@angular/router';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BaseListWidget } from '../../../widgets/base-list-widget';
+import { NgForOf } from '@angular/common';
+import { Period } from '../../../models/period';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PeriodStatus } from '../../../enum/period-status.enum';
 
 @Component({
@@ -40,9 +40,9 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
         name: 'Selection',
         type: 'SELECTION'
       }, {
-      name: 'Preselection',
-      type: 'PRESELECTION'
-    }
+        name: 'Preselection',
+        type: 'PRESELECTION'
+      }
     ]
   )
 
@@ -51,6 +51,7 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
   ngOnInit() {
     console.log('once')
     this.getEvaluators()
+    this.isDispatchable()
     this.typeForm.valueChanges.subscribe(value => {
       this.loadData()
     })
@@ -66,11 +67,12 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
 
   override loadData() {
     this.getEvaluators()
+    this.isDispatchable();
   }
 
   onOpenDialog() {
     const dialogRef = this.dialog.open(AddEvaluatorDialogComponent, {
-      data: {periodId: this.period?.id}
+      data: { periodId: this.period?.id }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -84,8 +86,7 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
         .dispatchEvaluators(this.period.id.toString())
         .subscribe({
           next: value => {
-            this.canDispatch.set(false)
-            this.canValidateDispatch.emit(true)
+            this.isDispatchable()
             this._snackBar.open('Candidats dispatchés', 'fermer', {
               duration: 3000
             });
@@ -114,6 +115,26 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
           }
         })
     }
+  }
+
+  isDispatchable() {
+
+    if (this.period?.id != null) {
+
+      this.evaluatorService
+        .hasEvaluatorBeenDispatched(this.period.id.toString())
+        .subscribe({
+          next: value => {
+            this.canDispatch.set(!value.isDispatch)
+            this.canValidateDispatch.emit(value.isDispatch)
+          },
+          error: err => {
+            console.log(err)
+          }
+        })
+    }
+
+
   }
 
   getEvaluators() {
