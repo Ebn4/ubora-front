@@ -1,26 +1,29 @@
-import { CriteriaAttachComponent } from './criteria-attach/criteria-attach.component';
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input, signal } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CriteriaAjoutComponent } from './criteria-ajout/criteria-ajout.component';
 import { BaseListWidget } from '../../widgets/base-list-widget';
 import { CriteriaService } from '../../services/criteria.service';
 import { Criteria } from '../../models/criteria';
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CriteriaEditComponent } from './criteria-edit/criteria-edit.component';
 import { CriteriaConfirmComponent } from './criteria-confirm/criteria-confirm.component';
+import { Period } from '../../models/period';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-criteria',
-  imports: [NgFor, FormsModule],
+  imports: [NgFor, FormsModule, NgIf],
   templateUrl: './criteria.component.html',
 })
 export class CriteriaComponent extends BaseListWidget {
   criterias: Criteria[] = [];
   showModal = false;
   criteriaOng: any;
+  type: string = '';
   criteriaService: CriteriaService = inject(CriteriaService);
-
+  route: ActivatedRoute = inject(ActivatedRoute);
+  periodId!: number;
   constructor(private _matDialog: MatDialog) {
     super();
   }
@@ -29,16 +32,15 @@ export class CriteriaComponent extends BaseListWidget {
     this.loadData();
   }
 
-  delete(id: number) {
+  changeStatus(id: number) {
     const dialogRef = this._matDialog.open(CriteriaConfirmComponent, {
-      data: { message: 'Voulez-vous vraiment supprimer ce critère ?' },
+      data: { message: 'Voulez-vous vraiment exécuter cette action ?' },
       disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.criteriaService.deleteCriteria(id).then(() => {
-          alert('Critère supprimé');
           this.loadData();
         });
       }
@@ -46,8 +48,15 @@ export class CriteriaComponent extends BaseListWidget {
   }
 
   override loadData() {
+    this.periodId = Number(this.route.snapshot.paramMap.get('id'));
     this.criteriaService
-      .getCriteria(this.currentPage, this.search, this.per_page)
+      .getCriteria(
+        this.currentPage,
+        this.search,
+        this.type,
+        this.per_page,
+        this.periodId
+      )
       .then((response) => {
         this.criterias = response.data;
         this.currentPage = response.current_page;
@@ -62,22 +71,6 @@ export class CriteriaComponent extends BaseListWidget {
 
     const dialogRef = this._matDialog.open(
       CriteriaAjoutComponent,
-      dialogConfig
-    );
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadData();
-      }
-    });
-  }
-
-  openModalAttach() {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true;
-    dialogConfig.data = {};
-
-    const dialogRef = this._matDialog.open(
-      CriteriaAttachComponent,
       dialogConfig
     );
     dialogRef.afterClosed().subscribe((result) => {
