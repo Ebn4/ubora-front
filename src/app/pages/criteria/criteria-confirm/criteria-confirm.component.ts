@@ -23,7 +23,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
           (click)="onYes()"
           class="bg-primary hover:bg-orange-600 text-white cursor-pointer font-bold py-2 px-4 rounded-lg transition duration-300"
         >
-          Supprimer
+          Exécuter
         </button>
       </div>
     </div>
