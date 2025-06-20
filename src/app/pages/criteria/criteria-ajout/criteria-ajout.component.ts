@@ -8,16 +8,14 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-criteria-ajout',
-  imports: [ReactiveFormsModule, NgIf, FormsModule],
+  imports: [ReactiveFormsModule, FormsModule],
   templateUrl: './criteria-ajout.component.html',
 })
 export class CriteriaAjoutComponent {
   criteriaService: CriteriaService = inject(CriteriaService);
-  isChecked = false;
 
   constructor(
     public dialogRef: MatDialogRef<CriteriaAjoutComponent>,
@@ -26,7 +24,7 @@ export class CriteriaAjoutComponent {
 
   form = new FormGroup({
     name: new FormControl('', [Validators.required]),
-    description: new FormControl('', [Validators.required]),
+    description: new FormControl(''),
   });
 
   submit() {
@@ -45,10 +43,5 @@ export class CriteriaAjoutComponent {
 
   closeModal() {
     this.dialogRef.close();
-  }
-
-  isCheck(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    this.isChecked = inputElement.checked;
   }
 }

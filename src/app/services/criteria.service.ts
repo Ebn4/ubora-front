@@ -1,12 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Criteria } from '../models/criteria';
+import { inject, Injectable } from '@angular/core';
+import { Criteria} from '../models/criteria';
 import { Response } from '../models/response';
+import { LocalStorageService } from './local-storage.service';
+import { CriteriaPeriod } from '../models/criteria-period';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CriteriaService {
-  private token = '5|AslMM4JvVrPtKrHweDoEn1Mn1h8YLkAvMSIXhyCx316cadda';
+  localStorageService = inject(LocalStorageService);
+  private token = this.localStorageService.getData('token');
   currentPage: number = 1;
   lastPage: number = 1;
 
@@ -15,12 +18,16 @@ export class CriteriaService {
   async getCriteria(
     page: number = 1,
     search: string = '',
-    per_page: number
+    type: string = '',
+    per_page: number,
+    periodId: number | undefined
   ): Promise<{ data: Criteria[]; current_page: number; last_page: number }> {
     const url = new URL('http://localhost:8000/api/criteria');
     url.searchParams.append('page', page.toString());
+    if (type) url.searchParams.append('type', type);
     if (search) url.searchParams.append('search', search);
     if (per_page) url.searchParams.append('per_page', per_page.toString());
+    if (periodId) url.searchParams.append('periodId', periodId.toString());
 
     const response = await fetch(url.toString(), {
       method: 'GET',
@@ -73,15 +80,11 @@ export class CriteriaService {
     return rep;
   }
 
-  async updateCriteria(
-    id: number,
-    name: string,
-    description: string
-  ): Promise<Response> {
+  async updateCriteria(id: number, description: string): Promise<Response> {
     const url = new URL('http://localhost:8000/api/criteria/' + id);
     const rep = await await fetch(url.toString(), {
       method: 'PUT',
-      body: JSON.stringify({ name: name, description: description }),
+      body: JSON.stringify({ description: description }),
       headers: {
         Authorization: `Bearer ${this.token}`,
         Accept: 'application/json',
@@ -107,7 +110,8 @@ export class CriteriaService {
 
   async attachCriteriaToPeriod(
     periodId: number,
-    criteriaIds: number[]
+    criterias: { id: number; ponderation: number }[],
+    type: string
   ): Promise<any> {
     const response = await fetch(
       'http://localhost:8000/api/periods/attach-criteria/' + periodId,
@@ -117,11 +121,36 @@ export class CriteriaService {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.token}`,
         },
-        body: JSON.stringify({ criteria_ids: criteriaIds }),
+        body: JSON.stringify({
+          type: type,
+          criteria: criterias,
+        }),
       }
     );
 
-    const data = response.json();
+    const data = await response.json();
     return data;
+  }
+
+  async getPeriodCriterias(
+    periodId: number,
+    search: string
+  ): Promise<CriteriaPeriod[]> {
+    const url = new URL('http://localhost:8000/api/period/join/criteria');
+    url.searchParams.append('search', search.toString());
+
+    if (search) url.searchParams.append('search', search);
+
+    url.searchParams.set('period_id', periodId.toString());
+
+    const rep = await fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    return rep.data;
   }
 }
