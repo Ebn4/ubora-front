@@ -13,11 +13,10 @@ import { Criteria } from '../../../models/criteria';
 
 @Component({
   selector: 'app-criteria-edit',
-  imports: [ReactiveFormsModule, NgIf, FormsModule],
+  imports: [ReactiveFormsModule, FormsModule],
   templateUrl: './criteria-edit.component.html',
 })
 export class CriteriaEditComponent {
-  isChecked = false;
   criteriaService: CriteriaService = inject(CriteriaService);
   form!: FormGroup;
   criteria!: Criteria | undefined;
@@ -26,9 +25,7 @@ export class CriteriaEditComponent {
     public dialogRef: MatDialogRef<CriteriaEditComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { criteriaId: number }
   ) {
-    // Initialisation vide du formulaire
     this.form = new FormGroup({
-      name: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
     });
 
@@ -39,7 +36,6 @@ export class CriteriaEditComponent {
         this.criteria = criteria;
         if (criteria) {
           this.form.patchValue({
-            name: criteria.name,
             description: criteria.description,
           });
         }
@@ -53,20 +49,14 @@ export class CriteriaEditComponent {
   }
 
   updateCriteria() {
-    const name = this.form.value.name as string;
     const description = this.form.value.description as string;
     const id = this.data.criteriaId;
-    this.criteriaService.updateCriteria(id, name, description).then(() => {
+    this.criteriaService.updateCriteria(id, description).then(() => {
       this.dialogRef.close(true);
     });
   }
 
   closeModal() {
     this.dialogRef.close();
-  }
-
-  isCheck(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    this.isChecked = inputElement.checked;
   }
 }
