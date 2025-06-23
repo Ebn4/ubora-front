@@ -2,6 +2,8 @@ import { NgClass } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { AuthServices } from '../../../services/auth.service';
+import { LocalStorageService } from '../../../services/local-storage.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,6 +12,8 @@ import { filter } from 'rxjs';
 })
 export class SidebarComponent {
   router: Router = inject(Router);
+  authService = inject(AuthServices);
+  localStorageService = inject(LocalStorageService);
 
   ngOnInit(){
     const url = this.router.url;
@@ -25,6 +29,19 @@ export class SidebarComponent {
   setActiveTab(tab: 'candidacy' | 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'user') {
     this.activeTab = tab;
   }
+
+  logout(){
+    this.authService.logout().subscribe({
+      next: () => {
+        this.localStorageService.removeData('token');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Logout failed', err);
+      }
+    });
+  }
+
   updateActiveTab(url: string) {
     if(url.includes('period')) {
       this.setActiveTab('period');
