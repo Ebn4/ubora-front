@@ -10,6 +10,7 @@ import {MatInput} from '@angular/material/input';
 import {MatAutocomplete, MatAutocompleteTrigger, MatOption} from '@angular/material/autocomplete';
 import {AsyncPipe} from '@angular/common';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-add-evaluator-dialog',
@@ -27,12 +28,14 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 })
 export class AddEvaluatorDialogComponent {
   readonly data = inject<{ periodId: number }>(MAT_DIALOG_DATA);
+  readonly snackbar = inject(MatSnackBar)
+  readonly dialogRef = inject(MatDialogRef<AddEvaluatorDialogComponent>);
+
   evaluators = signal<Evaluator[]>([])
   error = signal<string | null>(null)
   users = signal<LdapUser[]>([])
   periods = signal<Period[]>([])
   filteredUsers: Observable<LdapUser[]> | undefined;
-  readonly dialogRef = inject(MatDialogRef<AddEvaluatorDialogComponent>);
 
   @Output() successMessage = signal<string | null>(null)
 
@@ -91,11 +94,16 @@ export class AddEvaluatorDialogComponent {
       cuid: formData.selectedUserCuid ?? ''
     }).subscribe({
       next: value => {
-        this.successMessage.set("L'ajout de l'evaluateur s'effectuer avec succès")
+        this.snackbar.open("L'ajout de l'evaluateur s'effectuer avec succès", 'Fermer', {
+          duration: 3000,
+        });
         this.dialogRef.close()
       },
       error: err => {
         console.log(err)
+        this.snackbar.open(err.error.errors, 'Fermer', {
+          duration: 3000,
+        });
       }
     })
   }
