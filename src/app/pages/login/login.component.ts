@@ -16,7 +16,7 @@ import {AuthServices} from '../../services/auth.service';
     RouterLink,
     FormsModule
   ],
-  styleUrls: ['./login.component.css']
+  styles: ``
 })
 export default class LoginComponent {
 
@@ -29,7 +29,6 @@ export default class LoginComponent {
   formData = new FormGroup({
     cuid: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
-    rememberMe: new FormGroup(false)
   })
 
   async onSubmit() {
@@ -57,15 +56,10 @@ export default class LoginComponent {
       error: err => {
         this.isLoading = false
         console.log(err)
-        this.errorMessage = 'Email ou mot de passe incorrect'
+        this.errorMessage = 'Cuid ou mot de passe incorrect'
       }
     })
 
-
   }
 
-  loginWithGoogle(): void {
-    this.isLoading = true;
-    this.errorMessage = '';
-  }
 }
