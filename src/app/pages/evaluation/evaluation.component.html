@@ -1,0 +1,23 @@
+<form action="" [formGroup]="form" class="my-2" (submit)="onSubmit()">
+
+  <div class="grid  gap-4" formArrayName="crv">
+<!--    @for (criteria of criterias(); track criteria.id) {-->
+
+    @for (c of crv.controls; track $index) {
+      <div class="mb-4" [formGroupName]="$index" >
+        <label class="block text-gray-700 font-medium mb-2" [for]="criterias().at($index)?.name">{{ criterias().at($index)?.name }}</label>
+
+        <input type="number" formControlName="result" [id]="criterias().at($index)?.name"
+               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"/>
+      </div>
+    }
+  </div>
+
+  <div class="flex justify-end space-x-2">
+    <button type="submit"  [disabled]="form.invalid"
+            class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+      Enregistrer
+    </button>
+  </div>
+
+</form>
