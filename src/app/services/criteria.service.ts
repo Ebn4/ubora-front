@@ -1,156 +1,83 @@
 import { inject, Injectable } from '@angular/core';
-import { Criteria} from '../models/criteria';
+import { Criteria } from '../models/criteria';
 import { Response } from '../models/response';
 import { LocalStorageService } from './local-storage.service';
 import { CriteriaPeriod } from '../models/criteria-period';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { BASE_URL } from '../app.tokens';
+import { ResponseInterface } from '../models/response.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CriteriaService {
-  localStorageService = inject(LocalStorageService);
-  private token = this.localStorageService.getData('token');
-  currentPage: number = 1;
-  lastPage: number = 1;
+  http: HttpClient = inject(HttpClient);
+  baseUrl = inject(BASE_URL);
 
   constructor() {}
 
-  async getCriteria(
+  getCriteria(
     page: number = 1,
     search: string = '',
     type: string = '',
     per_page: number,
     periodId: number | undefined
-  ): Promise<{ data: Criteria[]; current_page: number; last_page: number }> {
-    const url = new URL('http://localhost:8000/api/criteria');
-    url.searchParams.append('page', page.toString());
-    if (type) url.searchParams.append('type', type);
-    if (search) url.searchParams.append('search', search);
-    if (per_page) url.searchParams.append('per_page', per_page.toString());
-    if (periodId) url.searchParams.append('periodId', periodId.toString());
+  ) {
+    let params = new HttpParams().set('page', page).set('per_page', per_page);
 
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        Accept: 'application/json',
-      },
-    });
+    if (search != null && search != '') params = params.set('search', search);
 
-    const rep = await response.json();
+    if (type != null && type != '') {
+      params = params.set('type', type);
+    }
 
-    const currentPage = rep.data.current_page;
-    const lastPage = rep.data.last_page;
-    const criterias = rep.data.data;
+    if (periodId != null && periodId != 0)
+      params = params.set('periodId', periodId);
 
-    this.currentPage = currentPage;
-    this.lastPage = lastPage;
-
-    return {
-      data: criterias,
-      current_page: currentPage,
-      last_page: lastPage,
-    };
-  }
-
-  async getOneCriteria(id: number): Promise<Criteria | undefined> {
-    const url = new URL('http://localhost:8000/api/criteria/' + id);
-    let rep = await fetch(url.toString(), {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        Accept: 'application/json',
-      },
-    }).then((res) => res.json());
-    const criteria = rep.data;
-    return criteria;
-  }
-
-  async createCriteria(name: string, description: string): Promise<Response> {
-    const url = new URL('http://localhost:8000/api/criteria');
-    const rep = await await fetch(url.toString(), {
-      method: 'POST',
-      body: JSON.stringify({ name: name, description: description }),
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => res.json());
-    return rep;
-  }
-
-  async updateCriteria(id: number, description: string): Promise<Response> {
-    const url = new URL('http://localhost:8000/api/criteria/' + id);
-    const rep = await await fetch(url.toString(), {
-      method: 'PUT',
-      body: JSON.stringify({ description: description }),
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => res.json());
-    return rep;
-  }
-
-  async deleteCriteria(id: number): Promise<Response> {
-    const url = new URL('http://localhost:8000/api/criteria/' + id);
-    const rep = await await fetch(url.toString(), {
-      method: 'DELETE',
-      body: JSON.stringify({ id: id }),
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => res.json());
-    return rep;
-  }
-
-  async attachCriteriaToPeriod(
-    periodId: number,
-    criterias: { id: number; ponderation: number }[],
-    type: string
-  ): Promise<any> {
-    const response = await fetch(
-      'http://localhost:8000/api/periods/attach-criteria/' + periodId,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.token}`,
-        },
-        body: JSON.stringify({
-          type: type,
-          criteria: criterias,
-        }),
-      }
+    return this.http.get<ResponseInterface<Criteria[]>>(
+      `${this.baseUrl}/criteria`,
+      { params }
     );
-
-    const data = await response.json();
-    return data;
   }
 
-  async getPeriodCriterias(
+  getOneCriteria(id: number) {
+    return this.http.get<Criteria>(
+      `${this.baseUrl}/criteria/${id}`
+    );
+  }
+
+  createCriteria(data: { name: string; description: string }) {
+    return this.http.post(`${this.baseUrl}/criteria`, data);
+  }
+
+  updateCriteria(id: number, data: { description: string }) {
+    return this.http.put(`${this.baseUrl}/criteria/${id}`, data);
+  }
+
+  deleteCriteria(id: number) {
+    return this.http.delete(`${this.baseUrl}/criteria/${id}`);
+  }
+
+  attachCriteriaToPeriod(
+    periodId: number,
+    data: { criteria: { id: number; ponderation: number }[]; type: string }
+  ) {
+    return this.http.post(
+      `${this.baseUrl}/periods/attach-criteria/${periodId}`,
+      data
+    );
+  }
+
+  getPeriodCriterias(
     periodId: number,
     search: string
-  ): Promise<CriteriaPeriod[]> {
-    const url = new URL('http://localhost:8000/api/period/join/criteria');
-    url.searchParams.append('search', search.toString());
+  ){
+    let params = new HttpParams().set('period_id', periodId);
+    if (search != null && search != '') params = params.set('search', search);
 
-    if (search) url.searchParams.append('search', search);
-
-    url.searchParams.set('period_id', periodId.toString());
-
-    const rep = await fetch(url.toString(), {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        Accept: 'application/json',
-      },
-    }).then((res) => res.json());
-
-    return rep.data;
+    return this.http.get<ResponseInterface<CriteriaPeriod[]>>(
+      `${this.baseUrl}/period/join/criteria`,
+      { params }
+    );
   }
 }
