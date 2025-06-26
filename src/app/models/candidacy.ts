@@ -33,13 +33,7 @@ export interface Candidacy {
   attestation_de_reussite_derniere_annee: string;
   user_last_login: string;
   faculte: string;
-  evaluateur1: number | null;
-  evaluateur2: number | null;
-  evaluateur3: number | null;
-  somme_notes: number | null;
   created_at: string;
   updated_at: string;
   period_id: number;
-  preselection: string | null;
-  evaluations_effectuées: number;
 }
