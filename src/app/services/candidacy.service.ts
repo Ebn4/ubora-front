@@ -1,7 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Candidacy, CandidacyResponse } from '../models/candidacy';
-import { Response } from '../models/response';
-import { LocalStorageService } from './local-storage.service';
+import { Candidacy } from '../models/candidacy';
 import { CandidaciesDispatchEvaluator } from '../models/candidacies-dispatch-evaluator';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BASE_URL } from '../app.tokens';
@@ -43,7 +41,7 @@ export class CandidacyService {
       .set('userProfile', userProfile)
       .set('candidacyId', candidacyId);
 
-    return this.http.get<ResponseInterface<CandidacyResponse>>(
+    return this.http.get<ResponseInterface<Candidacy>>(
       `${this.baseUrl}/getCandidacy`,
       { params }
     );
@@ -71,28 +69,4 @@ export class CandidacyService {
       { params }
     );
   }
-
-  // async getOneCandidacy(
-  //   userProfile: string,
-  //   candidacyId: number
-  // ): Promise<CandidacyResponse> {
-  //   const baseUrl = 'http://localhost:8000/api/getCandidacy';
-  //   const queryParams = new URLSearchParams({
-  //     userProfile: userProfile,
-  //     candidacyId: candidacyId.toString(),
-  //   });
-
-  //   const url = `${baseUrl}?${queryParams.toString()}`;
-
-  //   const response = await fetch(url, {
-  //     method: 'GET',
-  //     headers: {
-  //       Authorization: `Bearer ${this.token}`,
-  //       Accept: 'application/json',
-  //     },
-  //   });
-
-  //   const result: CandidacyResponse = await response.json();
-  //   return result;
-  // }
 }
