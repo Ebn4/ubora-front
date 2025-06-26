@@ -4,6 +4,7 @@ import { CandidaciesDispatchEvaluator } from '../models/candidacies-dispatch-eva
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BASE_URL } from '../app.tokens';
 import { ResponseInterface } from '../models/response.model';
+import {CandidateEvaluation} from '../models/candidate-evaluation';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +33,7 @@ export class CandidacyService {
 
     return this.http.get<ResponseInterface<Candidacy[]>>(
       `${this.baseUrl}/candidacies`,
-      { params }
+      {params}
     );
   }
 
@@ -43,7 +44,7 @@ export class CandidacyService {
 
     return this.http.get<ResponseInterface<Candidacy>>(
       `${this.baseUrl}/getCandidacy`,
-      { params }
+      {params}
     );
   }
 
@@ -66,7 +67,12 @@ export class CandidacyService {
 
     return this.http.get<ResponseInterface<CandidaciesDispatchEvaluator[]>>(
       `${this.baseUrl}/CandidaciesDispatchEvaluator`,
-      { params }
+      {params}
     );
+  }
+
+
+  evaluateCandidate(data: { interviewId: number, periodId: number, evaluations: CandidateEvaluation[] }) {
+    return this.http.post<{ errors: string | null, data: boolean }>(`${this.baseUrl}/candidate/selections`, data)
   }
 }
