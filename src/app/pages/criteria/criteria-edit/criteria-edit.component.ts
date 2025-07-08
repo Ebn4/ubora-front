@@ -1,3 +1,4 @@
+import { Criteria } from './../../../models/criteria';
 import { Component, Inject, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
@@ -7,9 +8,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { NgIf } from '@angular/common';
 import { CriteriaService } from '../../../services/criteria.service';
-import { Criteria } from '../../../models/criteria';
 
 @Component({
   selector: 'app-criteria-edit',
@@ -32,12 +31,14 @@ export class CriteriaEditComponent {
     // Chargement des données du critère et mise à jour du formulaire
     this.criteriaService
       .getOneCriteria(this.data.criteriaId)
-      .then((criteria) => {
-        this.criteria = criteria;
-        if (criteria) {
-          this.form.patchValue({
-            description: criteria.description,
-          });
+      .subscribe({
+        next: (criteria)=>{
+          this.criteria = criteria
+          if (criteria) {
+            this.form.patchValue({
+              description: criteria.description,
+            });
+          }
         }
       });
   }
@@ -51,8 +52,13 @@ export class CriteriaEditComponent {
   updateCriteria() {
     const description = this.form.value.description as string;
     const id = this.data.criteriaId;
-    this.criteriaService.updateCriteria(id, description).then(() => {
-      this.dialogRef.close(true);
+    this.criteriaService.updateCriteria(id, {description:description}).subscribe({
+      next: () => {
+        this.dialogRef.close(true);
+      },
+      error: (error) => {
+        console.error('Erreur lors de la mise à jour du critère:', error);
+      },
     });
   }
 
