@@ -5,5 +5,6 @@ export interface CriteriaPeriod {
   status: string;
   type?: string | null;
   ponderation?: string | null;
-  isChecked?: boolean;
+  period_criteria_id: number;
+  isChecked: boolean;
 }
