@@ -3,9 +3,9 @@ import { inject, Injectable } from '@angular/core';
 import { Period } from '../models/period';
 import { Observable } from 'rxjs';
 import { BASE_URL } from '../app.tokens';
-import { PeriodStatus } from '../enum/period-status.enum';
+import { map } from 'rxjs/operators';
 import { LocalStorageService } from './local-storage.service';
-import { ResponseInterface } from '../models/response.model';
+import { ResponseInterface, ResponseInterfaceE } from '../models/response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,16 +21,16 @@ export class PeriodService {
 
   constructor() {}
 
-  async createPeriod(data:{year: number}) {
+  createPeriod(data: { year: number }) {
     return this.http.post(`${this.baseUrl}/period`, data);
   }
 
+
   getOnePeriod(id: number) {
-    return this.http.get<Period>(
-      `${this.baseUrl}/period/${id}`
+    return this.http.get<{ data: Period }>(`${this.baseUrl}/period/${id}`).pipe(
+      map(response => response.data)
     );
   }
-
 
   getPeriod(
     page: number = 1,
@@ -46,14 +46,10 @@ export class PeriodService {
       params = params.set('status', status);
     }
 
-    return this.http.get<ResponseInterface<Period[]>>(
+    return this.http.get<ResponseInterfaceE<Period[]>>(
       `${this.baseUrl}/period`,
       { params }
     );
-  }
-
-  getYearCurrent(){
-    return this.http.get(`${this.baseUrl}/currentYear`);
   }
 
   changePeriodStatus(id: number, data: { status: string }) {
