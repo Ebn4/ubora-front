@@ -3,7 +3,7 @@ import { Candidacy } from '../models/candidacy';
 import { CandidaciesDispatchEvaluator } from '../models/candidacies-dispatch-evaluator';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BASE_URL } from '../app.tokens';
-import { ResponseInterface } from '../models/response.model';
+import { ResponseInterface, ResponseInterfaceE } from '../models/response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -30,16 +30,14 @@ export class CandidacyService {
 
     if (periodId != null) params = params.set('periodId', periodId);
 
-    return this.http.get<ResponseInterface<Candidacy[]>>(
+    return this.http.get<ResponseInterfaceE<Candidacy[]>>(
       `${this.baseUrl}/candidacies`,
       { params }
     );
   }
 
-  getOneCandidacy(userProfile: string, candidacyId: number) {
-    let params = new HttpParams()
-      .set('userProfile', userProfile)
-      .set('candidacyId', candidacyId);
+  getOneCandidacy(candidacyId: number) {
+    let params = new HttpParams().set('candidacyId', candidacyId);
 
     return this.http.get<ResponseInterface<Candidacy>>(
       `${this.baseUrl}/getCandidacy`,
