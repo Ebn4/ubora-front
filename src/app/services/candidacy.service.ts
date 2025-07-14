@@ -3,6 +3,8 @@ import { Candidacy } from '../models/candidacy';
 import { CandidaciesDispatchEvaluator } from '../models/candidacies-dispatch-evaluator';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BASE_URL } from '../app.tokens';
+import { ResponseInterface } from '../models/response.model';
+import {CandidateEvaluation} from '../models/candidate-evaluation';
 import { ResponseInterface, ResponseInterfaceE } from '../models/response.model';
 import {CandidateEvaluation} from '../models/candidate-evaluation';
 
@@ -34,6 +36,7 @@ export class CandidacyService {
     return this.http.get<ResponseInterfaceE<Candidacy[]>>(
       `${this.baseUrl}/candidacies`,
       {params}
+      {params}
     );
   }
 
@@ -42,6 +45,7 @@ export class CandidacyService {
 
     return this.http.get<ResponseInterface<Candidacy>>(
       `${this.baseUrl}/getCandidacy`,
+      {params}
       {params}
     );
   }
@@ -66,7 +70,13 @@ export class CandidacyService {
     return this.http.get<ResponseInterface<CandidaciesDispatchEvaluator[]>>(
       `${this.baseUrl}/CandidaciesDispatchEvaluator`,
       {params}
+      {params}
     );
+  }
+
+
+  evaluateCandidate(data: { interviewId: number, periodId: number, evaluations: CandidateEvaluation[] }) {
+    return this.http.post<{ errors: string | null, data: boolean }>(`${this.baseUrl}/candidate/selections`, data)
   }
 
 
