@@ -116,10 +116,10 @@
         <tbody>
           <tr *ngFor="let period of periods" class="border-b hover:bg-gray-50">
             <td class="py-2 px-4">Bourses {{ period.year }}</td>
-            <td class="py-2 px-4">300</td>
-            <td class="py-2 px-4">7</td>
-            <td class="py-2 px-4">200</td>
-            <td class="py-2 px-4">100</td>
+            <td class="py-2 px-4">{{ period.candidats_count }}</td>
+            <td class="py-2 px-4">{{ period.evaluators_count }}</td>
+            <td class="py-2 px-4">{{ period.preselection_count }}</td>
+            <td class="py-2 px-4">{{ period.selection_count }}</td>
             <td class="py-2 px-4">
               <span
                 class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs"

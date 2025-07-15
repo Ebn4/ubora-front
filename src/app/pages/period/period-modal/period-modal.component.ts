@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component, Input, Output, EventEmitter, Inject, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -36,9 +35,15 @@ export class PeriodModalComponent {
   }
 
   createPeriod() {
-    const year=this.form.value.year as number;
-    this.periodService.createPeriod(year).then(() => {
-      this.dialogRef.close(true);
+    const year = this.form.value.year as number;
+    this.periodService.createPeriod({ year: year }).subscribe({
+      next: () => {
+        this.dialogRef.close(true);
+      },
+      error: (error) => {
+        console.error('Error creating period:', error);
+        this.dialogRef.close(false);
+      }
     });
   }
 }

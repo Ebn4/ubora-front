@@ -40,8 +40,10 @@ export class CriteriaComponent extends BaseListWidget {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.criteriaService.deleteCriteria(id).then(() => {
-          this.loadData();
+        this.criteriaService.deleteCriteria(id).subscribe({
+          next: () =>{
+            this.loadData();
+          }
         });
       }
     });
@@ -57,10 +59,15 @@ export class CriteriaComponent extends BaseListWidget {
         this.per_page,
         this.periodId
       )
-      .then((response) => {
-        this.criterias = response.data;
-        this.currentPage = response.current_page;
-        this.lastPage = response.last_page;
+      .subscribe({
+        next: (response) => {
+          this.criterias = response.data;
+          this.currentPage = response.current_page;
+          this.lastPage = response.last_page;
+        },
+        error: (error) => {
+          console.error('Error loading candidacies:', error);
+        }
       });
   }
 
