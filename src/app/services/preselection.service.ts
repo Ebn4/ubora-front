@@ -1,5 +1,5 @@
-import {HttpClient} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {BASE_URL} from '../app.tokens';
 import {Observable} from 'rxjs';
 
@@ -15,6 +15,12 @@ export class PreselectionService {
   canValidate(periodId: number) {
     return this.http.get<{ canValidate: boolean }>(
       `${this.baseUrl}/preselection/periods/${periodId}/validate`
+    );
+  }
+
+  validatePreselection(periodId: number) {
+    return this.http.post<{ message: string }>(
+      `${this.baseUrl}/preselection/periods/${periodId}/validate`, {}
     );
   }
 
