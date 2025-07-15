@@ -1,0 +1,43 @@
+<!-- Main content -->
+<main class="flex-1 p-4">
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <!-- Tabs -->
+    <mat-tab-group
+      class="mb-6 border-b"
+      [(selectedIndex)]="tabIndex"
+      (selectedIndexChange)="onTabChange($event)"
+    >
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span
+            [ngClass]="{
+              'text-primary border-b-2 border-primary':
+                selectedTab === 'information',
+              'text-gray-500 hover:text-gray-700': selectedTab !== 'information'
+            }"
+            class="py-2 px-4 font-medium inline-block"
+          >
+            Informations
+          </span>
+        </ng-template>
+        <app-candidacy-informations></app-candidacy-informations>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span
+            [ngClass]="{
+              'text-primary border-b-2 border-primary':
+                selectedTab === 'evaluateur',
+              'text-gray-500 hover:text-gray-700': selectedTab !== 'evaluateur'
+            }"
+            class="py-2 px-4 font-medium inline-block"
+          >
+            Evaluateurs
+          </span>
+        </ng-template>
+        <app-candidacy-evaluateurs></app-candidacy-evaluateurs>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</main>
