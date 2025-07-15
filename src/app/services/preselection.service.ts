@@ -1,19 +1,28 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { BASE_URL } from '../app.tokens';
-import { Observable } from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {BASE_URL} from '../app.tokens';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PreselectionService {
 
-  constructor() { }
-
-  http: HttpClient = inject(HttpClient);
+  http = inject(HttpClient);
   baseUrl = inject(BASE_URL);
 
-  preselectionCandidacy(data: Array<{ period_criteria_id: number; dispatch_preselections_id: number, valeur: boolean }>) {
+
+  canValidate(periodId: number) {
+    return this.http.get<{ canValidate: boolean }>(
+      `${this.baseUrl}/preselection/periods/${periodId}/validate`
+    );
+  }
+
+  preselectionCandidacy(data: Array<{
+    period_criteria_id: number;
+    dispatch_preselections_id: number,
+    valeur: boolean
+  }>) {
     return this.http.post(`${this.baseUrl}/preselection`, data);
   }
 
