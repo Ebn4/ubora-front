@@ -12,6 +12,8 @@ import { CandidacyService } from '../../../services/candidacy.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { BaseListWidget } from '../../../widgets/base-list-widget';
 import { Period } from '../../../models/period';
+import { Subscription } from 'rxjs';
+import { ListeningChangeService } from '../../../services/listening-change.service';
 
 @Component({
   selector: 'app-period-candidacy',
@@ -22,12 +24,19 @@ export class PeriodCandidacyComponent
   extends BaseListWidget
   implements OnChanges
 {
+  private subscription!: Subscription;
   candidacies: Candidacy[] = [];
   @Input() period?: Period;
   ville: string = '';
+  institute_count: number =0
+  candidacy_count: number =0
+  city_count: number=0
+  preselection_count: number =0
+  selection_count: number = 0
+
   route: ActivatedRoute = inject(ActivatedRoute);
   candidacyService: CandidacyService = inject(CandidacyService);
-  constructor() {
+  constructor(private modalService: ListeningChangeService) {
     super();
   }
 
@@ -41,6 +50,12 @@ export class PeriodCandidacyComponent
 
   ngOnInit(): void {
     this.loadData();
+    this.subscription = this.modalService.modalClosed$.subscribe((modalClosed) => {
+      if (modalClosed) {
+        this.loadData();
+        this.modalService.resetNotification();
+      }
+    });
   }
 
   override loadData() {
@@ -52,10 +67,29 @@ export class PeriodCandidacyComponent
         this.period?.id,
         this.per_page
       )
-      .then((response) => {
-        this.candidacies = response.data;
-        this.currentPage = response.current_page;
-        this.lastPage = response.last_page;
+      .subscribe({
+        next: (response) => {
+          this.candidacies = response.data;
+          this.currentPage = response.meta.current_page;
+          this.lastPage = response.meta.last_page;
+
+          if (this.candidacies.length > 0) {
+            this.institute_count = this.candidacies[0].institute_count;
+            this.candidacy_count = this.candidacies[0].candidacy_count;
+            this.city_count = this.candidacies[0].city_count;
+            this.preselection_count = this.candidacies[0].preselection_count;
+            this.selection_count = this.candidacies[0].selection_count;
+          } else {
+            this.institute_count = 0;
+            this.candidacy_count = 0;
+            this.city_count = 0;
+            this.preselection_count = 0
+            this.selection_count = 0
+          }
+        },
+        error: (error) => {
+          console.error('Error loading candidacies:', error);
+        }
       });
   }
 }
