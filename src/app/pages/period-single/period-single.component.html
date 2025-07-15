@@ -32,32 +32,116 @@
         </p>
       </div>
       <div class="mt-4 md:mt-0 flex space-x-2">
-        @if (canDispatch() && period?.status === dispatchPeriodStatus) {
-          <button (click)="validateStatus()"
-            class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
-          >
-            Valider dispatch
-          </button>
-        }
-        <a [routerLink]="['/import']"
-           class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
+        @if (canDispatch()) {
+        <button
+          class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+          Valider dispatch
+        </button>
+        }
+
+        <div class="relative">
+          <button
+            id="dropdownDefaultButton"
+            (click)="toggleDropdown()"
+            class="text-white bg-primary hover:bg-primary focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-primary dark:hover:bg-primary dark:focus:ring-orange-700"
+            type="button"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 10l-4-4m0 0l-4 4m4-4v12"
-            />
-          </svg>
-          Importer
-        </a>
+            Autres Options
+            <svg
+              class="w-2.5 h-2.5 ms-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 10 6"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m1 1 4 4 4-4"
+              />
+            </svg>
+          </button>
+
+          <div
+            *ngIf="isDropdownVisible"
+            class="absolute left-0 mt-2 z-20 w-56 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-100 dark:border-gray-600"
+          >
+            <div
+              class="absolute -top-2 left-6 w-4 h-4 bg-white dark:bg-gray-700 rotate-45 border-l border-t border-gray-100 dark:border-gray-600"
+            ></div>
+            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+              <li class="border-b border-t border-gray-200 dark:border-gray-600">
+                <button
+                  (click)="openModalAttach(period?.id)"
+                  class="w-full text-left flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white transition rounded"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  Attacher critères présélections
+                </button>
+              </li>
+              <li class="border-b border-t border-gray-200 dark:border-gray-600">
+                <button
+                  (click)="openModalAttachSelection(period?.id)"
+                  class="w-full text-left flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white transition rounded"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  Attacher critères sélections
+                </button>
+              </li>
+              <li class="border-b border-gray-200 dark:border-gray-600">
+                <button
+                  (click)="importFileCandidacies(period?.id, period?.year)"
+                  class="w-full text-left flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white transition rounded"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 10l-4-4m0 0l-4 4m4-4v12"
+                    />
+                  </svg>
+                  Importer
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
         <p
           class="bg-green-300 hover:bg-green-200 text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
         >
@@ -85,7 +169,7 @@
             </svg>
             <h3 class="text-sm font-medium text-gray-500">Évaluateurs</h3>
           </div>
-          <p class="font-semibold">18</p>
+          <p class="font-semibold">{{period?.evaluators_count}}</p>
         </div>
         <div class="flex flex-col items-start">
           <div class="flex items-center mb-1">
@@ -102,9 +186,9 @@
                 d="M12 14l9-5-9-5-9 5 9 5zm0 0v6"
               />
             </svg>
-            <h3 class="text-sm font-medium text-gray-500">Lecteurs</h3>
+            <h3 class="text-sm font-medium text-gray-500">Critères</h3>
           </div>
-          <p class="font-semibold">10</p>
+          <p class="font-semibold">{{ period?.criteria_count }}</p>
         </div>
         <div class="flex flex-col items-start">
           <div class="flex items-center mb-1">
@@ -123,7 +207,7 @@
             </svg>
             <h3 class="text-sm font-medium text-gray-500">Candidatures</h3>
           </div>
-          <p class="font-semibold">320</p>
+          <p class="font-semibold">{{ period?.candidats_count }}</p>
         </div>
         <div class="flex flex-col items-start">
           <div class="flex items-center mb-1">
@@ -142,7 +226,7 @@
             </svg>
             <h3 class="text-sm font-medium text-gray-500">Pré sélectionnés</h3>
           </div>
-          <p class="font-semibold">156</p>
+          <p class="font-semibold">{{ period?.preselection_count }}</p>
         </div>
         <div class="flex flex-col items-start">
           <div class="flex items-center mb-1">
@@ -161,7 +245,7 @@
             </svg>
             <h3 class="text-sm font-medium text-gray-500">Sélectionnés</h3>
           </div>
-          <p class="font-semibold">50</p>
+          <p class="font-semibold">{{ period?.selection_count }}</p>
         </div>
       </div>
     </div>
@@ -185,7 +269,7 @@
             Critères
           </span>
         </ng-template>
-        <app-period-criteria></app-period-criteria>
+        <app-criteria></app-criteria>
       </mat-tab>
 
       <mat-tab>
@@ -217,8 +301,10 @@
             Évaluateurs
           </span>
         </ng-template>
-        <app-period-evaluateur [period]="period"
-                               (canValidateDispatch)="canValidateDispatch($event.valueOf())"></app-period-evaluateur>
+        <app-period-evaluateur
+          [period]="period"
+          (canValidateDispatch)="canValidateDispatch($event.valueOf())"
+        ></app-period-evaluateur>
       </mat-tab>
 
       <mat-tab>
@@ -237,101 +323,5 @@
         <app-period-lecteur></app-period-lecteur>
       </mat-tab>
     </mat-tab-group>
-  </div>
-
-  <!-- Modal pour attacher des critères -->
-  <div
-    *ngIf="showModal"
-    class="fixed inset-0 flex items-center justify-center"
-    id="attachCriteriaModal"
-  >
-    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xl font-bold">Attacher des critères</h3>
-        <button
-          (click)="closeModal()"
-          class="text-gray-500 hover:text-gray-700"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-
-      <div class="mb-4">
-        <label for="search" class="block text-gray-700 font-medium mb-2"
-        >Rechercher un critère</label
-        >
-        <input
-          type="text"
-          id="search"
-          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="Nom du critère..."
-        />
-      </div>
-
-      <div class="mb-4 max-h-60 overflow-y-auto">
-        <div class="border-b pb-2 mb-2">
-          <label class="flex items-center">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary"/>
-            <span class="ml-2">
-              <span class="font-medium">Publications scientifiques</span>
-              <span class="block text-sm text-gray-500"
-              >Catégorie: Académique</span
-              >
-            </span>
-          </label>
-        </div>
-        <div class="border-b pb-2 mb-2">
-          <label class="flex items-center">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary"/>
-            <span class="ml-2">
-              <span class="font-medium">Compétences en leadership</span>
-              <span class="block text-sm text-gray-500"
-              >Catégorie: Compétences</span
-              >
-            </span>
-          </label>
-        </div>
-        <div class="border-b pb-2 mb-2">
-          <label class="flex items-center">
-            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary"/>
-            <span class="ml-2">
-              <span class="font-medium">Participation communautaire</span>
-              <span class="block text-sm text-gray-500"
-              >Catégorie: Expérience</span
-              >
-            </span>
-          </label>
-        </div>
-      </div>
-
-      <div class="flex justify-end space-x-2">
-        <button
-          (click)="closeModal()"
-          type="button"
-          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300"
-        >
-          Annuler
-        </button>
-        <button
-          type="submit"
-          class="bg-primary hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
-        >
-          Attacher
-        </button>
-      </div>
-    </div>
   </div>
 </main>
