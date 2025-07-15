@@ -13,17 +13,14 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
   imports: [NgFor, FormsModule, RouterLink, NgClass, ReactiveFormsModule],
   templateUrl: './period.component.html',
 })
-export class PeriodComponent extends BaseListWidget{
-
-  periodService:PeriodService = inject(PeriodService);
+export class PeriodComponent extends BaseListWidget {
+  periodService: PeriodService = inject(PeriodService);
   periods: Period[] = [];
 
-  router:Router = inject(Router);
+  router: Router = inject(Router);
   showModal = false;
 
-  constructor(
-    private _matDialog: MatDialog
-  ) {
+  constructor(private _matDialog: MatDialog) {
     super();
   }
 
@@ -32,22 +29,26 @@ export class PeriodComponent extends BaseListWidget{
   }
 
   override loadData() {
-    this.periodService.getPeriod(this.currentPage, this.search, this.status, this.per_page).then(response => {
-      this.periods = response.data;
-      this.currentPage = response.current_page;
-      this.lastPage = response.last_page;
-    });
+    this.periodService
+      .getPeriod(this.currentPage, this.search, this.status, this.per_page)
+      .subscribe({
+        next: (response) => {
+          this.periods = response.data;
+          this.currentPage = response.meta.current_page;
+          this.lastPage = response.meta.last_page;
+        },
+      });
   }
 
   openModal() {
-    const dialogConfig = new MatDialogConfig()
+    const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
-    dialogConfig.data = {}
+    dialogConfig.data = {};
 
     const dialogRef = this._matDialog.open(PeriodModalComponent, dialogConfig);
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.loadData()
+        this.loadData();
       }
     });
   }
@@ -55,5 +56,4 @@ export class PeriodComponent extends BaseListWidget{
   closeModal() {
     this.showModal = false;
   }
-
 }
