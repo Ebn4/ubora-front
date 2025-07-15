@@ -2,28 +2,31 @@ import {
   Component,
   inject,
   Input,
-  OnChanges,
+  OnChanges, signal,
   SimpleChanges,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { NgFor } from '@angular/common';
-import { Candidacy } from '../../../models/candidacy';
-import { CandidacyService } from '../../../services/candidacy.service';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { BaseListWidget } from '../../../widgets/base-list-widget';
 import { Period } from '../../../models/period';
 import { Subscription } from 'rxjs';
 import { ListeningChangeService } from '../../../services/listening-change.service';
+import {FormsModule} from '@angular/forms';
+import {NgFor} from '@angular/common';
+import {Candidacy} from '../../../models/candidacy';
+import {CandidacyService} from '../../../services/candidacy.service';
+import {ActivatedRoute, RouterLink} from '@angular/router';
+import {BaseListWidget} from '../../../widgets/base-list-widget';
+import {PreselectionService} from '../../../services/preselection.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-period-candidacy',
   imports: [FormsModule, NgFor, RouterLink],
   templateUrl: './period-candidacy.component.html',
+  standalone: true
 })
 export class PeriodCandidacyComponent
   extends BaseListWidget
-  implements OnChanges
-{
+  implements OnChanges {
+
   private subscription!: Subscription;
   candidacies: Candidacy[] = [];
   @Input() period?: Period;
@@ -34,8 +37,13 @@ export class PeriodCandidacyComponent
   preselection_count: number =0
   selection_count: number = 0
 
+  readonly snackbar = inject(MatSnackBar)
   route: ActivatedRoute = inject(ActivatedRoute);
   candidacyService: CandidacyService = inject(CandidacyService);
+  preselectionService = inject(PreselectionService);
+
+  canValidatePreselection = signal(false)
+
   constructor(private modalService: ListeningChangeService) {
     super();
   }
@@ -44,12 +52,16 @@ export class PeriodCandidacyComponent
     if (changes['period']) {
       const current = changes['period'].currentValue;
       this.period = current;
-      if (current) this.loadData();
+      if (current) {
+        this.loadData();
+        this.checkIdCanValidatePreselection()
+      }
     }
   }
 
   ngOnInit(): void {
     this.loadData();
+    this.checkIdCanValidatePreselection()
     this.subscription = this.modalService.modalClosed$.subscribe((modalClosed) => {
       if (modalClosed) {
         this.loadData();
@@ -91,5 +103,36 @@ export class PeriodCandidacyComponent
           console.error('Error loading candidacies:', error);
         }
       });
+  }
+
+  checkIdCanValidatePreselection() {
+    if (this.period) {
+      this.preselectionService.canValidate(this.period.id)
+        .subscribe({
+          next: value => {
+            this.canValidatePreselection.set(value.canValidate)
+          },
+          error: err => {
+            console.error(err)
+          }
+        })
+    }
+  }
+
+  validatePreselection() {
+    if (this.period) {
+      this.preselectionService.validatePreselection(this.period.id)
+        .subscribe({
+          next: value => {
+            this.canValidatePreselection.set(false)
+            this.snackbar.open(value.message, 'Fermer', {
+              duration: 3000,
+            });
+          },
+          error: err => {
+            console.error(err)
+          }
+        })
+    }
   }
 }
