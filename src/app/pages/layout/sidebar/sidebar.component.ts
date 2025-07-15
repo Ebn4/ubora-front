@@ -25,8 +25,8 @@ export class SidebarComponent {
       this.updateActiveTab((event as NavigationEnd).urlAfterRedirects);
     })
   }
-  activeTab: 'candidacy' | 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'user' = 'criteria';
-  setActiveTab(tab: 'candidacy' | 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'user') {
+  activeTab: 'candidacy' | 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'user' | 'evaluator-candidacies' | 'preselection-admin' = 'criteria';
+  setActiveTab(tab: 'candidacy' | 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'user' | 'evaluator-candidacies' | 'preselection-admin') {
     this.activeTab = tab;
   }
 
@@ -63,6 +63,15 @@ export class SidebarComponent {
     }
     else if(url.includes('user')) {
       this.setActiveTab('user');
+    }
+    else if(url.includes('evaluator-candidacies')) {
+      this.setActiveTab('evaluator-candidacies');
+    }
+    else if(url.includes('preselection-admin')){
+      this.setActiveTab('preselection-admin');
+    }
+    else {
+      this.setActiveTab('criteria');
     }
   }
 }
