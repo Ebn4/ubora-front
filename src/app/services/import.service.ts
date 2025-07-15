@@ -1,39 +1,23 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CandidacyUpload } from '../models/candidacy-upload';
 import { DocumentUpload } from '../models/document-upload';
+import { HttpClient } from '@angular/common/http';
+import { BASE_URL } from '../app.tokens';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ImportService {
+  http: HttpClient = inject(HttpClient);
+  baseUrl = inject(BASE_URL);
   constructor() {}
   private token = '5|AslMM4JvVrPtKrHweDoEn1Mn1h8YLkAvMSIXhyCx316cadda';
-
-  async uploadCandidacies(file: File, year: string): Promise<CandidacyUpload> {
-    const formData = new FormData();
-    formData.append('fichier', file);
-    formData.append('year', Number(year).toString());
-
-    const response = await fetch(
-      'http://localhost:8000/api/uploadCandidacies',
-      {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Erreur API: ${response.status} - ${errorText}`);
-    }
-
-    return await response.json();
-  }
-
   private apiUrl = 'http://localhost:8000/api/uploadCandidaciesDocs';
+
+  uploadCandidacies(data: { rows: any; periodId: number, year: number }) {
+    return this.http.post(`${this.baseUrl}/uploadCandidacies`, data);
+  }
 
   async uploadDocument(file: File): Promise<DocumentUpload> {
     const formData = new FormData();
@@ -51,5 +35,12 @@ export class ImportService {
 
     const data = await response.json();
     return data as DocumentUpload;
+  }
+
+  getDocument(docName: string): Observable<Blob> {
+    const url = `http://localhost:8000/api/getDoc?docName=${encodeURIComponent(
+      docName
+    )}`;
+    return this.http.get(url, { responseType: 'blob' });
   }
 }
