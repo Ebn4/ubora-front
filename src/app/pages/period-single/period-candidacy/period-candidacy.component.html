@@ -2,7 +2,7 @@
 <div class="flex-1 p-4 rounded-lg bg-white m-4">
   <div class="flex flex-col md:flex-row justify-between items-center mb-5">
     <h2 class="text-2xl font-bold mb-4 md:mb-0">Gestion des Candidats</h2>
-    @if (canValidatePreselection()) {
+    @if (canValidatePreselection() && period?.status == validatedPreselectionPeriodStatus) {
       <button
         (click)="validatePreselection()"
         class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
