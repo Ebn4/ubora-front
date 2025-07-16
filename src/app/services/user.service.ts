@@ -16,4 +16,8 @@ export class UserService {
     return this.http.get<ResponseInterface<LdapUser[]>>(`${this.baseUrl}/users/ldap/${query}`)
   }
 
+  hasAdminRole() {
+    return this.http.get<{ hasAdminRole: boolean }>(`${this.baseUrl}/has-admin-role`)
+  }
+
 }
