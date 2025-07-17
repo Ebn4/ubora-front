@@ -7,6 +7,8 @@ import { CandidacyService } from '../../services/candidacy.service';
 import { FormsModule } from '@angular/forms';
 import { CandidaciesDispatchEvaluator } from '../../models/candidacies-dispatch-evaluator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { UserService } from '../../services/user.service';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-preselection',
@@ -18,11 +20,13 @@ export class PreselectionComponent extends BaseListWidget {
 
   candidacies: CandidaciesDispatchEvaluator[] = [];
   @Input() period?: Period;
-  evaluateurId: number = 4;
+  evaluateurId!: number;
   periodId: number = 4;
+  user!: User
   ville: string = '';
   route: ActivatedRoute = inject(ActivatedRoute);
   candidacyService: CandidacyService = inject(CandidacyService);
+  userService: UserService = inject(UserService);
   totalCandidats: number = 0;
   candidatsEvalues: number = 0;
   constructor() {
@@ -37,8 +41,20 @@ export class PreselectionComponent extends BaseListWidget {
     }
   }
 
+  getUser() {
+    this.userService.getUser().subscribe({
+      next: (user) => {
+        this.user = user
+        this.evaluateurId = this.user.id
+        console.log("User connecté : ", this.evaluateurId)
+      },
+      error: (error) => console.error("Error")
+    })
+  }
+
   ngOnInit(): void {
     this.loadData();
+    this.getUser()
   }
 
   override loadData() {

@@ -1,8 +1,9 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {BASE_URL} from '../app.tokens';
-import {ResponseInterface} from '../models/response.model';
-import {LdapUser} from '../models/ldap-user.model';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BASE_URL } from '../app.tokens';
+import { ResponseInterface } from '../models/response.model';
+import { LdapUser } from '../models/ldap-user.model';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,10 @@ export class UserService {
 
   hasAdminRole() {
     return this.http.get<{ hasAdminRole: boolean }>(`${this.baseUrl}/has-admin-role`)
+  }
+
+  getUser() {
+    return this.http.get<User>(`${this.baseUrl}/user`)
   }
 
 }
