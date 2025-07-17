@@ -8,8 +8,8 @@
           viewBox="0 0 24 24"
           fill="currentColor"
         >
-          <circle cx="12" cy="12" r="10" fill="#FF8C00" />
-          <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" />
+          <circle cx="12" cy="12" r="10" fill="#FF8C00"/>
+          <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
         </svg>
         <h1 class="text-xl font-bold">Ubora Assessments</h1>
       </div>
@@ -153,12 +153,12 @@
             </li>
             <li class="mb-1">
               <a
-                href="utilisateurs.html"
+                routerLink="users"
                 class="flex items-center p-3"
                 [ngClass]="{
                 'bg-primary text-white rounded':
-                  activeTab === 'user',
-                'text-gray-700 hover:bg-gray-100': activeTab !== 'user'
+                  activeTab === 'users',
+                'text-gray-700 hover:bg-gray-100': activeTab !== 'users'
               }"
               >
                 <svg
