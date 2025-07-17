@@ -5,6 +5,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {BASE_URL} from '../app.tokens';
 import {CandidateEvaluation} from '../models/candidate-evaluation';
 import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
+import {Interview} from '../models/interview';
 
 @Injectable({
   providedIn: 'root',
@@ -76,4 +77,9 @@ export class CandidacyService {
     return this.http.post<{ errors: string | null, data: boolean }>(`${this.baseUrl}/candidate/selections`, data)
   }
 
+  getCandidateInterview(candidateId: number) {
+    return this.http.get<ResponseInterface<Interview>>(
+      `${this.baseUrl}/candidates/${candidateId}/interviews`
+    );
+  }
 }
