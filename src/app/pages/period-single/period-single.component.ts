@@ -36,6 +36,7 @@ import { PreselectionService } from '../../services/preselection.service';
   templateUrl: './period-single.component.html',
 })
 export class PeriodSingleComponent {
+  validateDispatchPeriodStatus = PeriodStatus.STATUS_DISPATCH
   canDispatch = signal(false);
   periodService: PeriodService = inject(PeriodService);
   preselectionService: PreselectionService = inject(PreselectionService)
@@ -59,6 +60,7 @@ export class PeriodSingleComponent {
   toggleDropdown() {
     this.isDropdownVisible = !this.isDropdownVisible;
   }
+
   @HostListener('document:click', ['$event'])
   closeDropdownOnClick(event: MouseEvent) {
     const dropdownDefaultButton = document.getElementById(
@@ -128,7 +130,7 @@ export class PeriodSingleComponent {
     this.selectedTab = this.getTabName(index);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: this.selectedTab },
+      queryParams: {tab: this.selectedTab},
       queryParamsHandling: 'merge',
     });
   }
@@ -201,5 +203,19 @@ export class PeriodSingleComponent {
         this.event = true;
       }
     });
+  }
+
+  validateDispatch() {
+    this.periodService
+      .changePeriodStatus(this.periodId, {status: PeriodStatus.STATUS_PRESELECTION})
+      .subscribe({
+        next: value => {
+          this.loadData()
+          this.sendEmails()
+        },
+        error: err => {
+          console.error(err)
+        }
+      })
   }
 }

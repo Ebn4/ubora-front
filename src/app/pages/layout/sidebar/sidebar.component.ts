@@ -32,9 +32,9 @@ export class SidebarComponent {
       })
   }
 
-  activeTab: 'candidacy' | 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'user' | 'evaluator-candidacies' | 'preselection-admin' = 'criteria';
+  activeTab: 'candidacy' | 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'users' | 'evaluator-candidacies' | 'preselection-admin' = 'criteria';
 
-  setActiveTab(tab: 'candidacy' | 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'user' | 'evaluator-candidacies' | 'preselection-admin') {
+  setActiveTab(tab: 'candidacy' | 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'users' | 'evaluator-candidacies' | 'preselection-admin') {
     this.activeTab = tab;
   }
 
@@ -74,8 +74,8 @@ export class SidebarComponent {
       this.setActiveTab('presection');
     } else if (url.includes('criteria')) {
       this.setActiveTab('criteria');
-    } else if (url.includes('user')) {
-      this.setActiveTab('user');
+    } else if (url.includes('users')) {
+      this.setActiveTab('users');
     } else if (url.includes('evaluator-candidacies')) {
       this.setActiveTab('evaluator-candidacies');
     } else if (url.includes('preselection-admin')) {
