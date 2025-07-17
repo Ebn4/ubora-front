@@ -84,7 +84,7 @@ export class CriteriaService {
   }
 
   loadCriteriasByPeriodId(periodId: number, status: string) {
-    let params = new HttpParams().set('status', status);
+    let params = new HttpParams().set('type', status);
 
     return this.http.get<ResponseInterface<Criteria[]>>(
       `${this.baseUrl}/periods/criteria/${periodId}`,
