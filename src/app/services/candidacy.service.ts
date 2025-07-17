@@ -44,7 +44,7 @@ export class CandidacyService {
     let params = new HttpParams().set('candidacyId', candidacyId);
 
     return this.http.get<ResponseInterface<Candidacy>>(
-      `${this.baseUrl}/getCandidacy`,
+      `${this.baseUrl}/candidacies/${candidacyId}`,
       {params}
     );
   }
