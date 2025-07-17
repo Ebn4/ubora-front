@@ -28,6 +28,10 @@ export class UserService {
     return this.http.get<ResponseInterface<User[]>>(`${this.baseUrl}/users`, {params})
   }
 
+  deleteUser(userId: number) {
+    return this.http.delete(`${this.baseUrl}/users/${userId}`)
+  }
+
   searchUserFromLdap(query: string) {
     return this.http.get<ResponseInterface<LdapUser[]>>(`${this.baseUrl}/users/ldap/${query}`)
   }
