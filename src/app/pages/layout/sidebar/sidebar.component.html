@@ -20,22 +20,11 @@
     <!-- Sidebar -->
     <aside class="w-full md:w-64 bg-white shadow-md">
       <div class="p-4 border-b flex flex-col items-center">
-        <div
-          class="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-2"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-8 w-8 text-gray-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
+        <div class="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </div>
         <p class="font-medium">Admin</p>
@@ -43,92 +32,50 @@
       <nav class="p-2">
         <ul>
           <li class="mb-1">
-            <a
-              [routerLink]="['candidacy']"
-              class="flex items-center p-3"
-              [ngClass]="{
-                'bg-primary text-white rounded':
-                  activeTab === 'candidacy',
-                'text-gray-700 hover:bg-gray-100': activeTab !== 'candidacy'
-              }"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              Candidatures
-            </a>
-          </li>
-          <li class="mb-1">
-            <a
-              [routerLink]="['evaluator-candidacies']"
-              class="flex items-center p-3"
-              [ngClass]="{
+            <a [routerLink]="['evaluator-candidacies']" class="flex items-center p-3" [ngClass]="{
                 'bg-primary text-white rounded':
                   activeTab === 'evaluator-candidacies',
                 'text-gray-700 hover:bg-gray-100': activeTab !== 'evaluator-candidacies'
-              }"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
+              }">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               Mes Candidats
             </a>
           </li>
           @if (hasAdminRole()) {
-            <li class="mb-1">
-              <a
-                [routerLink]="['period']"
-                class="flex items-center p-3"
-                [ngClass]="{
+          <li class="mb-1">
+            <a [routerLink]="['candidacy']" class="flex items-center p-3" [ngClass]="{
+                'bg-primary text-white rounded':
+                  activeTab === 'candidacy',
+                'text-gray-700 hover:bg-gray-100': activeTab !== 'candidacy'
+              }">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Candidatures
+            </a>
+          </li>
+          <li class="mb-1">
+            <a [routerLink]="['period']" class="flex items-center p-3" [ngClass]="{
                 'bg-primary text-white rounded':
                   activeTab === 'period',
                 'text-gray-700 hover:bg-gray-100': activeTab !== 'period'
-              }"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                Périodes
-              </a>
-            </li>
-            <li class="mb-1">
-              <a
-                [routerLink]="['criteria']"
-                class="flex items-center p-3"
-                [ngClass]="{
+              }">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Périodes
+            </a>
+          </li>
+          <li class="mb-1">
+            <a [routerLink]="['criteria']" class="flex items-center p-3" [ngClass]="{
                 'bg-primary text-white rounded':
                   activeTab === 'criteria',
                 'text-gray-700 hover:bg-gray-100': activeTab !== 'criteria'
@@ -180,23 +127,11 @@
             </li>
           }
           <li class="mt-4">
-            <button
-              (click)="logout()"
-              class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
+            <button (click)="logout()" class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
               Se déconnecter
             </button>
