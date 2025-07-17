@@ -36,4 +36,7 @@ export class PreselectionService {
     return this.http.get(`${this.baseUrl}/getPreselectionsForDispatch/${dispatchId}`);
   }
 
+  sendDispatchNotification(): Observable<any> {
+    return this.http.post(`${this.baseUrl}/sendDispatchNotification`, {});
+  }
 }

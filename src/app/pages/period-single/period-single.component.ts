@@ -18,6 +18,8 @@ import {
 import { CriteriaComponent } from '../criteria/criteria.component';
 import { CriteriaAttachSelectionComponent } from './criteria-attach-selection/criteria-attach-selection.component';
 import { ImportFileCandidaciesComponent } from '../import-file-candidacies/import-file-candidacies.component';
+import { PeriodStatus } from '../../enum/period-status.enum';
+import { PreselectionService } from '../../services/preselection.service';
 
 @Component({
   selector: 'app-period-single',
@@ -36,6 +38,7 @@ import { ImportFileCandidaciesComponent } from '../import-file-candidacies/impor
 export class PeriodSingleComponent {
   canDispatch = signal(false);
   periodService: PeriodService = inject(PeriodService);
+  preselectionService: PreselectionService = inject(PreselectionService)
   route: ActivatedRoute = inject(ActivatedRoute);
   period!: Period | undefined;
   selectedTab: string = 'tab1';
@@ -44,6 +47,11 @@ export class PeriodSingleComponent {
   year!: number
   showModal = false;
   isDropdownVisible = false;
+  dispatchStatus = signal(PeriodStatus.STATUS_DISPATCH);
+  preselectionStatus = signal(PeriodStatus.STATUS_PRESELECTION);
+  interviewStatus = signal(PeriodStatus.STATUS_INTERVIEW);
+
+
   event = false;
 
   constructor(private router: Router, private _matDialog: MatDialog) { }
@@ -130,6 +138,14 @@ export class PeriodSingleComponent {
   closeModal() {
     this.showModal = false;
   }
+
+  sendEmails() {
+    this.preselectionService.sendDispatchNotification().subscribe({
+      next: res => {},
+      error: err => console.error(err)
+    });
+  }
+
 
   canValidateDispatch(canDispatch: boolean) {
     this.canDispatch.set(canDispatch);
