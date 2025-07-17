@@ -12,6 +12,7 @@ import {
   CandidacyPreselectionComponent
 } from './pages/preselection/candidacy-preselection/candidacy-preselection.component';
 import {HasAdminRoleGuard} from './middlewares/has-admin-role.guard';
+import {UsersComponent} from './pages/users/users.component';
 
 export const routes: Routes = [
   {
@@ -26,6 +27,7 @@ export const routes: Routes = [
     component: SidebarComponent,
     children: [
       {path: '', redirectTo: 'period', pathMatch: 'full'},
+      {path: 'users', component: UsersComponent, canActivate: [HasAdminRoleGuard]},
       {path: 'period', component: PeriodComponent, canActivate: [HasAdminRoleGuard]},
       {path: 'period-single/:id', component: PeriodSingleComponent, canActivate: [HasAdminRoleGuard]},
       {path: 'criteria', component: CriteriaComponent, canActivate: [HasAdminRoleGuard]},
