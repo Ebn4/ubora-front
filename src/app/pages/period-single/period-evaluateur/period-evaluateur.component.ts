@@ -1,15 +1,15 @@
-import { Component, EventEmitter, inject, Input, OnChanges, Output, signal, SimpleChanges } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { AddEvaluatorDialogComponent } from '../add-evaluator-dialog/add-evaluator-dialog.component';
-import { EvaluatorService } from '../../../services/evaluator.service';
-import { Evaluator } from '../../../models/evaluator.model';
-import { RouterLink } from '@angular/router';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BaseListWidget } from '../../../widgets/base-list-widget';
-import { NgForOf } from '@angular/common';
-import { Period } from '../../../models/period';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { PeriodStatus } from '../../../enum/period-status.enum';
+import {Component, EventEmitter, inject, Input, OnChanges, Output, signal, SimpleChanges} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {AddEvaluatorDialogComponent} from '../add-evaluator-dialog/add-evaluator-dialog.component';
+import {EvaluatorService} from '../../../services/evaluator.service';
+import {Evaluator} from '../../../models/evaluator.model';
+import {RouterLink} from '@angular/router';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {BaseListWidget} from '../../../widgets/base-list-widget';
+import {NgForOf} from '@angular/common';
+import {Period} from '../../../models/period';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {PeriodStatus} from '../../../enum/period-status.enum';
 
 @Component({
   selector: 'app-period-evaluateur',
@@ -26,6 +26,7 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
 
   private _snackBar = inject(MatSnackBar);
   canDispatch = signal(true)
+  @Input() candidatesCount? = 0;
   @Input() period?: Period
   @Output() canValidateDispatch = new EventEmitter<boolean>()
   readonly dialog = inject(MatDialog);
@@ -40,9 +41,9 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
         name: 'Selection',
         type: 'SELECTION'
       }, {
-        name: 'Preselection',
-        type: 'PRESELECTION'
-      }
+      name: 'Preselection',
+      type: 'PRESELECTION'
+    }
     ]
   )
 
@@ -72,7 +73,7 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
 
   onOpenDialog() {
     const dialogRef = this.dialog.open(AddEvaluatorDialogComponent, {
-      data: { periodId: this.period?.id }
+      data: {periodId: this.period?.id}
     });
 
     dialogRef.afterClosed().subscribe(result => {

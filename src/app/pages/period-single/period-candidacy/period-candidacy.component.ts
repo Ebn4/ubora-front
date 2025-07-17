@@ -5,9 +5,9 @@ import {
   OnChanges, signal,
   SimpleChanges,
 } from '@angular/core';
-import { Period } from '../../../models/period';
-import { Subscription } from 'rxjs';
-import { ListeningChangeService } from '../../../services/listening-change.service';
+import {Period} from '../../../models/period';
+import {Subscription} from 'rxjs';
+import {ListeningChangeService} from '../../../services/listening-change.service';
 import {FormsModule} from '@angular/forms';
 import {NgFor} from '@angular/common';
 import {Candidacy} from '../../../models/candidacy';
@@ -16,6 +16,8 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
 import {BaseListWidget} from '../../../widgets/base-list-widget';
 import {PreselectionService} from '../../../services/preselection.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {PeriodService} from '../../../services/period.service';
+import {PeriodStatus} from '../../../enum/period-status.enum';
 
 @Component({
   selector: 'app-period-candidacy',
@@ -31,16 +33,18 @@ export class PeriodCandidacyComponent
   candidacies: Candidacy[] = [];
   @Input() period?: Period;
   ville: string = '';
-  institute_count: number =0
-  candidacy_count: number =0
-  city_count: number=0
-  preselection_count: number =0
+  institute_count: number = 0
+  candidacy_count: number = 0
+  city_count: number = 0
+  preselection_count: number = 0
   selection_count: number = 0
+  validatedPreselectionPeriodStatus = PeriodStatus.STATUS_PRESELECTION
 
   readonly snackbar = inject(MatSnackBar)
   route: ActivatedRoute = inject(ActivatedRoute);
   candidacyService: CandidacyService = inject(CandidacyService);
   preselectionService = inject(PreselectionService);
+  periodService = inject(PeriodService);
 
   canValidatePreselection = signal(false)
 
@@ -125,12 +129,33 @@ export class PeriodCandidacyComponent
         .subscribe({
           next: value => {
             this.canValidatePreselection.set(false)
+
+            this.changePeriodStatus()
             this.snackbar.open(value.message, 'Fermer', {
               duration: 3000,
             });
+
+
           },
           error: err => {
             console.error(err)
+          }
+        })
+    }
+  }
+
+  changePeriodStatus() {
+    if (this.period) {
+      this.periodService.changePeriodStatus(this.period.id, {status: PeriodStatus.STATUS_SELECTION})
+        .subscribe({
+          next: value => {
+          },
+          error: err => {
+            console.error(err)
+            this.snackbar.open(err.error.message, 'Fermer', {
+              duration: 3000,
+            });
+
           }
         })
     }

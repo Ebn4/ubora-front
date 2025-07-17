@@ -2,10 +2,10 @@
   <div class="flex flex-col md:flex-row justify-between items-center mb-6">
     <h2 class="text-2xl font-bold mb-4 md:mb-0">Gestion des Evaluateurs</h2>
     <div class="flex items-center gap-4">
-      @if (period?.status == dispatchStatus()) {
+      @if (period?.status == dispatchStatus() && (candidatesCount != null && candidatesCount > 0)) {
         <button (click)="canDispatch() ? onDispatchEvaluator() : onCancelDispatch()"
                 class="bg-primary hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300">
-          {{ canDispatch() ? 'Dispatcher' : 'Annuler Dispatche' }}
+          {{ canDispatch() ? 'Dispatcher' : 'Supprimer Dispatche' }}
         </button>
       }
       <button (click)="onOpenDialog()"
