@@ -1,12 +1,28 @@
 <main class="flex-1 p-4">
-  <div class="bg-white rounded-lg shadow-md p-6 mb-6" [ngClass]="{ 'opacity-10 bg-dark': showModal }">
+  <div
+    class="bg-white rounded-lg shadow-md p-6 mb-6"
+    [ngClass]="{ 'opacity-10 bg-dark': showModal }"
+  >
     <div class="flex flex-col md:flex-row justify-between items-start mb-6">
       <div>
         <div class="flex items-center mb-2">
-          <a [routerLink]="['/period']" class="text-gray-500 hover:text-gray-700 mr-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          <a
+            [routerLink]="['/period']"
+            class="text-gray-500 hover:text-gray-700 mr-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
           </a>
           <h2 class="text-2xl font-bold">Bourses {{ period?.year }}</h2>
@@ -16,11 +32,12 @@
         </p>
       </div>
       <div class="mt-4 md:mt-0 flex space-x-2">
-        @if (canDispatch()) {
-        <button (click)="sendEmails()"
-          class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300">
-          Valider dispatch
-        </button>
+        @if (canDispatch() &&  validateDispatchPeriodStatus == period?.status) {
+          <button (click)="validateDispatch()"
+            class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
+          >
+            Valider dispatch
+          </button>
         }
 
         <div class="relative">
