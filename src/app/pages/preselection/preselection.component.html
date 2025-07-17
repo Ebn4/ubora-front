@@ -64,31 +64,29 @@
     <table class="min-w-full bg-white">
       <thead>
         <tr class="bg-gray-800 text-white">
+          <th class="py-2 px-4 text-left">DATE SOUMISSION</th>
           <th class="py-2 px-4 text-left">REFERENCE</th>
           <th class="py-2 px-4 text-left">NOMS</th>
           <th class="py-2 px-4 text-left">VILLE</th>
-          <th class="py-2 px-4 text-left">DATE SOUMISSION</th>
-          <th class="py-2 px-4 text-left">PRESELECTION</th>
-          <th class="py-2 px-4 text-left">MOYENNE</th>
+          <th class="py-2 px-4 text-left">STATUS</th>
           <th class="py-2 px-4 text-left">DETAIL</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let candidacie of candidacies" class="border-b hover:bg-gray-50">
+          <td class="py-2 px-4">{{ candidacie.form_submited_at }}</td>
           <td class="py-2 px-4">{{ candidacie.id }}</td>
           <td class="py-2 px-4">
             {{ candidacie.etn_nom }} {{ candidacie.etn_postnom }}
             {{ candidacie.etn_prenom }}
           </td>
           <td class="py-2 px-4">{{ candidacie.ville }}</td>
-          <td class="py-2 px-4">{{ candidacie.form_submited_at }}</td>
           <td class="py-2 px-4">
             <span class="flex items-center">
               En attente
               <span class="ml-1 h-3 w-3 bg-yellow-400 rounded-full"></span>
             </span>
           </td>
-          <td class="py-2 px-4">{{ candidacie.pourcentage_obtenu }}</td>
           <td class="py-2 px-4">
             <a [routerLink]="['/evaluator-candidacies-single', candidacie.id, candidacie.pivot.id]"
               class="text-blue-500">
