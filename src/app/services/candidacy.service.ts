@@ -1,10 +1,10 @@
-import { inject, Injectable } from '@angular/core';
-import { Candidacy } from '../models/candidacy';
-import { CandidaciesDispatchEvaluator } from '../models/candidacies-dispatch-evaluator';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { BASE_URL } from '../app.tokens';
-import { ResponseInterface, ResponseInterfaceE } from '../models/response.model';
+import {inject, Injectable} from '@angular/core';
+import {Candidacy} from '../models/candidacy';
+import {CandidaciesDispatchEvaluator} from '../models/candidacies-dispatch-evaluator';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {BASE_URL} from '../app.tokens';
 import {CandidateEvaluation} from '../models/candidate-evaluation';
+import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,9 @@ export class CandidacyService {
   http: HttpClient = inject(HttpClient);
   baseUrl = inject(BASE_URL);
 
-  constructor() {}
+  constructor() {
+  }
+
   getCandidacies(
     page: number = 1,
     search: string = '',
@@ -69,7 +71,9 @@ export class CandidacyService {
     );
   }
 
+
   evaluateCandidate(data: { interviewId: number, periodId: number, evaluations: CandidateEvaluation[] }) {
     return this.http.post<{ errors: string | null, data: boolean }>(`${this.baseUrl}/candidate/selections`, data)
   }
+
 }
