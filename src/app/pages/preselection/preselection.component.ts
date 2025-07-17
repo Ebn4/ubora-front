@@ -44,16 +44,17 @@ export class PreselectionComponent extends BaseListWidget {
   getUser() {
     this.userService.getUser().subscribe({
       next: (user) => {
-        this.user = user
-        this.evaluateurId = this.user.id
-        console.log("User connecté : ", this.evaluateurId)
+        this.user = user;
+        this.evaluateurId = this.user.id;
+        this.loadData();
       },
-      error: (error) => console.error("Error")
-    })
+      error: (error) => {
+        console.error("Erreur lors de la récupération de l'utilisateur :", error);
+      }
+    });
   }
 
   ngOnInit(): void {
-    this.loadData();
     this.getUser()
   }
 
