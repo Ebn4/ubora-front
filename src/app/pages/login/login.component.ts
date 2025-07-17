@@ -11,9 +11,7 @@ import {AuthServices} from '../../services/auth.service';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    NgClass,
     NgIf,
-    RouterLink,
     FormsModule
   ],
   styles: ``
