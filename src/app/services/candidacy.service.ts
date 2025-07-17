@@ -82,4 +82,10 @@ export class CandidacyService {
       `${this.baseUrl}/candidates/${candidateId}/interviews`
     );
   }
+
+  candidateHasSelected(candidateId: number) {
+    return this.http.get<{ hasSelection: boolean }>(
+      `${this.baseUrl}/candidates/${candidateId}/has-selection`
+    );
+  }
 }
