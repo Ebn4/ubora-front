@@ -41,6 +41,7 @@ export interface CandidaciesDispatchEvaluator {
   updated_at: string;
   period_id: number;
   candidaciesPreselection: number
+  statusCandidacy: boolean
   totalCandidats: number;
   pivot: {
     evaluator_id: number;
