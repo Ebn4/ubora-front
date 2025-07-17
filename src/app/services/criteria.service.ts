@@ -1,11 +1,12 @@
-import { inject, Injectable } from '@angular/core';
-import { Criteria } from '../models/criteria';
-import { Response } from '../models/response';
-import { LocalStorageService } from './local-storage.service';
-import { CriteriaPeriod } from '../models/criteria-period';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { BASE_URL } from '../app.tokens';
-import { ResponseInterface } from '../models/response.model';
+import {inject, Injectable} from '@angular/core';
+import {Criteria} from '../models/criteria';
+import {Response} from '../models/response';
+import {LocalStorageService} from './local-storage.service';
+import {CriteriaPeriod} from '../models/criteria-period';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {BASE_URL} from '../app.tokens';
+import {ResponseInterface} from '../models/response.model';
+import {PeriodStatus} from '../enum/period-status.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,8 @@ export class CriteriaService {
   http: HttpClient = inject(HttpClient);
   baseUrl = inject(BASE_URL);
 
-  constructor() {}
+  constructor() {
+  }
 
   getCriteria(
     page: number = 1,
@@ -36,7 +38,7 @@ export class CriteriaService {
 
     return this.http.get<ResponseInterface<Criteria[]>>(
       `${this.baseUrl}/criteria`,
-      { params }
+      {params}
     );
   }
 
@@ -71,13 +73,22 @@ export class CriteriaService {
   getPeriodCriterias(
     periodId: number,
     search: string
-  ){
+  ) {
     let params = new HttpParams().set('period_id', periodId);
     if (search != null && search != '') params = params.set('search', search);
 
     return this.http.get<ResponseInterface<CriteriaPeriod[]>>(
       `${this.baseUrl}/period/join/criteria`,
-      { params }
+      {params}
+    );
+  }
+
+  loadCriteriasByPeriodId(periodId: number, status: string) {
+    let params = new HttpParams().set('status', status);
+
+    return this.http.get<ResponseInterface<Criteria[]>>(
+      `${this.baseUrl}/periods/criteria/${periodId}`,
+      {params}
     );
   }
 }
