@@ -37,10 +37,11 @@ export interface Candidacy {
   updated_at: string;
   period_id: number;
   evaluators: [],
+  evalutors_number: number
   nb_evaluation: number
   institute_count: number
   candidacy_count: number
   city_count: number
-  preselection_count: number,
-  selection_count: number,
+  preselection_count: number
+  selection_count: number
 }
