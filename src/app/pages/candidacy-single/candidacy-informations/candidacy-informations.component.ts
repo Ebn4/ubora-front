@@ -22,6 +22,7 @@ export class CandidacyInformationsComponent extends BaseListWidget {
 
   candidacyId!: number;
   candidacy?: Candidacy;
+  candidateHasSelected = signal(true)
 
   interview = signal<Interview | null>(null)
   period = signal<Period | null>(null)
@@ -33,6 +34,7 @@ export class CandidacyInformationsComponent extends BaseListWidget {
   ngOnInit(): void {
     this.loadData();
     this.loadCandidateInterviewInfo()
+    this.checkIfCandidateHasSelected()
   }
 
   override loadData() {
@@ -71,6 +73,16 @@ export class CandidacyInformationsComponent extends BaseListWidget {
         },
         error: err => {
           console.error(err)
+        }
+      })
+  }
+
+  checkIfCandidateHasSelected() {
+    this.candidacyService
+      .candidateHasSelected(this.candidacyId)
+      .subscribe({
+        next: value => {
+          this.candidateHasSelected.set(value.hasSelection)
         }
       })
   }
