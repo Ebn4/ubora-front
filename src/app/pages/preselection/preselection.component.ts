@@ -1,4 +1,4 @@
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { Component, inject, Input, SimpleChanges } from '@angular/core';
 import { BaseListWidget } from '../../widgets/base-list-widget';
 import { Period } from '../../models/period';
@@ -12,7 +12,7 @@ import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-preselection',
-  imports: [NgFor, FormsModule, RouterLink],
+  imports: [NgFor, FormsModule, RouterLink, NgIf],
   templateUrl: './preselection.component.html',
 })
 export class PreselectionComponent extends BaseListWidget {
