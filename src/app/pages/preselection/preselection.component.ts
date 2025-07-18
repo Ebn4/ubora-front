@@ -1,8 +1,9 @@
+import { PreselectionService } from './../../services/preselection.service';
 import { NgFor, NgIf } from '@angular/common';
 import { Component, inject, Input, SimpleChanges } from '@angular/core';
 import { BaseListWidget } from '../../widgets/base-list-widget';
 import { Period } from '../../models/period';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CandidacyService } from '../../services/candidacy.service';
 import { FormsModule } from '@angular/forms';
 import { CandidaciesDispatchEvaluator } from '../../models/candidacies-dispatch-evaluator';
@@ -29,7 +30,8 @@ export class PreselectionComponent extends BaseListWidget {
   userService: UserService = inject(UserService);
   totalCandidats: number = 0;
   candidatsEvalues: number = 0;
-  constructor() {
+  constructor(
+    private preselectionService: PreselectionService) {
     super();
   }
 
@@ -56,6 +58,10 @@ export class PreselectionComponent extends BaseListWidget {
 
   ngOnInit(): void {
     this.getUser()
+  }
+
+  goToCandidacyDetails(candidacie: any) {
+    this.preselectionService.setCandidacy(candidacie);
   }
 
   override loadData() {
