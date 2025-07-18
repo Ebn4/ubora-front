@@ -1,17 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { Candidacy } from '../../../models/candidacy';
 import { CandidacyService } from '../../../services/candidacy.service';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CriteriaPeriod } from '../../../models/criteria-period';
 import { CriteriaService } from '../../../services/criteria.service';
 import { PeriodStatus } from '../../../enum/period-status.enum';
 import { ImportService } from '../../../services/import.service';
-import { NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { PreselectionService } from '../../../services/preselection.service';
 
 @Component({
   selector: 'app-candidacy-preselection',
-  imports: [RouterLink, NgIf, NgFor],
+  imports: [RouterLink, NgIf, NgFor, NgClass],
   templateUrl: './candidacy-preselection.component.html',
 })
 export class CandidacyPreselectionComponent {
@@ -34,22 +34,55 @@ export class CandidacyPreselectionComponent {
   type: string = PeriodStatus.STATUS_PRESELECTION;
   search: string = '';
 
-  constructor() { }
+  candidaciesList: any;
+  currentIndex: number = 0;
+
+  constructor(private router: Router) { }
+
   ngOnInit() {
+
+    this.candidaciesList = this.preselectionService.getCandidacy();
+    const currentId = Number(this.route.snapshot.paramMap.get('id'));
+    this.currentIndex = this.candidaciesList.findIndex((c: any) => c.id === currentId);
+    this.loadDataCandidacy()
     this.loadDataCriteria();
-    this.checkPreselection()
   }
 
   loadDataCandidacy() {
-    this.candidacyId = Number(this.route.snapshot.paramMap.get('id'));
-    this.candidacyService.getOneCandidacy(this.candidacyId).subscribe({
+    const candidacyId = this.candidaciesList[this.currentIndex]?.id;
+
+    this.candidacyService.getOneCandidacy(candidacyId).subscribe({
       next: (response) => {
         this.candidacy = response.data;
+        this.preselectionCheck = this.candidacy.candidacy_preselection
       },
       error: (error) => {
-        console.error('Error loading candidacies:', error);
-      },
+        console.error('Erreur chargement candidature:', error);
+      }
     });
+  }
+
+  goToPrevious() {
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+      this.updateRouteAndLoad();
+    }
+  }
+
+  goToNext() {
+    if (this.currentIndex < this.candidaciesList.length - 1) {
+      this.currentIndex++;
+      this.updateRouteAndLoad();
+    }
+  }
+
+  updateRouteAndLoad() {
+    const candidacy = this.candidaciesList[this.currentIndex];
+    this.router.navigate(
+      ['/evaluator-candidacies-single', candidacy.id, candidacy.pivot?.id || 0],
+      { replaceUrl: true }
+    );
+    this.loadDataCandidacy();
   }
 
   loadDataCriteria() {
@@ -88,26 +121,10 @@ export class CandidacyPreselectionComponent {
 
     this.preselectionService.preselectionCandidacy(data).subscribe({
       next: (res) => {
-        this.checkPreselection()
+        this.preselectionCheck = true
       },
       error: (err) => {
         console.error('Erreur lors de la préselection', err);
-      }
-    });
-  }
-
-  checkPreselection() {
-    this.dispatch_preselections_id = Number(this.route.snapshot.paramMap.get('dispatchId'));
-    this.preselectionService.getPreselectionsForDispatch(this.dispatch_preselections_id).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.preselectionCheck = true
-        }
-      },
-      error: (err) => {
-        if (err.status === 404) {
-          return;
-        }
       }
     });
   }
