@@ -1,11 +1,14 @@
-import {inject, Injectable} from '@angular/core';
-import {Candidacy} from '../models/candidacy';
-import {CandidaciesDispatchEvaluator} from '../models/candidacies-dispatch-evaluator';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {BASE_URL} from '../app.tokens';
-import {CandidateEvaluation} from '../models/candidate-evaluation';
-import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
-import {Interview} from '../models/interview';
+import { inject, Injectable } from '@angular/core';
+import { Candidacy } from '../models/candidacy';
+import { CandidaciesDispatchEvaluator } from '../models/candidacies-dispatch-evaluator';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { BASE_URL } from '../app.tokens';
+import { CandidateEvaluation } from '../models/candidate-evaluation';
+import { ResponseInterface, ResponseInterfaceE } from '../models/response.model';
+import { Interview } from '../models/interview';
+import { User } from '../models/user.model';
+import { UserService } from './user.service';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +16,9 @@ import {Interview} from '../models/interview';
 export class CandidacyService {
   http: HttpClient = inject(HttpClient);
   baseUrl = inject(BASE_URL);
+  user!: User
+  userService: UserService = inject(UserService);
+  evaluator_id!: number
 
   constructor() {
   }
@@ -41,11 +47,19 @@ export class CandidacyService {
   }
 
   getOneCandidacy(candidacyId: number) {
-    let params = new HttpParams().set('candidacyId', candidacyId);
+    return this.userService.getUser().pipe(
+      switchMap((user) => {
+        const evaluatorId = user.id;
+        let params = new HttpParams().set('evaluator_id', evaluatorId);
+        if (evaluatorId != null && evaluatorId != null) {
+          params = params.set('evaluator_id', evaluatorId);
+        }
 
-    return this.http.get<ResponseInterface<Candidacy>>(
-      `${this.baseUrl}/candidacies/${candidacyId}`,
-      {params}
+        return this.http.get<ResponseInterface<Candidacy>>(
+          `${this.baseUrl}/candidacies/${candidacyId}`,
+          { params }
+        );
+      })
     );
   }
 

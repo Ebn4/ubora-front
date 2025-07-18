@@ -50,7 +50,6 @@ export class CandidacyPreselectionComponent {
 
   loadDataCandidacy() {
     const candidacyId = this.candidaciesList[this.currentIndex]?.id;
-
     this.candidacyService.getOneCandidacy(candidacyId).subscribe({
       next: (response) => {
         this.candidacy = response.data;
@@ -83,6 +82,7 @@ export class CandidacyPreselectionComponent {
       { replaceUrl: true }
     );
     this.loadDataCandidacy();
+    this.loadDataCriteria()
   }
 
   loadDataCriteria() {
@@ -122,6 +122,7 @@ export class CandidacyPreselectionComponent {
     this.preselectionService.preselectionCandidacy(data).subscribe({
       next: (res) => {
         this.preselectionCheck = true
+        this.goToNext();
       },
       error: (err) => {
         console.error('Erreur lors de la préselection', err);
