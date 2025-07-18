@@ -94,7 +94,7 @@
             </span>
           </td>
           <td class="py-2 px-4">
-            <a [routerLink]="['/evaluator-candidacies-single', candidacie.id, candidacie.pivot.id]"
+            <a (click)="goToCandidacyDetails(candidacies)" [routerLink]="['/evaluator-candidacies-single', candidacie.id, candidacie.pivot.id]"
               class="text-blue-500">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />

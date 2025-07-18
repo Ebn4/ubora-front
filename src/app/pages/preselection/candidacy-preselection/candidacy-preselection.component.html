@@ -17,19 +17,22 @@
 
       <div class="flex items-center space-x-4">
         <div class="text-sm text-gray-600">
-          Candidat <span class="font-bold">1</span> sur
-          <span class="font-bold">156</span>
+          Candidat <span class="font-bold">{{ currentIndex + 1 }}</span> sur
+          <span class="font-bold">{{ candidaciesList.length }}</span>
         </div>
         <div class="flex space-x-2">
-          <button id="prevCandidate"
-            class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-2 rounded-lg transition duration-300" disabled>
+          <button (click)="goToPrevious()" [disabled]="currentIndex === 0"
+            class="bg-gray-200 hover:bg-primary hover:text-white text-gray-700 px-3 py-2 rounded-lg transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            [ngClass]="{'bg-primary text-white': currentIndex !== 0}" aria-label="Précédent">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <button id="nextCandidate"
-            class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-2 rounded-lg transition duration-300">
+
+          <button (click)="goToNext()" [disabled]="currentIndex === candidaciesList.length - 1"
+            class="bg-gray-200 hover:bg-primary hover:text-white text-gray-700 px-3 py-2 rounded-lg transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            [ngClass]="{'bg-primary text-white': currentIndex !== candidaciesList.length - 1}" aria-label="Suivant">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -37,6 +40,7 @@
           </button>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -60,27 +64,27 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <p class="text-sm font-medium text-gray-500">Nom</p>
-            <p class="font-semibold">MUKENDI</p>
+            <p class="font-semibold">{{ candidacy?.etn_nom }}</p>
           </div>
           <div>
             <p class="text-sm font-medium text-gray-500">Postnom</p>
-            <p class="font-semibold">KALALA</p>
+            <p class="font-semibold">{{ candidacy?.etn_postnom }}</p>
           </div>
           <div>
             <p class="text-sm font-medium text-gray-500">Prénom</p>
-            <p class="font-semibold">Jean-Baptiste</p>
+            <p class="font-semibold">{{ candidacy?.etn_prenom }}</p>
           </div>
           <div>
             <p class="text-sm font-medium text-gray-500">Email</p>
-            <p class="font-semibold">jb.mukendi.com</p>
+            <p class="font-semibold">{{ candidacy?.etn_email }}</p>
           </div>
           <div>
             <p class="text-sm font-medium text-gray-500">Téléphone</p>
-            <p class="font-semibold">+243 123 456 789</p>
+            <p class="font-semibold">{{ candidacy?.telephone }}</p>
           </div>
           <div>
             <p class="text-sm font-medium text-gray-500">Ville</p>
-            <p class="font-semibold">Kinshasa</p>
+            <p class="font-semibold">{{ candidacy?.ville }}</p>
           </div>
         </div>
       </div>
@@ -95,7 +99,7 @@
           </div>
           <div class="mb-3">
             <p class="text-sm font-medium text-gray-500">Établissement</p>
-            <p class="font-semibold">Université de Kinshasa</p>
+            <p class="font-semibold">{{ candidacy?.universite_institut_sup }}</p>
           </div>
           <div class="mb-3">
             <p class="text-sm font-medium text-gray-500">Spécialisation</p>
@@ -117,7 +121,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
-              <span class="text-sm font-medium">CV_JeanBaptiste_MUKENDI.pdf</span>
+              <span class="text-sm font-medium">{{ candidacy?.diplome_detat }}</span>
             </div>
             <button (click)="getDocument()" class="text-blue-500 cursor-pointer hover:text-blue-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"

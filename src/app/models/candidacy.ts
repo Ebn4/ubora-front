@@ -44,4 +44,5 @@ export interface Candidacy {
   city_count: number
   preselection_count: number
   selection_count: number
+  candidacy_preselection: boolean
 }
