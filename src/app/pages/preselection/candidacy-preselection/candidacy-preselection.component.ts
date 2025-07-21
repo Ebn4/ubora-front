@@ -122,7 +122,11 @@ export class CandidacyPreselectionComponent {
     this.preselectionService.preselectionCandidacy(data).subscribe({
       next: (res) => {
         this.preselectionCheck = true
-        this.goToNext();
+        if (this.currentIndex < this.candidaciesList.length - 1) {
+          this.goToNext();
+        }else{
+          this.router.navigate(['/evaluator-candidacies']);
+        }
       },
       error: (err) => {
         console.error('Erreur lors de la préselection', err);
