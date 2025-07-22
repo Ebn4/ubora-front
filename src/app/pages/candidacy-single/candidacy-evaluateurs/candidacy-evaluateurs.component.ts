@@ -1,4 +1,3 @@
-import {NgForOf, NgIf} from '@angular/common';
 import {Component, inject, Input, signal} from '@angular/core';
 import {Evaluator} from '../../../models/evaluator.model';
 import {CandidacyService} from '../../../services/candidacy.service';
@@ -9,7 +8,6 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
   selector: 'app-candidacy-evaluateurs',
   imports: [
     FormsModule,
-    NgForOf,
     RouterLink
   ],
   templateUrl: './candidacy-evaluateurs.component.html',
