@@ -1,14 +1,15 @@
-import { inject, Injectable } from '@angular/core';
-import { Candidacy } from '../models/candidacy';
-import { CandidaciesDispatchEvaluator } from '../models/candidacies-dispatch-evaluator';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { BASE_URL } from '../app.tokens';
-import { CandidateEvaluation } from '../models/candidate-evaluation';
-import { ResponseInterface, ResponseInterfaceE } from '../models/response.model';
-import { Interview } from '../models/interview';
-import { User } from '../models/user.model';
-import { UserService } from './user.service';
-import { switchMap } from 'rxjs/operators';
+import {inject, Injectable} from '@angular/core';
+import {Candidacy} from '../models/candidacy';
+import {CandidaciesDispatchEvaluator} from '../models/candidacies-dispatch-evaluator';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {BASE_URL} from '../app.tokens';
+import {CandidateEvaluation} from '../models/candidate-evaluation';
+import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
+import {Interview} from '../models/interview';
+import {User} from '../models/user.model';
+import {UserService} from './user.service';
+import {switchMap} from 'rxjs/operators';
+import {Evaluator} from '../models/evaluator.model';
 
 @Injectable({
   providedIn: 'root',
@@ -42,7 +43,7 @@ export class CandidacyService {
 
     return this.http.get<ResponseInterfaceE<Candidacy[]>>(
       `${this.baseUrl}/candidacies`,
-      { params }
+      {params}
     );
   }
 
@@ -57,7 +58,7 @@ export class CandidacyService {
 
         return this.http.get<ResponseInterface<Candidacy>>(
           `${this.baseUrl}/candidacies/${candidacyId}`,
-          { params }
+          {params}
         );
       })
     );
@@ -84,7 +85,7 @@ export class CandidacyService {
 
     return this.http.get<ResponseInterface<CandidaciesDispatchEvaluator[]>>(
       `${this.baseUrl}/CandidaciesDispatchEvaluator`,
-      { params }
+      {params}
     );
   }
 
@@ -102,6 +103,12 @@ export class CandidacyService {
   candidateHasSelected(candidateId: number) {
     return this.http.get<{ hasSelection: boolean }>(
       `${this.baseUrl}/candidates/${candidateId}/has-selection`
+    );
+  }
+
+  getCandidateEvaluators(candidateId: number) {
+    return this.http.get<ResponseInterface<Evaluator[]>>(
+      `${this.baseUrl}/candidates/${candidateId}/evaluators`
     );
   }
 }
