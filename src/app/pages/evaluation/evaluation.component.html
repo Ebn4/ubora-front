@@ -4,8 +4,8 @@
 <!--    @for (criteria of criterias(); track criteria.id) {-->
 
     @for (c of crv.controls; track $index) {
-      <div class="mb-4" [formGroupName]="$index" >
-        <label class="block text-gray-700 font-medium mb-2" [for]="criterias().at($index)?.name">{{ criterias().at($index)?.name }}</label>
+      <div class="mb-4" [formGroupName]="$index">
+        <label class="block text-gray-700 font-medium mb-2" [for]="criterias().at($index)?.name">{{ criterias().at($index)?.name }} (sur {{criterias().at($index)?.ponderation}})</label>
 
         <input type="number" formControlName="result" [id]="criterias().at($index)?.name"
                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"/>
