@@ -48,7 +48,11 @@
         </select>
       </div>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 mr-0.5">
+      <span class="mr-2">Période</span>
+      <select id="periodId" [(ngModel)]="periodId" (change)="onPeriodSelect()" class="border rounded px-3 py-1">
+        <option *ngFor="let period of periods" [value]="period.id">{{ period.year }}</option>
+      </select>
       <span class="mr-2">Afficher</span>
       <select id="per_page" [(ngModel)]="per_page" (change)="paginationChange()" class="border rounded px-2 py-1">
         @for(option of countPerPageList; track option) {
@@ -94,7 +98,8 @@
             </span>
           </td>
           <td class="py-2 px-4">
-            <a (click)="goToCandidacyDetails(candidacies)" [routerLink]="['/evaluator-candidacies-single', candidacie.id, candidacie.pivot.id]"
+            <a (click)="goToCandidacyDetails(candidacies)"
+              [routerLink]="['/evaluator-candidacies-single', candidacie.id, candidacie.pivot.id]"
               class="text-blue-500">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
