@@ -42,7 +42,7 @@ export class CandidacyService {
 
     return this.http.get<ResponseInterfaceE<Candidacy[]>>(
       `${this.baseUrl}/candidacies`,
-      {params}
+      { params }
     );
   }
 
@@ -64,6 +64,7 @@ export class CandidacyService {
   }
 
   CandidaciesDispatchEvaluator(
+    periodId: number,
     page: number = 1,
     search: string = '',
     ville: string = '',
@@ -79,10 +80,11 @@ export class CandidacyService {
     }
 
     if (evaluateurId != null) params = params.set('evaluateurId', evaluateurId);
+    if (periodId != null) params = params.set('periodId', periodId);
 
     return this.http.get<ResponseInterface<CandidaciesDispatchEvaluator[]>>(
       `${this.baseUrl}/CandidaciesDispatchEvaluator`,
-      {params}
+      { params }
     );
   }
 

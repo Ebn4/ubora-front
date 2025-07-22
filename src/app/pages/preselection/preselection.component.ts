@@ -10,6 +10,7 @@ import { CandidaciesDispatchEvaluator } from '../../models/candidacies-dispatch-
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
+import { PeriodService } from '../../services/period.service';
 
 @Component({
   selector: 'app-preselection',
@@ -20,19 +21,37 @@ export class PreselectionComponent extends BaseListWidget {
   showModal = false;
 
   candidacies: CandidaciesDispatchEvaluator[] = [];
+  periods: Period[] = [];
   @Input() period?: Period;
   evaluateurId!: number;
-  periodId: number = 4;
+  periodId!: number;
   user!: User
   ville: string = '';
   route: ActivatedRoute = inject(ActivatedRoute);
   candidacyService: CandidacyService = inject(CandidacyService);
+  periodService: PeriodService = inject(PeriodService);
   userService: UserService = inject(UserService);
   totalCandidats: number = 0;
   candidatsEvalues: number = 0;
   constructor(
     private preselectionService: PreselectionService) {
     super();
+  }
+
+  ngOnInit(): void {
+    this.getUser()
+    this.periodService.getYearsPeriod().subscribe({
+      next: (periods) => {
+        this.periods = periods;
+        if (!this.periodId && this.periods.length > 0) {
+          this.periodId = this.periods[0].id;
+          this.loadData()
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching periods:', error);
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -56,17 +75,24 @@ export class PreselectionComponent extends BaseListWidget {
     });
   }
 
-  ngOnInit(): void {
-    this.getUser()
-  }
-
   goToCandidacyDetails(candidacie: any) {
     this.preselectionService.setCandidacy(candidacie);
   }
 
+  onPeriodSelect() {
+    if (this.periodId) {
+      this.loadData();
+    }
+  }
+
   override loadData() {
+    if (!this.periodId) {
+      return;
+    }
+
     this.candidacyService
       .CandidaciesDispatchEvaluator(
+        this.periodId,
         this.currentPage,
         this.search,
         this.ville,
