@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, inject, Input, OnInit, signal} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, inject, Input, OnInit, Output, signal} from '@angular/core';
 import {CriteriaService} from '../../services/criteria.service';
 import {Criteria} from '../../models/criteria';
 import {CandidacyService} from '../../services/candidacy.service';
@@ -28,6 +28,8 @@ export class EvaluationComponent implements OnInit {
 
   @Input() periodId: number | null = null;
   @Input() interviewId: number | null = null;
+
+  @Output() onEvaluated = new EventEmitter()
 
   snackBar = inject(MatSnackBar)
   criterias = signal<Criteria[]>([]);
@@ -94,11 +96,12 @@ export class EvaluationComponent implements OnInit {
           }
           if (value.data) {
             this.showSnackbar('evaluation effectuer')
+            this.onEvaluated.emit()
           }
         },
         error: err => {
           if (err.error.errors) {
-            this.snackBar.open(err.error.errors, 'Fermer', {
+            this.snackBar.open(err.error.errors[0], 'Fermer', {
               duration: 3000
             })
           }
