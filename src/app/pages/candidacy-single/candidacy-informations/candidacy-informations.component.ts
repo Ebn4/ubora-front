@@ -87,4 +87,9 @@ export class CandidacyInformationsComponent extends BaseListWidget {
       })
   }
 
+  onEvaluated() {
+    this.loadData()
+    this.candidateHasSelected.set(true)
+  }
+
 }
