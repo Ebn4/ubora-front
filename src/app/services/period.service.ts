@@ -1,11 +1,11 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Period } from '../models/period';
-import { Observable } from 'rxjs';
-import { BASE_URL } from '../app.tokens';
-import { map } from 'rxjs/operators';
-import { LocalStorageService } from './local-storage.service';
-import { ResponseInterface, ResponseInterfaceE } from '../models/response.model';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {Period} from '../models/period';
+import {Observable} from 'rxjs';
+import {BASE_URL} from '../app.tokens';
+import {map} from 'rxjs/operators';
+import {LocalStorageService} from './local-storage.service';
+import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +19,8 @@ export class PeriodService {
   http = inject(HttpClient);
   baseUrl = inject(BASE_URL);
 
-  constructor() {}
+  constructor() {
+  }
 
   createPeriod(data: { year: number }) {
     return this.http.post(`${this.baseUrl}/period`, data);
@@ -48,11 +49,11 @@ export class PeriodService {
 
     return this.http.get<ResponseInterfaceE<Period[]>>(
       `${this.baseUrl}/period`,
-      { params }
+      {params}
     );
   }
 
-  getYearsPeriod(){
+  getYearsPeriod() {
     return this.http.get<Period[]>(
       `${this.baseUrl}/getYearsPeriod`
     );
@@ -60,5 +61,11 @@ export class PeriodService {
 
   changePeriodStatus(id: number, data: { status: string }) {
     return this.http.put(`${this.baseUrl}/periods/${id}/status`, data);
+  }
+
+  periodHasEvaluators(id: number) {
+    return this.http.get<{
+      hasEvaluator: boolean
+    }>(`${this.baseUrl}/periods/${id}/has-evaluators`);
   }
 }
