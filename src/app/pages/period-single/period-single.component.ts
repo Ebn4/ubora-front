@@ -20,6 +20,8 @@ import { CriteriaAttachSelectionComponent } from './criteria-attach-selection/cr
 import { ImportFileCandidaciesComponent } from '../import-file-candidacies/import-file-candidacies.component';
 import { PeriodStatus } from '../../enum/period-status.enum';
 import { PreselectionService } from '../../services/preselection.service';
+import { ListeningChangeService } from '../../services/listening-change.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-period-single',
@@ -51,11 +53,11 @@ export class PeriodSingleComponent {
   dispatchStatus = signal(PeriodStatus.STATUS_DISPATCH);
   preselectionStatus = signal(PeriodStatus.STATUS_PRESELECTION);
   interviewStatus = signal(PeriodStatus.STATUS_INTERVIEW);
-
+  private subscription!: Subscription;
 
   event = false;
 
-  constructor(private router: Router, private _matDialog: MatDialog) { }
+  constructor(private router: Router, private _matDialog: MatDialog, private modalService: ListeningChangeService) { }
 
   toggleDropdown() {
     this.isDropdownVisible = !this.isDropdownVisible;
@@ -77,6 +79,12 @@ export class PeriodSingleComponent {
 
   ngOnInit() {
     this.loadData()
+    this.subscription = this.modalService.modalClosed$.subscribe((modalClosed) => {
+      if (modalClosed) {
+        this.loadData();
+        this.modalService.resetNotification();
+      }
+    });
   }
 
   loadData() {
@@ -130,7 +138,7 @@ export class PeriodSingleComponent {
     this.selectedTab = this.getTabName(index);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: {tab: this.selectedTab},
+      queryParams: { tab: this.selectedTab },
       queryParamsHandling: 'merge',
     });
   }
@@ -143,7 +151,7 @@ export class PeriodSingleComponent {
 
   sendEmails() {
     this.preselectionService.sendDispatchNotification().subscribe({
-      next: res => {},
+      next: res => { },
       error: err => console.error(err)
     });
   }
@@ -207,7 +215,7 @@ export class PeriodSingleComponent {
 
   validateDispatch() {
     this.periodService
-      .changePeriodStatus(this.periodId, {status: PeriodStatus.STATUS_PRESELECTION})
+      .changePeriodStatus(this.periodId, { status: PeriodStatus.STATUS_PRESELECTION })
       .subscribe({
         next: value => {
           this.loadData()

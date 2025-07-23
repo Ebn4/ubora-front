@@ -10,6 +10,8 @@ import { CriteriaEditComponent } from './criteria-edit/criteria-edit.component';
 import { CriteriaConfirmComponent } from './criteria-confirm/criteria-confirm.component';
 import { Period } from '../../models/period';
 import { ActivatedRoute } from '@angular/router';
+import { ListeningChangeService } from '../../services/listening-change.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-criteria',
@@ -24,12 +26,22 @@ export class CriteriaComponent extends BaseListWidget {
   criteriaService: CriteriaService = inject(CriteriaService);
   route: ActivatedRoute = inject(ActivatedRoute);
   periodId!: number;
-  constructor(private _matDialog: MatDialog) {
+  private subscription!: Subscription;
+
+
+  constructor(private _matDialog: MatDialog, private modalService: ListeningChangeService) {
     super();
   }
 
   ngOnInit(): void {
     this.loadData();
+
+    this.subscription = this.modalService.modalClosed$.subscribe((modalClosed) => {
+      if (modalClosed) {
+        this.loadData();
+        this.modalService.resetNotification();
+      }
+    });
   }
 
   changeStatus(id: number) {
@@ -41,7 +53,7 @@ export class CriteriaComponent extends BaseListWidget {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.criteriaService.deleteCriteria(id).subscribe({
-          next: () =>{
+          next: () => {
             this.loadData();
           }
         });

@@ -59,6 +59,12 @@ export class PeriodService {
     );
   }
 
+  getYearsPeriod(){
+    return this.http.get<Period[]>(
+      `${this.baseUrl}/getYearsPeriod`
+    );
+  }
+
   changePeriodStatus(id: number, data: { status: string }) {
     return this.http.put(`${this.baseUrl}/periods/${id}/status`, data);
   }

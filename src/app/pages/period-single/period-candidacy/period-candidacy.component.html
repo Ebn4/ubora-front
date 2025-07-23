@@ -3,39 +3,25 @@
   <div class="flex flex-col md:flex-row justify-between items-center mb-5">
     <h2 class="text-2xl font-bold mb-4 md:mb-0">Gestion des Candidats</h2>
     @if (canValidatePreselection() && period?.status == validatedPreselectionPeriodStatus) {
-      <button
-        (click)="validatePreselection()"
-        class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300"
-      >
-        Valider présélection
-      </button>
+    <button (click)="validatePreselection()"
+      class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300">
+      Valider présélection
+    </button>
     }
   </div>
 
   <div class="flex items-center justify-between mb-3">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div>
-        <label for="search" class="block text-gray-700 font-medium"
-        >Rechercher</label
-        >
-        <input
-          type="text"
-          id="search"
-          [(ngModel)]="search"
-          (input)="onSearchChange()"
+        <label for="search" class="block text-gray-700 font-medium">Rechercher</label>
+        <input type="text" id="search" [(ngModel)]="search" (input)="onSearchChange()"
           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           placeholder="recherche..." />
       </div>
       <div>
-        <label for="ville" class="block text-gray-700 font-medium mb-1"
-        >Filtrer par ville</label
-        >
-        <select
-          id="ville"
-          [(ngModel)]="ville"
-          (change)="onSearchChange()"
-          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-        >
+        <label for="ville" class="block text-gray-700 font-medium mb-1">Filtrer par ville</label>
+        <select id="ville" [(ngModel)]="ville" (change)="onSearchChange()"
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
           <option value="">Toutes les villes</option>
           <option value="kinshasa">kinshasa</option>
           <option value="Test">Test</option>
@@ -58,9 +44,9 @@
       <span class="mr-2">Afficher</span>
       <select id="per_page" [(ngModel)]="per_page" (change)="paginationChange()" class="border rounded px-2 py-1">
         @for (option of countPerPageList; track option) {
-          <option [value]="option.value" [selected]="option.value === per_page">
-            {{ option.label }}
-          </option>
+        <option [value]="option.value" [selected]="option.value === per_page">
+          {{ option.label }}
+        </option>
         }
       </select>
     </div>
@@ -96,9 +82,9 @@
       <thead>
         <tr class="bg-gray-800 text-white">
           <th class="py-2 px-4 text-left">DATE SOUMISSION</th>
-          <th class="py-2 px-4 text-left">REFERENCE</th>
           <th class="py-2 px-4 text-left">NOMS</th>
           <th class="py-2 px-4 text-left">VILLE</th>
+          <th class="py-2 px-4 text-left">GENRE</th>
           <th class="py-2 px-4 text-left">PRESELECTION</th>
           <th class="py-2 px-4 text-left">NBR D'EVALUATIONS</th>
           <th class="py-2 px-4 text-left">DETAILS</th>
@@ -107,12 +93,12 @@
       <tbody>
         <tr *ngFor="let candidacie of candidacies" class="border-b hover:bg-gray-50">
           <td class="py-2 px-4">{{ candidacie.form_submited_at }}</td>
-          <td class="py-2 px-4">{{ candidacie.id }}</td>
           <td class="py-2 px-4">
             {{ candidacie.etn_nom }} {{ candidacie.etn_postnom }}
             {{ candidacie.etn_prenom }}
           </td>
           <td class="py-2 px-4">{{ candidacie.ville }}</td>
+          <td class="py-2 px-4">{{ candidacie.sexe }}</td>
           <td class="py-2 px-4">
             <span class="flex items-center">
               En attente
@@ -142,7 +128,7 @@
     <div class="flex">
       <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"
         class="px-3 py-1 border border-gray-300 rounded-l bg-gray-100 hover:bg-gray-200">
-        Précédente
+        Précédent
       </button>
       <span *ngFor="let page of [].constructor(lastPage); let i = index">
         <button (click)="changePage(i + 1)" class="px-3 py-1 border-t border-b border-gray-300 bg-primary text-white"
@@ -155,7 +141,7 @@
       </span>
       <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === lastPage"
         class="px-3 py-1 border border-gray-300 rounded-r bg-gray-100 hover:bg-gray-200">
-        Suivante
+        Suivant
       </button>
     </div>
   </div>
