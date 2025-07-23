@@ -13,6 +13,8 @@ import {
 } from './pages/preselection/candidacy-preselection/candidacy-preselection.component';
 import {HasAdminRoleGuard} from './middlewares/has-admin-role.guard';
 import {UsersComponent} from './pages/users/users.component';
+import {SelectionsComponent} from './pages/selections/selections.component';
+import {CandidacySelectionComponent} from './pages/selections/candidacy-selection/candidacy-selection.component';
 
 export const routes: Routes = [
   {
@@ -31,6 +33,8 @@ export const routes: Routes = [
       {path: 'period', component: PeriodComponent, canActivate: [HasAdminRoleGuard]},
       {path: 'period-single/:id', component: PeriodSingleComponent, canActivate: [HasAdminRoleGuard]},
       {path: 'criteria', component: CriteriaComponent, canActivate: [HasAdminRoleGuard]},
+      {path: 'selections', component: SelectionsComponent},
+      {path: 'selections/candidates/:id', component: CandidacySelectionComponent},
       {path: 'candidacy', component: PeriodCandidacyComponent},
       {path: 'candidacy-single/:id', component: CandidacySingleComponent},
       {path: 'evaluator-candidacies', component: PreselectionComponent},

@@ -111,4 +111,19 @@ export class CandidacyService {
       `${this.baseUrl}/candidates/${candidateId}/evaluators`
     );
   }
+
+  getPreselectedCandidates(page: number = 1, search: string = '', per_page: number) {
+    let params = new HttpParams()
+      .set('per_page', per_page)
+      .set('page', page)
+
+    if (search != '') {
+      params = params.set('search', search)
+    }
+
+    return this.http.get<ResponseInterface<Candidacy[]>>(
+      `${this.baseUrl}/candidates/interviews`,
+      {params}
+    );
+  }
 }
