@@ -15,6 +15,7 @@ import {
 import { NgFor, NgIf } from '@angular/common';
 import { CriteriaPeriod } from '../../../models/criteria-period';
 import { PeriodStatus } from '../../../enum/period-status.enum';
+import { ListeningChangeService } from '../../../services/listening-change.service';
 
 @Component({
   selector: 'app-criteria-attach-selection',
@@ -32,6 +33,7 @@ export class CriteriaAttachSelectionComponent extends BaseListWidget {
   constructor(
     public dialogRef: MatDialogRef<CriteriaAttachSelectionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
+    private modalService: ListeningChangeService
   ) {
     super();
     this.periodId = data.periodId;
@@ -93,7 +95,7 @@ export class CriteriaAttachSelectionComponent extends BaseListWidget {
       })
       .subscribe({
         next: () => {
-          this.dialogRef.close(true);
+          this.closeModal()
         },
         error: (error) => {
           console.error('Error attaching criteria:', error);
@@ -103,5 +105,6 @@ export class CriteriaAttachSelectionComponent extends BaseListWidget {
 
   closeModal() {
     this.dialogRef.close();
+    this.modalService.notifyModalClosed();
   }
 }
