@@ -43,9 +43,19 @@ export interface CandidaciesDispatchEvaluator {
   candidaciesPreselection: number
   statusCandidacy: boolean
   totalCandidats: number;
-  pivot: {
-    evaluator_id: number;
-    candidacy_id: number;
-    id: number;
-  };
+  dispatch: [
+    {
+      id: number,
+      user_id: number,
+      type: string,
+      created_at: string,
+      updated_at: string,
+      period_id: 4,
+      pivot: {
+        candidacy_id: number,
+        evaluator_id: number,
+        id: number
+      }
+    },
+  ]
 }
