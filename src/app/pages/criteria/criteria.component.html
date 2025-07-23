@@ -87,6 +87,7 @@
           <tr class="bg-gray-800 text-white">
             <th class="py-2 px-4 text-left">Nom du critère</th>
             <th class="py-2 px-4 text-left">Description</th>
+            <th *ngIf="periodId != 0" class="py-2 px-4 text-left">Pondération</th>
             <th class="py-2 px-4 text-left">Statut</th>
             <th *ngIf="periodId == 0" class="py-2 px-4 text-left">Actions</th>
           </tr>
@@ -98,6 +99,7 @@
           >
             <td class="py-2 px-4">{{ criteria.name }}</td>
             <td class="py-2 px-4">{{ criteria.description }}</td>
+            <td *ngIf="periodId != 0" class="py-2 px-4">{{ criteria.ponderation }}</td>
             <td class="py-2 px-4">
               <span
                 class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs"
@@ -161,7 +163,7 @@
           [disabled]="currentPage === 1"
           class="px-3 py-1 border border-gray-300 rounded-l bg-gray-100 hover:bg-gray-200"
         >
-          Précédente
+          Précédent
         </button>
         <span *ngFor="let page of [].constructor(lastPage); let i = index">
           <button
@@ -183,7 +185,7 @@
           [disabled]="currentPage === lastPage"
           class="px-3 py-1 border border-gray-300 rounded-r bg-gray-100 hover:bg-gray-200"
         >
-          Suivante
+          Suivant
         </button>
       </div>
     </div>
