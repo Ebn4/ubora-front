@@ -5,6 +5,7 @@ import {filter} from 'rxjs';
 import {AuthServices} from '../../../services/auth.service';
 import {LocalStorageService} from '../../../services/local-storage.service';
 import {UserService} from '../../../services/user.service';
+import {User} from '../../../models/user.model';
 
 @Component({
   selector: 'app-sidebar',
@@ -16,14 +17,16 @@ export class SidebarComponent {
   router: Router = inject(Router);
   authService = inject(AuthServices);
   userService = inject(UserService);
+  localStorageService = inject(LocalStorageService);
 
   hasAdminRole = signal(false)
-  localStorageService = inject(LocalStorageService);
+  user = signal<User | null>(null)
 
   ngOnInit() {
     const url = this.router.url;
     this.updateActiveTab(url);
     this.checkIfUserHasAdminRole()
+    this.getCurrentUser()
 
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
@@ -81,5 +84,17 @@ export class SidebarComponent {
     } else {
       this.setActiveTab('criteria');
     }
+  }
+
+  getCurrentUser() {
+    this.userService.getUser()
+      .subscribe({
+        next: value => {
+          this.user.set(value)
+        },
+        error: err => {
+          console.error(err)
+        }
+      })
   }
 }
