@@ -65,7 +65,7 @@ export class PeriodService {
 
   periodHasEvaluators(id: number) {
     return this.http.get<{
-      hasEvaluator: boolean
+      hasEvaluators: boolean
     }>(`${this.baseUrl}/periods/${id}/has-evaluators`);
   }
 }

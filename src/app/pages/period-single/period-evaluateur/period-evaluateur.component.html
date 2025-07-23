@@ -4,7 +4,9 @@
     <div class="flex items-center gap-4">
       @if (period?.status == dispatchStatus() && (candidatesCount != null && candidatesCount > 0)) {
         <button (click)="canDispatch() ? onDispatchEvaluator() : onCancelDispatch()"
-                class="bg-primary hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300">
+                [disabled]="!isDisableDispatchButton()"
+                [ngClass]="{'hover:bg-orange-600': isDisableDispatchButton()}"
+                class="bg-primary text-white font-bold py-2 px-4 rounded-lg flex items-center transition duration-300">
           {{ canDispatch() ? 'Dispatcher' : 'Supprimer Dispatche' }}
         </button>
       }

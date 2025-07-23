@@ -6,10 +6,11 @@ import {Evaluator} from '../../../models/evaluator.model';
 import {RouterLink} from '@angular/router';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BaseListWidget} from '../../../widgets/base-list-widget';
-import {NgForOf} from '@angular/common';
+import {NgClass, NgForOf} from '@angular/common';
 import {Period} from '../../../models/period';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {PeriodStatus} from '../../../enum/period-status.enum';
+import {PeriodService} from '../../../services/period.service';
 
 @Component({
   selector: 'app-period-evaluateur',
@@ -17,7 +18,8 @@ import {PeriodStatus} from '../../../enum/period-status.enum';
     RouterLink,
     FormsModule,
     NgForOf,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgClass
   ],
   templateUrl: './period-evaluateur.component.html',
   standalone: true
@@ -25,16 +27,17 @@ import {PeriodStatus} from '../../../enum/period-status.enum';
 export class PeriodEvaluateurComponent extends BaseListWidget implements OnChanges {
 
   private _snackBar = inject(MatSnackBar);
-  canDispatch = signal(true)
+  readonly dialog = inject(MatDialog);
+
   @Input() candidatesCount? = 0;
   @Input() period?: Period
   @Output() canValidateDispatch = new EventEmitter<boolean>()
-  readonly dialog = inject(MatDialog);
 
-  evaluators = signal<Evaluator[]>([])
   perPage = signal(10)
+  canDispatch = signal(true)
+  isDisableDispatchButton = signal(false)
+  evaluators = signal<Evaluator[]>([])
   dispatchStatus = signal(PeriodStatus.STATUS_DISPATCH);
-  typeForm = new FormControl('')
   evaluatorTypes = signal<{ name: string, type: string }[]>(
     [
       {
@@ -47,12 +50,15 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
     ]
   )
 
+  typeForm = new FormControl('')
+
   evaluatorService = inject(EvaluatorService)
+  periodService = inject(PeriodService)
 
   ngOnInit() {
-    console.log('once')
     this.getEvaluators()
     this.isDispatchable()
+    this.periodHasEvaluators()
     this.typeForm.valueChanges.subscribe(value => {
       this.loadData()
     })
@@ -69,6 +75,7 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
   override loadData() {
     this.getEvaluators()
     this.isDispatchable();
+    this.periodHasEvaluators()
   }
 
   onOpenDialog() {
@@ -82,20 +89,26 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
   }
 
   onDispatchEvaluator() {
-    if (this.period?.id != null) {
-      this.evaluatorService
-        .dispatchEvaluators(this.period.id.toString())
-        .subscribe({
-          next: value => {
-            this.isDispatchable()
-            this._snackBar.open('Candidats dispatchés', 'fermer', {
-              duration: 3000
-            });
-          },
-          error: err => {
-            console.log(err)
-          }
-        })
+    if (this.isDisableDispatchButton()) {
+      if (this.period?.id != null) {
+        this.evaluatorService
+          .dispatchEvaluators(this.period.id.toString())
+          .subscribe({
+            next: value => {
+              this.isDispatchable()
+              this._snackBar.open('Candidats dispatchés', 'fermer', {
+                duration: 3000
+              });
+            },
+            error: err => {
+              console.log(err)
+            }
+          })
+      }
+    } else {
+      this._snackBar.open("Vous ne pouvez pas dispatcher car vous n'avez pas encore ajouter des evaluateurs de PRESELECTION pour cette periode", 'fermer', {
+        duration: 3000
+      });
     }
   }
 
@@ -156,6 +169,26 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
         }
       })
 
+
+  }
+
+  periodHasEvaluators() {
+    if (this.period?.id != null) {
+
+      this.periodService
+        .periodHasEvaluators(this.period.id)
+        .subscribe({
+          next: value => {
+            console.log(value.hasEvaluators)
+            this.isDisableDispatchButton.set(value.hasEvaluators)
+          },
+          error: err => {
+            console.log(err)
+          }
+        })
+
+      console.log(this.isDisableDispatchButton())
+    }
 
   }
 }
