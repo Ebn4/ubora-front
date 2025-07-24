@@ -30,7 +30,7 @@ export class CandidacyPreselectionComponent {
   selectedCriteriaIds: any[] = [];
   criteriaOng: any;
   criteriaService: CriteriaService = inject(CriteriaService);
-  periodId: number = 4;
+  periodId!: number;
   type: string = PeriodStatus.STATUS_PRESELECTION;
   search: string = '';
 
@@ -78,7 +78,7 @@ export class CandidacyPreselectionComponent {
   updateRouteAndLoad() {
     const candidacy = this.candidaciesList[this.currentIndex];
     this.router.navigate(
-      ['/evaluator-candidacies-single', candidacy.id, candidacy.pivot?.id || 0],
+      ['/evaluator-candidacies-single', candidacy.id, candidacy.dispatch[0].pivot?.id || 0, this.periodId],
       { replaceUrl: true }
     );
     this.loadDataCandidacy();
@@ -86,15 +86,17 @@ export class CandidacyPreselectionComponent {
   }
 
   loadDataCriteria() {
+    this.periodId = Number(this.route.snapshot.paramMap.get('periodId'));
+    const candidacy = this.candidaciesList[this.currentIndex];
     this.criteriaService
-      .getPeriodCriterias(this.periodId, this.search)
+      .getPeriodCriterias(this.periodId, this.search, candidacy.dispatch[0].pivot?.id)
       .subscribe({
         next: (response) => {
           this.criterias = response.data
             .filter((c) => c.type === "PRESELECTION")
             .map((c) => ({
               ...c,
-              isChecked: false,
+              isChecked: c.valeur === 1 ? true : false,
             }));
         },
         error: (error) => {
