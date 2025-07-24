@@ -39,13 +39,12 @@ export class PreselectionComponent extends BaseListWidget {
   }
 
   ngOnInit(): void {
-    this.getUser()
     this.periodService.getYearsPeriod().subscribe({
       next: (periods) => {
         this.periods = periods;
         if (!this.periodId && this.periods.length > 0) {
           this.periodId = this.periods[0].id;
-          this.loadData()
+          this.getUser()
         }
       },
       error: (error) => {
@@ -86,10 +85,6 @@ export class PreselectionComponent extends BaseListWidget {
   }
 
   override loadData() {
-    if (!this.periodId) {
-      return;
-    }
-
     this.candidacyService
       .CandidaciesDispatchEvaluator(
         this.periodId,
@@ -104,7 +99,6 @@ export class PreselectionComponent extends BaseListWidget {
           this.candidacies = response.data;
           this.currentPage = response.current_page;
           this.lastPage = response.last_page;
-
           if (this.candidacies.length > 0) {
             this.totalCandidats = this.candidacies[0].totalCandidats;
             this.candidatsEvalues = this.candidacies[0].candidaciesPreselection;
