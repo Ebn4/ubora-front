@@ -94,17 +94,17 @@
         <h5 class="font-bold mb-3">Diplôme et Formation</h5>
         <div class="bg-gray-50 p-4 rounded-lg">
           <div class="mb-3">
-            <p class="text-sm font-medium text-gray-500">Niveau d'études</p>
-            <p class="font-semibold">Master en Informatique</p>
+            <p class="text-sm font-medium text-gray-500">Section</p>
+            <p class="font-semibold">{{ candidacy?.section_option }}</p>
           </div>
           <div class="mb-3">
             <p class="text-sm font-medium text-gray-500">Établissement</p>
             <p class="font-semibold">{{ candidacy?.universite_institut_sup }}</p>
           </div>
           <div class="mb-3">
-            <p class="text-sm font-medium text-gray-500">Spécialisation</p>
+            <p class="text-sm font-medium text-gray-500">Nationalité</p>
             <p class="font-semibold">
-              Intelligence Artificielle et Machine Learning
+              {{ candidacy?.nationalite }}
             </p>
           </div>
         </div>
@@ -121,9 +121,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
-              <span class="text-sm font-medium">{{ candidacy?.diplome_detat }}</span>
+              <span class="text-sm font-medium">Diplôme d'Etat</span>
             </div>
-            <button (click)="getDocument()" class="text-blue-500 cursor-pointer hover:text-blue-700">
+            <button (click)="getDocument(candidacy?.diplome_detat)" class="text-blue-500 cursor-pointer hover:text-blue-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -140,9 +140,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
-              <span class="text-sm font-medium">Diplome_Master_Informatique.jpg</span>
+              <span class="text-sm font-medium">CV</span>
             </div>
-            <button class="text-blue-500 hover:text-blue-700">
+            <button (click)="getDocument(candidacy?.cv)" class="text-blue-500 hover:text-blue-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -159,9 +159,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
-              <span class="text-sm font-medium">Releve_Notes_Master.pdf</span>
+              <span class="text-sm font-medium">Attestation</span>
             </div>
-            <button class="text-blue-500 hover:text-blue-700">
+            <button (click)="getDocument(candidacy?.attestation_de_reussite_derniere_annee)" class="text-blue-500 hover:text-blue-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
