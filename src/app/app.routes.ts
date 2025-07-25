@@ -38,7 +38,7 @@ export const routes: Routes = [
       {path: 'candidacy', component: PeriodCandidacyComponent},
       {path: 'candidacy-single/:id', component: CandidacySingleComponent},
       {path: 'evaluator-candidacies', component: PreselectionComponent},
-      {path: 'evaluator-candidacies-single/:id/:dispatchId/:periodId', component: CandidacyPreselectionComponent}
+      {path: 'evaluator-candidacies-single/:id/:dispatchId/:periodId/:evaluateurId', component: CandidacyPreselectionComponent}
     ]
   }
 ];
