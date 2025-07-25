@@ -31,6 +31,7 @@ export class CandidacyPreselectionComponent {
   criteriaOng: any;
   criteriaService: CriteriaService = inject(CriteriaService);
   periodId!: number;
+  evaluateurId!: number;
   type: string = PeriodStatus.STATUS_PRESELECTION;
   search: string = '';
 
@@ -78,7 +79,7 @@ export class CandidacyPreselectionComponent {
   updateRouteAndLoad() {
     const candidacy = this.candidaciesList[this.currentIndex];
     this.router.navigate(
-      ['/evaluator-candidacies-single', candidacy.id, candidacy.dispatch[0].pivot?.id || 0, this.periodId],
+      ['/evaluator-candidacies-single', candidacy.id, candidacy.dispatch[0].pivot?.id || 0, this.periodId, this.evaluateurId],
       { replaceUrl: true }
     );
     this.loadDataCandidacy();
@@ -87,9 +88,10 @@ export class CandidacyPreselectionComponent {
 
   loadDataCriteria() {
     this.periodId = Number(this.route.snapshot.paramMap.get('periodId'));
+    this.evaluateurId = Number(this.route.snapshot.paramMap.get('evaluateurId'));
     const candidacy = this.candidaciesList[this.currentIndex];
     this.criteriaService
-      .getPeriodCriterias(this.periodId, this.search, candidacy.dispatch[0].pivot?.id)
+      .getPeriodCriterias(this.periodId, this.search, candidacy.dispatch[0].pivot?.id, this.evaluateurId)
       .subscribe({
         next: (response) => {
           this.criterias = response.data
@@ -136,8 +138,9 @@ export class CandidacyPreselectionComponent {
     });
   }
 
-  getDocument() {
-    this.importService.getDocument('30 DBA.docx').subscribe((file) => {
+  getDocument(fileName: any) {
+    const actualFileName = fileName || '30 DBA.docx';
+    this.importService.getDocument(actualFileName).subscribe((file) => {
       const blob = new Blob([file], { type: file.type });
       const url = window.URL.createObjectURL(blob);
       window.open(url);

@@ -73,12 +73,16 @@ export class CriteriaService {
   getPeriodCriterias(
     periodId: number,
     search: string,
-    dispatchPreselectionsId: number | undefined = undefined
+    dispatchPreselectionsId: number | undefined = undefined,
+    evaluateurId: number | undefined = undefined
   ) {
     let params = new HttpParams().set('period_id', periodId);
     if (search != null && search != '') params = params.set('search', search);
     if (dispatchPreselectionsId != null && dispatchPreselectionsId != 0) {
       params = params.set('dispatch_preselections_id', dispatchPreselectionsId);
+    }
+    if (evaluateurId != null && evaluateurId != 0) {
+      params = params.set('evaluateurId', evaluateurId);
     }
 
     return this.http.get<ResponseInterface<CriteriaPeriod[]>>(
