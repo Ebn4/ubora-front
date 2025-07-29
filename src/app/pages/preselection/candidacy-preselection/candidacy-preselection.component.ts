@@ -18,6 +18,7 @@ export class CandidacyPreselectionComponent {
   candidacyId!: number;
   dispatch_preselections_id!: number;
   preselectionCheck = false
+  period_status: string = "PRESELECTION"
 
   candidacy?: Candidacy;
   candidacyService: CandidacyService = inject(CandidacyService);
@@ -54,6 +55,8 @@ export class CandidacyPreselectionComponent {
     this.candidacyService.getOneCandidacy(candidacyId).subscribe({
       next: (response) => {
         this.candidacy = response.data;
+        this.period_status = this.candidacy.period_status;
+        console.log('Candidacy loaded:', this.candidacy);
       },
       error: (error) => {
         console.error('Erreur chargement candidature:', error);

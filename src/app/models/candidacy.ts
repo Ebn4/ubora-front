@@ -36,6 +36,7 @@ export interface Candidacy {
   created_at: string;
   updated_at: string;
   period_id: number;
+  period_status: string;
   evaluators: [],
   evalutors_number: number
   nb_evaluation: number

@@ -81,7 +81,7 @@
           <th class="py-2 px-4 text-left">NOMS</th>
           <th class="py-2 px-4 text-left">VILLE</th>
           <th class="py-2 px-4 text-left">GENRE</th>
-          <th class="py-2 px-4 text-left">PRESELECTION</th>
+          <th class="py-2 px-4 text-left">UNIVERSITE</th>
           <th class="py-2 px-4 text-left">NBR D'EVALUATIONS</th>
           <th class="py-2 px-4 text-left">DETAILS</th>
         </tr>
@@ -95,12 +95,7 @@
           </td>
           <td class="py-2 px-4">{{ candidacie.ville }}</td>
           <td class="py-2 px-4">{{ candidacie.sexe }}</td>
-          <td class="py-2 px-4">
-            <span class="flex items-center">
-              En attente
-              <span class="ml-1 h-3 w-3 bg-yellow-400 rounded-full"></span>
-            </span>
-          </td>
+          <td class="py-2 px-4">{{ candidacie.universite_institut_sup }}</td>
           <td class="py-2 px-4">{{ candidacie.nb_evaluation }} / {{ candidacie.evalutors_number }}</td>
           <td class="py-2 px-4">
             <a [routerLink]="['/candidacy-single', candidacie.id]" class="text-blue-500">
