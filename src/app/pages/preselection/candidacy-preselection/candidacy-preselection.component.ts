@@ -54,7 +54,6 @@ export class CandidacyPreselectionComponent {
     this.candidacyService.getOneCandidacy(candidacyId).subscribe({
       next: (response) => {
         this.candidacy = response.data;
-        this.preselectionCheck = this.candidacy.candidacy_preselection
       },
       error: (error) => {
         console.error('Erreur chargement candidature:', error);
@@ -100,6 +99,7 @@ export class CandidacyPreselectionComponent {
               ...c,
               isChecked: c.valeur === 1 ? true : false,
             }));
+            this.preselectionCheck = this.criterias.some(c => c.isChecked);
         },
         error: (error) => {
           console.error('Error fetching criteria:', error);
