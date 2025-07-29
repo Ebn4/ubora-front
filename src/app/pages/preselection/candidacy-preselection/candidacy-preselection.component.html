@@ -55,7 +55,7 @@
         </span>
         <span *ngIf="!preselectionCheck"
           class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-          En attente de présélection
+          Pas Evalué
         </span>
       </div>
 
@@ -202,7 +202,7 @@
 
       <!-- Bouton d'action -->
       <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-        <button type="button" (click)="preselectionCandidacy()" [disabled]="preselectionCheck"
+        <button *ngIf="period_status === 'PRESELECTION'" type="button" (click)="preselectionCandidacy()" [disabled]="preselectionCheck"
           class="flex-1 cursor-pointer bg-primary hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center"
           [class.opacity-50]="preselectionCheck" [class.cursor-not-allowed]="preselectionCheck">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
