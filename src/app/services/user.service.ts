@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {BASE_URL} from '../app.tokens';
-import {ResponseInterface} from '../models/response.model';
+import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
 import {LdapUser} from '../models/ldap-user.model';
 import {User} from '../models/user.model';
 
@@ -25,7 +25,7 @@ export class UserService {
     if (role != null && role != '')
       params = params.set('role', role)
 
-    return this.http.get<ResponseInterface<User[]>>(`${this.baseUrl}/users`, {params})
+    return this.http.get<ResponseInterfaceE<User[]>>(`${this.baseUrl}/users`, {params})
   }
 
   deleteUser(userId: number) {
