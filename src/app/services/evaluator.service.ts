@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {BASE_URL} from '../app.tokens';
-import {ResponseInterface} from '../models/response.model';
+import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
 import {Evaluator} from '../models/evaluator.model';
 
 @Injectable({
@@ -27,7 +27,7 @@ export class EvaluatorService {
     if (periodId != null)
       params = params.set('periodId', periodId)
 
-    return this.http.get<ResponseInterface<Evaluator[]>>(`${this.baseUrl}/evaluators`, {params})
+    return this.http.get<ResponseInterfaceE<Evaluator[]>>(`${this.baseUrl}/evaluators`, {params})
   }
 
   getEvaluator(id: string) {
