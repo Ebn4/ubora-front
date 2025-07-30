@@ -45,6 +45,10 @@ export class EvaluatorService {
   }
 
   hasEvaluatorBeenDispatched(periodId: string) {
-    return this.http.get<{isDispatch: boolean}>(`${this.baseUrl}/evaluators/${periodId}/is-dispatched`)
+    return this.http.get<{ isDispatch: boolean }>(`${this.baseUrl}/evaluators/${periodId}/is-dispatched`)
+  }
+
+  isSelectorEvaluator() {
+    return this.http.get<{ isSelectorEvaluator: boolean }>(`${this.baseUrl}/evaluators/is-selector-evaluator`)
   }
 }
