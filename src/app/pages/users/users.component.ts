@@ -43,6 +43,8 @@ export class UsersComponent extends BaseListWidget {
       .subscribe({
         next: value => {
           this.users.set(value.data)
+          this.currentPage = value.meta.current_page;
+          this.lastPage = value.meta.last_page;
           console.log(value)
         },
         error: err => {

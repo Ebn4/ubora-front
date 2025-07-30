@@ -163,6 +163,8 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
       .subscribe({
         next: value => {
           this.evaluators.set(value.data)
+          this.currentPage = value.meta.current_page;
+          this.lastPage = value.meta.last_page;
         },
         error: err => {
           console.log(err)
