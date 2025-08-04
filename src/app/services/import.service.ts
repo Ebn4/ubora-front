@@ -1,6 +1,4 @@
 import {inject, Injectable} from '@angular/core';
-import {CandidacyUpload} from '../models/candidacy-upload';
-import {DocumentUpload} from '../models/document-upload';
 import {HttpClient} from '@angular/common/http';
 import {BASE_URL} from '../app.tokens';
 import {Observable} from 'rxjs';
@@ -14,9 +12,6 @@ export class ImportService {
 
   constructor() {
   }
-
-  private token = '5|AslMM4JvVrPtKrHweDoEn1Mn1h8YLkAvMSIXhyCx316cadda';
-  private apiUrl = 'http://localhost:8000/api/uploadCandidaciesDocs';
 
   uploadCandidacies(data: { rows: any; periodId: number, year: number }) {
     return this.http.post(`${this.baseUrl}/uploadCandidacies`, data);
