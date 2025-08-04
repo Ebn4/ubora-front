@@ -19,6 +19,7 @@ import {PreselectionService} from '../../services/preselection.service';
 import {ListeningChangeService} from '../../services/listening-change.service';
 import {Subscription} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {ImportDocumentsComponent} from './import-documents/import-documents.component';
 
 @Component({
   selector: 'app-period-single',
@@ -208,6 +209,24 @@ export class PeriodSingleComponent {
 
     const dialogRef = this._matDialog.open(
       ImportFileCandidaciesComponent,
+      dialogConfig
+    );
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        this.event = true;
+      }
+    });
+  }
+
+  importDocumentsCandidacies() {
+
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.width = '900px';
+    dialogConfig.maxWidth = '100vw';
+
+    const dialogRef = this._matDialog.open(
+      ImportDocumentsComponent,
       dialogConfig
     );
     dialogRef.afterClosed().subscribe((result) => {
