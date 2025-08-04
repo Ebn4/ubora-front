@@ -38,6 +38,10 @@ export class EvaluatorService {
     return this.http.post(`${this.baseUrl}/evaluators`, data)
   }
 
+  deleteEvaluator(evaluatorId: number) {
+    return this.http.delete(`${this.baseUrl}/evaluators/${evaluatorId}`)
+  }
+
   dispatchEvaluators(periodId: string) {
     return this.http.post(`${this.baseUrl}/evaluators/${periodId}/dispatch`, {
       periodId: periodId
@@ -45,6 +49,10 @@ export class EvaluatorService {
   }
 
   hasEvaluatorBeenDispatched(periodId: string) {
-    return this.http.get<{isDispatch: boolean}>(`${this.baseUrl}/evaluators/${periodId}/is-dispatched`)
+    return this.http.get<{ isDispatch: boolean }>(`${this.baseUrl}/evaluators/${periodId}/is-dispatched`)
+  }
+
+  isSelectorEvaluator() {
+    return this.http.get<{ isSelectorEvaluator: boolean }>(`${this.baseUrl}/evaluators/is-selector-evaluator`)
   }
 }

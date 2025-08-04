@@ -193,4 +193,19 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
     }
 
   }
+
+  deleteEvaluator(id: number) {
+    this.evaluatorService.deleteEvaluator(id)
+      .subscribe({
+        next: value => {
+          this._snackBar.open('Evaluateur supprimer', 'Fermer', {duration: 3000})
+          this.loadData()
+        },
+        error: err => {
+          this._snackBar.open(err.error.errors, 'Fermer', {
+            duration: 3000,
+          });
+        }
+      })
+  }
 }
