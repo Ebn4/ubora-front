@@ -1,9 +1,9 @@
-import { inject, Injectable } from '@angular/core';
-import { CandidacyUpload } from '../models/candidacy-upload';
-import { DocumentUpload } from '../models/document-upload';
-import { HttpClient } from '@angular/common/http';
-import { BASE_URL } from '../app.tokens';
-import { Observable } from 'rxjs';
+import {inject, Injectable} from '@angular/core';
+import {CandidacyUpload} from '../models/candidacy-upload';
+import {DocumentUpload} from '../models/document-upload';
+import {HttpClient} from '@angular/common/http';
+import {BASE_URL} from '../app.tokens';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +11,10 @@ import { Observable } from 'rxjs';
 export class ImportService {
   http: HttpClient = inject(HttpClient);
   baseUrl = inject(BASE_URL);
-  constructor() {}
+
+  constructor() {
+  }
+
   private token = '5|AslMM4JvVrPtKrHweDoEn1Mn1h8YLkAvMSIXhyCx316cadda';
   private apiUrl = 'http://localhost:8000/api/uploadCandidaciesDocs';
 
@@ -19,28 +22,16 @@ export class ImportService {
     return this.http.post(`${this.baseUrl}/uploadCandidacies`, data);
   }
 
-  async uploadDocument(file: File): Promise<DocumentUpload> {
+  uploadDocument(file: File) {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('docName', file.name);
-
-    const response = await fetch(this.apiUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        Accept: 'application/json',
-      },
-      body: formData,
-    });
-
-    const data = await response.json();
-    return data as DocumentUpload;
+    formData.append('zip_file', file);
+    return this.http.post<{ message: string }>(`${this.baseUrl}/upload-documents`, formData)
   }
 
   getDocument(docName: string): Observable<Blob> {
     const url = `http://localhost:8000/api/getDoc?docName=${encodeURIComponent(
       docName
     )}`;
-    return this.http.get(url, { responseType: 'blob' });
+    return this.http.get(url, {responseType: 'blob'});
   }
 }

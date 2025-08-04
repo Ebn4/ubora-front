@@ -6,6 +6,7 @@ import {AuthServices} from '../../../services/auth.service';
 import {LocalStorageService} from '../../../services/local-storage.service';
 import {UserService} from '../../../services/user.service';
 import {User} from '../../../models/user.model';
+import {EvaluatorService} from '../../../services/evaluator.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,15 +18,18 @@ export class SidebarComponent {
   router: Router = inject(Router);
   authService = inject(AuthServices);
   userService = inject(UserService);
+  evaluatorService = inject(EvaluatorService);
   localStorageService = inject(LocalStorageService);
 
   hasAdminRole = signal(false)
+  isSelectorEvaluator = signal(false)
   user = signal<User | null>(null)
 
   ngOnInit() {
     const url = this.router.url;
     this.updateActiveTab(url);
     this.checkIfUserHasAdminRole()
+    this.checkIfIsSelectorEvaluator()
     this.getCurrentUser()
 
     this.router.events
@@ -46,6 +50,17 @@ export class SidebarComponent {
       .subscribe({
         next: value => {
           this.hasAdminRole.set(value.hasAdminRole)
+        }, error: err => {
+          console.error(err)
+        }
+      })
+  }
+
+  checkIfIsSelectorEvaluator() {
+    this.evaluatorService.isSelectorEvaluator()
+      .subscribe({
+        next: value => {
+          this.isSelectorEvaluator.set(value.isSelectorEvaluator)
         }, error: err => {
           console.error(err)
         }
@@ -81,7 +96,7 @@ export class SidebarComponent {
       this.setActiveTab('evaluator-candidacies');
     } else if (url.includes('preselection-admin')) {
       this.setActiveTab('preselection-admin');
-    }else if (url.includes('selections')) {
+    } else if (url.includes('selections')) {
       this.setActiveTab('selections');
     } else {
       this.setActiveTab('criteria');

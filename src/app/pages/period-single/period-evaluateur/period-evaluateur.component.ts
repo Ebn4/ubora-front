@@ -3,7 +3,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {AddEvaluatorDialogComponent} from '../add-evaluator-dialog/add-evaluator-dialog.component';
 import {EvaluatorService} from '../../../services/evaluator.service';
 import {Evaluator} from '../../../models/evaluator.model';
-import {RouterLink} from '@angular/router';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BaseListWidget} from '../../../widgets/base-list-widget';
 import {NgClass, NgForOf} from '@angular/common';
@@ -15,7 +14,6 @@ import {PeriodService} from '../../../services/period.service';
 @Component({
   selector: 'app-period-evaluateur',
   imports: [
-    RouterLink,
     FormsModule,
     NgForOf,
     ReactiveFormsModule,
@@ -192,5 +190,20 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
       console.log(this.isDisableDispatchButton())
     }
 
+  }
+
+  deleteEvaluator(id: number) {
+    this.evaluatorService.deleteEvaluator(id)
+      .subscribe({
+        next: value => {
+          this._snackBar.open('Evaluateur supprimer', 'Fermer', {duration: 3000})
+          this.loadData()
+        },
+        error: err => {
+          this._snackBar.open(err.error.errors, 'Fermer', {
+            duration: 3000,
+          });
+        }
+      })
   }
 }
