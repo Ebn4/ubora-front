@@ -1,0 +1,133 @@
+<div
+  class="flex flex-col p-4 rounded-lg bg-white m-0 upload-csv-container max-h-[90vh] min-h-[30vh] w-full mx-auto"
+>
+  <!-- Header Section -->
+  <div class="flex flex-0 justify-between items-center mb-6 pt-3">
+    <h2 class="text-2xl font-bold mb-4 md:mb-0">Importation des Documents</h2>
+
+    <button
+      (click)="closeModal()"
+      class="text-gray-500 cursor-pointer hover:text-gray-700"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Upload Section -->
+  <div class="mb-6 w-full">
+    <p class="mt-2 text-sm text-gray-600">
+      Sélectionnez un fichier ZIP à télécharger
+    </p>
+    <div
+      [class.has-file]="selectedFile()"
+      [class.processing]="isProcessing()"
+      class="border-2 border-dashed rounded-xl p-4 text-center bg-gray-50 transition-all duration-300"
+      [ngClass]="{
+        'border-orange-400 bg-gray-50': isProcessing(),
+        'border-orange-500 bg-gray-50': selectedFile() && !isProcessing(),
+        'border-gray-300': !selectedFile() && !isProcessing()
+      }"
+      (click)="triggerFileInput()"
+    >
+      <input
+        type="file"
+        id="zipFileInput"
+        accept=".zip"
+        (change)="onFileSelected($event)"
+        hidden
+      />
+
+      <div class="upload-area py-5 cursor-pointer">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-8 w-16 text-gray-400 mx-auto mb-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+          />
+        </svg>
+        <p class="text-gray-600 text-base">
+          <span *ngIf="!selectedFile() && !isProcessing()">Cliquez pour sélectionner un fichier ZIP ou faites-le glisser et déposez-le</span>
+          <span *ngIf="isProcessing()">Traitement du fichier en cours...</span>
+        </p>
+      </div>
+
+      <!-- Error Message -->
+      <div
+        *ngIf="error()"
+        class="mt-4 p-3 flex items-center gap-2 rounded-md bg-red-50 text-red-600"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-red-500"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-9.707a1 1 0 00-1.414 1.414L10 11.414l.707-.707a1 1 0 000-1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span>{{ error() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Section -->
+  <div *ngIf="isProcessing()" class="text-center mt-8">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-12 w-12 mx-auto text-orange-400 animate-spin mb-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M12 4v1m0 14v1m8-8h1M4 12H3m15.364 6.364l-.707.707M6.343 6.343l-.707-.707m12.728 0l.707-.707M6.343 17.657l-.707.707"
+      />
+    </svg>
+    <p class="text-base text-gray-600">Processing your CSV file...</p>
+  </div>
+
+  <div class="flex justify-end py-5">
+    <button
+      (click)="closeModal()"
+      type="button"
+      class="bg-gray-300 hover:bg-gray-400 cursor-pointer text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300 mr-3"
+    >
+      Annuler
+    </button>
+    <button
+      class="bg-primary hover:bg-orange-600 cursor-pointer text-white font-bold py-2 px-6 rounded-lg transition duration-300"
+      (click)="onImportClick()"
+      [disabled]="isLoading"
+    >
+      <span *ngIf="!isLoading">Importer</span>
+      <span *ngIf="isLoading">Importer...</span>
+    </button>
+  </div>
+
+</div>
