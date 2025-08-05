@@ -1,14 +1,15 @@
-import {ActivatedRoute, Router} from '@angular/router';
-import {Component, inject, signal} from '@angular/core';
-import {BaseListWidget} from '../../../widgets/base-list-widget';
-import {Candidacy} from '../../../models/candidacy';
-import {CandidacyService} from '../../../services/candidacy.service';
-import {NgFor, NgIf} from '@angular/common';
-import {Interview} from '../../../models/interview';
-import {PeriodService} from '../../../services/period.service';
-import {Period} from '../../../models/period';
-import {EvaluationComponent} from '../../evaluation/evaluation.component';
-import {PeriodStatus} from '../../../enum/period-status.enum';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { BaseListWidget } from '../../../widgets/base-list-widget';
+import { Candidacy } from '../../../models/candidacy';
+import { CandidacyService } from '../../../services/candidacy.service';
+import { NgFor, NgIf } from '@angular/common';
+import { Interview } from '../../../models/interview';
+import { PeriodService } from '../../../services/period.service';
+import { Period } from '../../../models/period';
+import { EvaluationComponent } from '../../evaluation/evaluation.component';
+import { PeriodStatus } from '../../../enum/period-status.enum';
+import { ImportService } from '../../../services/import.service';
 
 @Component({
   selector: 'app-candidacy-informations',
@@ -29,6 +30,7 @@ export class CandidacyInformationsComponent extends BaseListWidget {
 
   candidacyService = inject(CandidacyService);
   periodService = inject(PeriodService);
+  importService: ImportService = inject(ImportService);
   route: ActivatedRoute = inject(ActivatedRoute);
 
   ngOnInit(): void {
@@ -90,6 +92,15 @@ export class CandidacyInformationsComponent extends BaseListWidget {
   onEvaluated() {
     this.loadData()
     this.candidateHasSelected.set(true)
+  }
+
+  getDocument(fileName: any) {
+    const actualFileName = 'Adonai MUKE CV.pdf';
+    this.importService.getDocument(actualFileName).subscribe((file) => {
+      const blob = new Blob([file], { type: file.type });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url);
+    });
   }
 
 }
