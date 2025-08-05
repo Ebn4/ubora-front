@@ -194,10 +194,23 @@
                 selectedTab === 'candidacy',
               'text-gray-500 hover:text-gray-700': selectedTab !== 'candidacy'
             }" class="py-2 px-4 font-medium inline-block">
-            Candidatures
+            Candidats
           </span>
         </ng-template>
         <app-period-candidacy [period]="period"></app-period-candidacy>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span [ngClass]="{
+              'text-primary border-b-2 border-primary':
+                selectedTab === 'candidacy-rejected',
+              'text-gray-500 hover:text-gray-700': selectedTab !== 'candidacy-rejected'
+            }" class="py-2 px-4 font-medium inline-block">
+            Candidats Rejetés
+          </span>
+        </ng-template>
+        <app-period-candidacy-rejected [period]="period"></app-period-candidacy-rejected>
       </mat-tab>
 
       <mat-tab>

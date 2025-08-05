@@ -20,6 +20,7 @@ import {ListeningChangeService} from '../../services/listening-change.service';
 import {Subscription} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ImportDocumentsComponent} from './import-documents/import-documents.component';
+import { PeriodCandidacyRejectedComponent } from "./period-candidacy-rejected/period-candidacy-rejected.component";
 
 @Component({
   selector: 'app-period-single',
@@ -31,7 +32,8 @@ import {ImportDocumentsComponent} from './import-documents/import-documents.comp
     MatTabsModule,
     NgIf,
     CriteriaComponent,
-  ],
+    PeriodCandidacyRejectedComponent
+],
   templateUrl: './period-single.component.html',
 })
 export class PeriodSingleComponent {
@@ -112,9 +114,9 @@ export class PeriodSingleComponent {
         return 0;
       case 'candidacy':
         return 1;
-      case 'evaluateur':
+      case 'candidacy-rejected':
         return 2;
-      case 'lecteur':
+      case 'evaluateur':
         return 3;
       default:
         return 0;
@@ -128,9 +130,9 @@ export class PeriodSingleComponent {
       case 1:
         return 'candidacy';
       case 2:
-        return 'evaluateur';
+        return 'candidacy-rejected';
       case 3:
-        return 'lecteur';
+        return 'evaluateur';
       default:
         return 'criteria';
     }
