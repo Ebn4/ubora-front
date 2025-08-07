@@ -32,10 +32,6 @@ export class PeriodCandidacyRejectedComponent extends BaseListWidget
   @Input() period?: Period;
   ville: string = '';
   institute_count: number = 0
-  candidacy_count: number = 0
-  city_count: number = 0
-  preselection_count: number = 0
-  selection_count: number = 0
   validatedPreselectionPeriodStatus = PeriodStatus.STATUS_PRESELECTION
 
   readonly snackbar = inject(MatSnackBar)
@@ -86,20 +82,6 @@ export class PeriodCandidacyRejectedComponent extends BaseListWidget
           this.candidacies = response.data;
           this.currentPage = response.meta.current_page;
           this.lastPage = response.meta.last_page;
-
-          if (this.candidacies.length > 0) {
-            this.institute_count = this.candidacies[0].institute_count;
-            this.candidacy_count = this.candidacies[0].candidacy_count;
-            this.city_count = this.candidacies[0].city_count;
-            this.preselection_count = this.candidacies[0].preselection_count;
-            this.selection_count = this.candidacies[0].selection_count;
-          } else {
-            this.institute_count = 0;
-            this.candidacy_count = 0;
-            this.city_count = 0;
-            this.preselection_count = 0
-            this.selection_count = 0
-          }
         },
         error: (error) => {
           console.error('Error loading candidacies:', error);
