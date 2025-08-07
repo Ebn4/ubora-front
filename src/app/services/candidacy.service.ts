@@ -47,6 +47,29 @@ export class CandidacyService {
     );
   }
 
+  getCandidaciesRejected(
+    page: number = 1,
+    search: string = '',
+    ville: string = '',
+    periodId: number | undefined,
+    per_page: number
+  ) {
+    let params = new HttpParams().set('page', page).set('per_page', per_page);
+
+    if (search != null && search != '') params = params.set('search', search);
+
+    if (ville != null && ville != '') {
+      params = params.set('ville', ville);
+    }
+
+    if (periodId != null) params = params.set('periodId', periodId);
+
+    return this.http.get<ResponseInterfaceE<Candidacy[]>>(
+      `${this.baseUrl}/rejeted_candidacies`,
+      {params}
+    );
+  }
+
   getOneCandidacy(candidacyId: number) {
     return this.userService.getUser().pipe(
       switchMap((user) => {

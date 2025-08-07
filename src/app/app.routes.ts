@@ -37,7 +37,7 @@ export const routes: Routes = [
       {path: 'selections', component: SelectionsComponent, canActivate: [IsSelectorEvaluatorGuard]},
       {path: 'selections/candidates/:id', component: CandidacySelectionComponent},
       {path: 'candidacy', component: PeriodCandidacyComponent},
-      {path: 'candidacy-single/:id', component: CandidacySingleComponent},
+      {path: 'candidacy-single/:id/:period_id', component: CandidacySingleComponent},
       {path: 'evaluator-candidacies', component: PreselectionComponent},
       {
         path: 'evaluator-candidacies-single/:id/:dispatchId/:periodId/:evaluateurId',

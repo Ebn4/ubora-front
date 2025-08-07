@@ -5,7 +5,7 @@
 @theme {
   --color-primary: #FF8C00;
   --color-secondary: #F5E6D8;
-  --color-dark: #1A1A1A;
+  --color-dark: #0F172A;
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
