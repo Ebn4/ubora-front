@@ -1,25 +1,25 @@
-import {CriteriaAttachComponent} from './criteria-attach/criteria-attach.component';
-import {Period} from './../../models/period';
-import {Component, inject, signal, HostListener} from '@angular/core';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {PeriodService} from '../../services/period.service';
-import {NgClass, NgIf} from '@angular/common';
-import {PeriodCandidacyComponent} from './period-candidacy/period-candidacy.component';
-import {PeriodEvaluateurComponent} from './period-evaluateur/period-evaluateur.component';
-import {MatTabsModule} from '@angular/material/tabs';
+import { CriteriaAttachComponent } from './criteria-attach/criteria-attach.component';
+import { Period } from './../../models/period';
+import { Component, inject, signal, HostListener } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { PeriodService } from '../../services/period.service';
+import { NgClass, NgIf } from '@angular/common';
+import { PeriodCandidacyComponent } from './period-candidacy/period-candidacy.component';
+import { PeriodEvaluateurComponent } from './period-evaluateur/period-evaluateur.component';
+import { MatTabsModule } from '@angular/material/tabs';
 import {
   MatDialog,
   MatDialogConfig,
 } from '@angular/material/dialog';
-import {CriteriaComponent} from '../criteria/criteria.component';
-import {CriteriaAttachSelectionComponent} from './criteria-attach-selection/criteria-attach-selection.component';
-import {ImportFileCandidaciesComponent} from '../import-file-candidacies/import-file-candidacies.component';
-import {PeriodStatus} from '../../enum/period-status.enum';
-import {PreselectionService} from '../../services/preselection.service';
-import {ListeningChangeService} from '../../services/listening-change.service';
-import {Subscription} from 'rxjs';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {ImportDocumentsComponent} from './import-documents/import-documents.component';
+import { CriteriaComponent } from '../criteria/criteria.component';
+import { CriteriaAttachSelectionComponent } from './criteria-attach-selection/criteria-attach-selection.component';
+import { ImportFileCandidaciesComponent } from '../import-file-candidacies/import-file-candidacies.component';
+import { PeriodStatus } from '../../enum/period-status.enum';
+import { PreselectionService } from '../../services/preselection.service';
+import { ListeningChangeService } from '../../services/listening-change.service';
+import { Subscription } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ImportDocumentsComponent } from './import-documents/import-documents.component';
 import { PeriodCandidacyRejectedComponent } from "./period-candidacy-rejected/period-candidacy-rejected.component";
 
 @Component({
@@ -33,7 +33,7 @@ import { PeriodCandidacyRejectedComponent } from "./period-candidacy-rejected/pe
     NgIf,
     CriteriaComponent,
     PeriodCandidacyRejectedComponent
-],
+  ],
   templateUrl: './period-single.component.html',
 })
 export class PeriodSingleComponent {
@@ -142,7 +142,7 @@ export class PeriodSingleComponent {
     this.selectedTab = this.getTabName(index);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: {tab: this.selectedTab},
+      queryParams: { tab: this.selectedTab },
       queryParamsHandling: 'merge',
     });
   }
@@ -171,7 +171,7 @@ export class PeriodSingleComponent {
     periodId = this.periodId;
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
-    dialogConfig.data = {periodId};
+    dialogConfig.data = { periodId };
 
     const dialogRef = this._matDialog.open(
       CriteriaAttachComponent,
@@ -188,7 +188,7 @@ export class PeriodSingleComponent {
     periodId = this.periodId;
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
-    dialogConfig.data = {periodId};
+    dialogConfig.data = { periodId };
 
     const dialogRef = this._matDialog.open(
       CriteriaAttachSelectionComponent,
@@ -207,7 +207,7 @@ export class PeriodSingleComponent {
     dialogConfig.disableClose = true;
     dialogConfig.width = '900px';
     dialogConfig.maxWidth = '100vw';
-    dialogConfig.data = {periodId, year};
+    dialogConfig.data = { periodId, year };
 
     const dialogRef = this._matDialog.open(
       ImportFileCandidaciesComponent,
@@ -240,7 +240,7 @@ export class PeriodSingleComponent {
 
   validateDispatch() {
     this.periodService
-      .changePeriodStatus(this.periodId, {status: PeriodStatus.STATUS_PRESELECTION})
+      .changePeriodStatus(this.periodId, { status: PeriodStatus.STATUS_PRESELECTION })
       .subscribe({
         next: value => {
           this.loadData()
@@ -254,7 +254,7 @@ export class PeriodSingleComponent {
 
   closeStatus() {
     if (this.period) {
-      this.periodService.changePeriodStatus(this.period.id, {status: PeriodStatus.STATUS_CLOSE})
+      this.periodService.changePeriodStatus(this.period.id, { status: PeriodStatus.STATUS_CLOSE })
         .subscribe({
           next: res => {
             this.loadData()
