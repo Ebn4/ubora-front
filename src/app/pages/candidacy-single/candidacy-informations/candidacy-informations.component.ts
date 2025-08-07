@@ -1,21 +1,17 @@
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Component, inject, signal } from '@angular/core';
 import { BaseListWidget } from '../../../widgets/base-list-widget';
 import { Candidacy } from '../../../models/candidacy';
 import { CandidacyService } from '../../../services/candidacy.service';
-import { NgFor, NgIf } from '@angular/common';
 import { Interview } from '../../../models/interview';
 import { PeriodService } from '../../../services/period.service';
 import { Period } from '../../../models/period';
-import { EvaluationComponent } from '../../evaluation/evaluation.component';
 import { PeriodStatus } from '../../../enum/period-status.enum';
 import { ImportService } from '../../../services/import.service';
 
 @Component({
   selector: 'app-candidacy-informations',
-  imports: [
-    EvaluationComponent
-  ],
+  imports: [],
   templateUrl: './candidacy-informations.component.html',
 })
 export class CandidacyInformationsComponent extends BaseListWidget {
