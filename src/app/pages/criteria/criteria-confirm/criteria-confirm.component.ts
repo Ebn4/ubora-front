@@ -5,35 +5,33 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'app-criteria-confirm',
   imports: [],
   template: `
-    <div class="p-6 bg-white">
-      <h2 class="text-lg font-bold mb-2">Confirmation</h2>
-      <p class="mb-4">{{ data.message }}</p>
-      <div class="flex justify-end gap-2">
-      </div>
+    <div class="p-8 bg-white rounded-3xl shadow-lg">
+  <h2 class="text-xl font-semibold text-slate-800 mb-4">Confirmation</h2>
+  <p class="text-sm text-slate-600 mb-6">{{ data.message }}</p>
 
-      <div class="flex justify-end space-x-2">
-        <button
-          (click)="close()"
-          type="button"
-          class="bg-gray-300 hover:bg-gray-400 cursor-pointer text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300"
-        >
-          Annuler
-        </button>
-        <button
-          (click)="onYes()"
-          class="bg-primary hover:bg-orange-600 text-white cursor-pointer font-bold py-2 px-4 rounded-lg transition duration-300"
-        >
-          Exécuter
-        </button>
-      </div>
-    </div>
+  <div class="flex justify-end gap-4">
+    <button
+      (click)="close()"
+      type="button"
+      class="bg-slate-200 hover:bg-slate-300 cursor-pointer text-slate-700 font-semibold py-2 px-6 rounded-xl transition-all duration-200 transform hover:scale-105"
+    >
+      Annuler
+    </button>
+    <button
+      (click)="onYes()"
+      class="bg-orange-500 text-white cursor-pointer font-semibold py-2 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg"
+    >
+      Exécuter
+    </button>
+  </div>
+</div>
   `,
 })
 export class CriteriaConfirmComponent {
   constructor(
     public dialogRef: MatDialogRef<CriteriaConfirmComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { message: string }
-  ) {}
+  ) { }
 
   close() {
     this.dialogRef.close(false);
