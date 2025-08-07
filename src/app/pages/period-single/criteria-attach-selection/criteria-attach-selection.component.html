@@ -1,14 +1,11 @@
 <!-- Modal pour attacher des critères -->
-<div
-  class="fixed inset-0 flex items-center justify-center"
-  id="attachCriteriaModal"
->
-  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-xl font-bold">Attacher critères sélections</h3>
+<div class="fixed inset-0 flex items-center justify-center">
+  <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-2xl mx-4 border border-slate-100">
+    <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+      <h3 class="text-2xl font-bold text-slate-800">Attacher des critères</h3>
       <button
         (click)="closeModal()"
-        class="text-gray-500 cursor-pointer hover:text-gray-700"
+        class="text-slate-400 hover:text-slate-600 cursor-pointer transition-colors duration-200 rounded-full p-1 hover:bg-slate-100"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -26,76 +23,87 @@
         </svg>
       </button>
     </div>
-    <div class="mb-4">
-      <label for="search" class="block text-gray-700 font-medium mb-2"
-        >Rechercher un critère</label
-      >
-      <input
-        type="text"
-        id="search"
-        [(ngModel)]="search"
-        (input)="onSearchChange()"
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-        placeholder="Nom du critère..."
-      />
+
+    <!-- Recherche -->
+    <div class="mb-6">
+      <label for="search" class="block text-sm font-medium text-slate-700 mb-2">
+        Rechercher un critère
+      </label>
+      <div class="relative">
+        <input
+          type="text"
+          id="search"
+          [(ngModel)]="search"
+          (input)="onSearchChange()"
+          class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-slate-400"
+          placeholder="Nom du critère..."
+        />
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
     </div>
 
-    <div class="mb-4 max-h-60 overflow-y-auto">
+    <!-- Liste des critères -->
+    <div class="mb-6 max-h-96 overflow-y-auto pr-2">
       <ng-container *ngFor="let criteria of criterias">
-        <div
-          *ngIf="!criteria.type || criteria.type === type"
-          class="border-b pb-2 mb-2"
-        >
-          <div class="flex items-start md:items-center">
-            <label class="flex items-center flex-1">
+        <div *ngIf="!criteria.type || criteria.type === type" class="border border-slate-100 rounded-lg p-4 mb-3 hover:bg-slate-50 transition-colors duration-150">
+          <div class="flex flex-col md:flex-row md:items-center gap-4">
+            <label class="flex items-center flex-1 cursor-pointer">
               <input
                 type="checkbox"
-                class="form-checkbox h-5 w-5 text-primary"
+                class="form-checkbox h-5 w-5 text-orange-500 rounded border-slate-300 focus:ring-orange-500"
                 [value]="criteria.id"
                 [checked]="criteria.isChecked"
                 (change)="onToggleCriteria(criteria.id, $event)"
               />
-              <span class="ml-2">
-                <span class="font-medium">{{ criteria.name }}</span>
-                <span class="block text-sm text-gray-500">
-                  {{ criteria.description }}
-                </span>
+              <span class="ml-3">
+                <span class="block font-medium text-slate-800">{{ criteria.name }}</span>
+                <span class="block text-sm text-slate-500 mt-1">{{ criteria.description }}</span>
               </span>
             </label>
-            <div class="ml-4 w-28">
+            <div class="md:w-32">
               <label
                 for="ponderation-{{ criteria.id }}"
-                class="block text-gray-700 text-xs mb-1"
+                class="block text-xs font-medium text-slate-600 mb-1"
                 >Pondération</label
               >
-              <input
-                type="number"
-                id="ponderation-{{ criteria.id }}"
-                [(ngModel)]="criteria.ponderation"
-                min="0"
-                max="20"
-                class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-                value="{{ criteria.ponderation }}"
-              />
+              <div class="relative">
+                <input
+                  type="number"
+                  id="ponderation-{{ criteria.id }}"
+                  [(ngModel)]="criteria.ponderation"
+                  min="0"
+                  max="20"
+                  class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                  value="{{ criteria.ponderation }}"
+                />
+                <span class="absolute right-3 top-2 text-xs text-slate-400">%</span>
+              </div>
             </div>
           </div>
         </div>
       </ng-container>
     </div>
 
-    <div class="flex justify-end space-x-2">
+    <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
       <button
         (click)="closeModal()"
         type="button"
-        class="bg-gray-300 hover:bg-gray-400 cursor-pointer text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300"
+        class="px-6 py-2.5 cursor-pointer rounded-lg font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 transition-colors duration-200"
       >
         Annuler
       </button>
       <button
         (click)="attachCriteria()"
         type="submit"
-        class="bg-primary hover:bg-orange-600 text-white cursor-pointer font-bold py-2 px-4 rounded-lg transition duration-300"
+        class="px-6 py-2.5 cursor-pointer bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2"
       >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
         Attacher
       </button>
     </div>
