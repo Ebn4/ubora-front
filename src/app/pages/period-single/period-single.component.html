@@ -51,7 +51,7 @@
       <div class="flex flex-wrap justify-center gap-4 mb-12">
         @if (canDispatch() && validateDispatchPeriodStatus == period?.status) {
           <button (click)="validateDispatch()"
-                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
                   style="background: linear-gradient(135deg, #10B981, #059669);">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -62,7 +62,7 @@
 
         @if (period?.status === PeriodStatus.STATUS_SELECTION) {
           <button (click)="closeStatus()"
-                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
                   style="background: linear-gradient(135deg, #EF4444, #DC2626);">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -73,7 +73,7 @@
 
         <div class="relative">
           <button (click)="toggleDropdown()"
-                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
                   style="background: linear-gradient(135deg, #FF8C00, #FF7A00);">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
@@ -164,7 +164,7 @@
     </div>
   </div>
 
-  <div class="px-6 pb-8">
+  <div class="px-4 pb-8">
     <div class="max-w-7xl mx-auto">
       <div class="text-center mb-8">
         <h2 class="text-2xl font-bold text-slate-900 mb-2">Tableau de Bord</h2>
@@ -174,7 +174,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
         <div class="group relative">
           <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          <div class="relative bg-white rounded-3xl shadow-xl p-8 border border-slate-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+          <div class="relative bg-white rounded-3xl  p-8 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <div class="flex items-center justify-between mb-6">
               <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -197,7 +197,7 @@
 
         <div class="group relative">
           <div class="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          <div class="relative bg-white rounded-3xl shadow-xl p-8 border border-slate-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+          <div class="relative bg-white rounded-3xl  p-8 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <div class="flex items-center justify-between mb-6">
               <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -220,7 +220,7 @@
 
         <div class="group relative">
           <div class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          <div class="relative bg-white rounded-3xl shadow-xl p-8 border border-slate-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+          <div class="relative bg-white rounded-3xl  p-8 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <div class="flex items-center justify-between mb-6">
               <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -243,7 +243,7 @@
 
         <div class="group relative">
           <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-purple-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          <div class="relative bg-white rounded-3xl shadow-xl p-8 border border-slate-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+          <div class="relative bg-white rounded-3xl  p-8 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
             <div class="flex items-center justify-between mb-6">
               <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -267,16 +267,16 @@
     </div>
   </div>
 
-  <div class="px-6 pb-8">
-    <div class="max-w-7xl mx-auto">
-      <div class="bg-white rounded-1xl shadow-2xl overflow-hidden" [ngClass]="{ 'opacity-10': showModal }">
-        <div class="px-1 py-3 bg-slate-50">
+  <div class="px-2 pb-8">
+    <div class="ww-full">
+      <div class="overflow-hidden" [ngClass]="{ 'opacity-10': showModal }">
+        <div class="px-1 py-3">
           <mat-tab-group class="mb-6" [(selectedIndex)]="tabIndex" (selectedIndexChange)="onTabChange($event)">
             <mat-tab>
               <ng-template mat-tab-label>
                 <div class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
                      [ngClass]="{
-                       'text-white shadow-xl': selectedTab === 'criteria',
+                       'text-white ': selectedTab === 'criteria',
                        'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'criteria'
                      }"
                      [style.background]="selectedTab === 'criteria' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
@@ -295,7 +295,7 @@
               <ng-template mat-tab-label>
                 <div class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
                      [ngClass]="{
-                       'text-white shadow-xl': selectedTab === 'candidacy',
+                       'text-white ': selectedTab === 'candidacy',
                        'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'candidacy'
                      }"
                      [style.background]="selectedTab === 'candidacy' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
@@ -314,7 +314,7 @@
               <ng-template mat-tab-label>
                 <div class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
                      [ngClass]="{
-                       'text-white shadow-xl': selectedTab === 'candidacy-rejected',
+                       'text-white ': selectedTab === 'candidacy-rejected',
                        'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'candidacy-rejected'
                      }"
                      [style.background]="selectedTab === 'candidacy-rejected' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
@@ -333,7 +333,7 @@
               <ng-template mat-tab-label>
                 <div class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
                      [ngClass]="{
-                       'text-white shadow-xl': selectedTab === 'evaluateur',
+                       'text-white ': selectedTab === 'evaluateur',
                        'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'evaluateur'
                      }"
                      [style.background]="selectedTab === 'evaluateur' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
