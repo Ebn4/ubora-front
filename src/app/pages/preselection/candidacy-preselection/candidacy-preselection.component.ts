@@ -8,6 +8,9 @@ import { PeriodStatus } from '../../../enum/period-status.enum';
 import { ImportService } from '../../../services/import.service';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { PreselectionService } from '../../../services/preselection.service';
+import { FilePreviewResult, FilePreviewService } from '../../../services/file-preview.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DocPreviewComponent } from './doc-preview/doc-preview.component';
 
 @Component({
   selector: 'app-candidacy-preselection',
@@ -15,6 +18,7 @@ import { PreselectionService } from '../../../services/preselection.service';
   templateUrl: './candidacy-preselection.component.html',
 })
 export class CandidacyPreselectionComponent {
+  currentPreview: FilePreviewResult | null = null;
   candidacyId!: number;
   dispatch_preselections_id!: number;
   preselectionCheck = false
@@ -22,6 +26,7 @@ export class CandidacyPreselectionComponent {
 
   candidacy?: Candidacy;
   candidacyService: CandidacyService = inject(CandidacyService);
+  filePreviewService = inject(FilePreviewService)
   route: ActivatedRoute = inject(ActivatedRoute);
   importService: ImportService = inject(ImportService);
   preselectionService: PreselectionService = inject(PreselectionService);
@@ -39,10 +44,9 @@ export class CandidacyPreselectionComponent {
   candidaciesList: any;
   currentIndex: number = 0;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private _matDialog: MatDialog) { }
 
   ngOnInit() {
-
     this.candidaciesList = this.preselectionService.getCandidacy();
     const currentId = Number(this.route.snapshot.paramMap.get('id'));
     this.currentIndex = this.candidaciesList.findIndex((c: any) => c.id === currentId);
@@ -56,7 +60,6 @@ export class CandidacyPreselectionComponent {
       next: (response) => {
         this.candidacy = response.data;
         this.period_status = this.candidacy.period_status;
-        console.log('Candidacy loaded:', this.candidacy);
       },
       error: (error) => {
         console.error('Erreur chargement candidature:', error);
@@ -102,7 +105,7 @@ export class CandidacyPreselectionComponent {
               ...c,
               isChecked: c.valeur === 1 ? true : false,
             }));
-            this.preselectionCheck = this.criterias.some(c => c.isChecked);
+          this.preselectionCheck = this.criterias.some(c => c.isChecked);
         },
         error: (error) => {
           console.error('Error fetching criteria:', error);
@@ -131,7 +134,7 @@ export class CandidacyPreselectionComponent {
         this.preselectionCheck = true
         if (this.currentIndex < this.candidaciesList.length - 1) {
           this.goToNext();
-        }else{
+        } else {
           this.router.navigate(['/evaluator-candidacies']);
         }
       },
@@ -141,14 +144,34 @@ export class CandidacyPreselectionComponent {
     });
   }
 
-  getDocument(fileName: any) {
-    const actualFileName = fileName || '30 DBA.docx';
+  docPreview(fileName: any) {
+    const actualFileName = 'image.jpg';
+
     this.importService.getDocument(actualFileName).subscribe((file) => {
       const blob = new Blob([file], { type: file.type });
-      const url = window.URL.createObjectURL(blob);
-      window.open(url);
+      const fileFromUrl = new File([blob], "test-doc.docx", { type: blob.type });
+
+      this.filePreviewService.previewFile(fileFromUrl).subscribe({
+        next: (result) => {
+          const dialogConfig = new MatDialogConfig();
+          dialogConfig.disableClose = true;
+          dialogConfig.data = { currentPreview: result };
+
+          const dialogRef = this._matDialog.open(DocPreviewComponent, dialogConfig);
+
+          dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+            }
+          });
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
     });
   }
 
-
+  closePreview() {
+    this.currentPreview = null;
+  }
 }
