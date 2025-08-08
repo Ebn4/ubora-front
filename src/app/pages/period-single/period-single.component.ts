@@ -21,6 +21,7 @@ import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ImportDocumentsComponent } from './import-documents/import-documents.component';
 import { PeriodCandidacyRejectedComponent } from "./period-candidacy-rejected/period-candidacy-rejected.component";
+import {ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-period-single',
@@ -32,7 +33,8 @@ import { PeriodCandidacyRejectedComponent } from "./period-candidacy-rejected/pe
     MatTabsModule,
     NgIf,
     CriteriaComponent,
-    PeriodCandidacyRejectedComponent
+    PeriodCandidacyRejectedComponent,
+    ReactiveFormsModule
   ],
   templateUrl: './period-single.component.html',
 })
