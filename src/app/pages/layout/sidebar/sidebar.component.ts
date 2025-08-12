@@ -23,6 +23,7 @@ export class SidebarComponent {
 
   hasAdminRole = signal(false)
   isSelectorEvaluator = signal(false)
+  isPreselectorEvaluator = signal(false)
   user = signal<User | null>(null)
 
   ngOnInit() {
@@ -30,6 +31,7 @@ export class SidebarComponent {
     this.updateActiveTab(url);
     this.checkIfUserHasAdminRole()
     this.checkIfIsSelectorEvaluator()
+    this.checkIfIsPreselectorEvaluator()
     this.getCurrentUser()
 
     this.router.events
@@ -61,6 +63,17 @@ export class SidebarComponent {
       .subscribe({
         next: value => {
           this.isSelectorEvaluator.set(value.isSelectorEvaluator)
+        }, error: err => {
+          console.error(err)
+        }
+      })
+  }
+
+  checkIfIsPreselectorEvaluator() {
+    this.evaluatorService.isPreselectorEvaluator()
+      .subscribe({
+        next: value => {
+          this.isPreselectorEvaluator.set(value.isPreselectorEvaluator)
         }, error: err => {
           console.error(err)
         }
