@@ -53,19 +53,31 @@
             </svg>
             Valider le Dispatch
           </button>
-        } @if (period?.status === PeriodStatus.STATUS_SELECTION) {
-        <button (click)="closeStatus()"
-                class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
-                style="background: linear-gradient(135deg, #EF4444, #DC2626);">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-               stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          Clôturer la Période
-        </button>
-      }
-
+        }
+        @if (period?.status === PeriodStatus.STATUS_SELECTION) {
+          <button (click)="closeStatus()"
+                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
+                  style="background: linear-gradient(135deg, #EF4444, #DC2626);">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Clôturer la Période
+          </button>
+        }
+        @if (canValidatePreselection() && period?.status == validatedPreselectionPeriodStatus) {
+          <button (click)="validatePreselection()"
+                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-md"
+                  style="background: linear-gradient(135deg, #10B981, #059669);">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Valider la présélection
+          </button>
+        }
         <div class="relative">
           <button (click)="toggleDropdown()"
                   class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
