@@ -27,6 +27,7 @@ import {lastValueFrom} from 'rxjs';
 export class EvaluationComponent implements OnInit {
 
   @Input() periodId: number | null = null;
+  @Input() hasSelected: boolean = false;
   @Input() interviewId: number | null = null;
 
   @Output() onEvaluated = new EventEmitter()
@@ -56,13 +57,16 @@ export class EvaluationComponent implements OnInit {
     if (this.periodId != null) {
       const value = await lastValueFrom(this.criteriaService.loadCriteriasByPeriodId(this.periodId, 'SELECTION'))
 
-      value.data.forEach(criteria => {
+      for (const criteria of value.data) {
+
+        const result = await lastValueFrom(this.candidateService.getCandidateSelectionResultByCriteria(this.interviewId ?? 0, criteria.id))
+
         const a = this.formBuilder.group({
           critere: [criteria],
-          result: ['', [Validators.required, Validators.min(0.5), Validators.max(criteria.ponderation)]]
+          result: [result.data.result, [Validators.required, Validators.min(0.5), Validators.max(criteria.ponderation)]]
         })
         this.crv.push(a)
-      })
+      }
 
       this.cdr.detectChanges()
       this.criterias.set(value.data);
@@ -77,37 +81,40 @@ export class EvaluationComponent implements OnInit {
 
   onSubmit() {
 
-    const fields: CandidateEvaluation[] = this.crv.controls.map((e, i) => {
-      return {
-        key: e.get('critere')?.value?.id,
-        value: e.get('result')?.value
-      }
-    })
-
-    if (this.periodId != null && this.interviewId != null) {
-      this.candidateService.evaluateCandidate({
-        interviewId: this.interviewId,
-        periodId: this.periodId,
-        evaluations: fields
-      }).subscribe({
-        next: value => {
-          if (value.errors != null) {
-            this.showSnackbar(value.errors)
-          }
-          if (value.data) {
-            this.showSnackbar('evaluation effectuer')
-            this.onEvaluated.emit()
-          }
-        },
-        error: err => {
-          if (err.error.errors) {
-            this.snackBar.open(err.error.errors[0], 'Fermer', {
-              duration: 3000
-            })
-          }
+    if (!this.hasSelected) {
+      const fields: CandidateEvaluation[] = this.crv.controls.map((e, i) => {
+        return {
+          key: e.get('critere')?.value?.id,
+          value: e.get('result')?.value
         }
       })
+
+      if (this.periodId != null && this.interviewId != null) {
+        this.candidateService.evaluateCandidate({
+          interviewId: this.interviewId,
+          periodId: this.periodId,
+          evaluations: fields
+        }).subscribe({
+          next: value => {
+            if (value.errors != null) {
+              this.showSnackbar(value.errors)
+            }
+            if (value.data) {
+              this.showSnackbar('evaluation effectuer')
+              this.onEvaluated.emit()
+            }
+          },
+          error: err => {
+            if (err.error.errors) {
+              this.snackBar.open(err.error.errors[0], 'Fermer', {
+                duration: 3000
+              })
+            }
+          }
+        })
+      }
     }
+
   }
 
 }

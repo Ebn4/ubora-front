@@ -1,8 +1,6 @@
 <form action="" [formGroup]="form" class="my-2" (submit)="onSubmit()">
 
   <div class="grid  gap-4" formArrayName="crv">
-    <!--    @for (criteria of criterias(); track criteria.id) {-->
-
     @for (c of crv.controls; track $index) {
       <div class="mb-4" [formGroupName]="$index">
         <label class="block text-gray-700 font-medium mb-2"
@@ -14,7 +12,6 @@
       </div>
     }
   </div>
-
 
   <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
     <button type="submit" [disabled]="form.invalid"
