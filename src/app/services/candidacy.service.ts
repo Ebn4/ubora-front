@@ -10,6 +10,7 @@ import {User} from '../models/user.model';
 import {UserService} from './user.service';
 import {switchMap} from 'rxjs/operators';
 import {Evaluator} from '../models/evaluator.model';
+import {CandidacySelectionResult} from '../models/candidacy-selection-result';
 
 @Injectable({
   providedIn: 'root',
@@ -148,5 +149,9 @@ export class CandidacyService {
       `${this.baseUrl}/candidates/interviews`,
       {params}
     );
+  }
+
+  getCandidateSelectionResultByCriteria(interviewId: number, criteriaId: number) {
+    return this.http.get<ResponseInterface<CandidacySelectionResult>>(`${this.baseUrl}/candidates/${interviewId}/criterias/${criteriaId}/result`);
   }
 }
