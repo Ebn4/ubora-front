@@ -1,22 +1,5 @@
 <!-- Container principal avec nouveau layout -->
 <div class="min-h-screen p-6" style="background-color: white;">
-  <div>
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-      @if (canValidatePreselection() && period?.status == validatedPreselectionPeriodStatus) {
-        <button (click)="validatePreselection()"
-                class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-md"
-                style="background: linear-gradient(135deg, #10B981, #059669);">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-               stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          Valider la présélection
-        </button>
-      }
-    </div>
-  </div>
-
   <div class="">
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 w-full">
