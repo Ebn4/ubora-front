@@ -1,7 +1,6 @@
 import {Routes} from '@angular/router';
 import {PeriodComponent} from './pages/period/period.component';
 import {PeriodSingleComponent} from './pages/period-single/period-single.component';
-import {SidebarComponent} from './pages/layout/sidebar/sidebar.component';
 import {PeriodCandidacyComponent} from './pages/period-single/period-candidacy/period-candidacy.component';
 import {CandidacySingleComponent} from './pages/candidacy-single/candidacy-single.component';
 import {CriteriaComponent} from './pages/criteria/criteria.component';
@@ -16,6 +15,7 @@ import {UsersComponent} from './pages/users/users.component';
 import {SelectionsComponent} from './pages/selections/selections.component';
 import {CandidacySelectionComponent} from './pages/selections/candidacy-selection/candidacy-selection.component';
 import {IsSelectorEvaluatorGuard} from './middlewares/is-selector-evaluator.guard';
+import {DefaultLayoutComponent} from './pages/layout/default-layout/default-layout.component';
 
 export const routes: Routes = [
   {
@@ -27,7 +27,7 @@ export const routes: Routes = [
   {
     path: '',
     canActivate: [AuthGuard],
-    component: SidebarComponent,
+    component: DefaultLayoutComponent,
     children: [
       {path: '', redirectTo: 'period', pathMatch: 'full'},
       {path: 'users', component: UsersComponent, canActivate: [HasAdminRoleGuard]},
