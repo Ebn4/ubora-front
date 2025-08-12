@@ -39,18 +39,8 @@
     </div>
   </div>
 
-  <div class="px-6 py-8">
+  <div class="px-6 pt-4">
     <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-slate-900 mb-4">
-          Programme de Bourses {{ period?.year }}
-        </h1>
-        <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-          Gestion complète du processus de sélection et d'évaluation des candidatures pour l'année
-          académique {{ period?.year }}
-        </p>
-      </div>
-
       <div class="flex flex-wrap justify-center gap-4 mb-12">
         @if (canDispatch() && validateDispatchPeriodStatus == period?.status) {
           <button (click)="validateDispatch()"
@@ -63,20 +53,18 @@
             </svg>
             Valider le Dispatch
           </button>
-        }
-
-        @if (period?.status === PeriodStatus.STATUS_SELECTION) {
-          <button (click)="closeStatus()"
-                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
-                  style="background: linear-gradient(135deg, #EF4444, #DC2626);">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            Clôturer la Période
-          </button>
-        }
+        } @if (period?.status === PeriodStatus.STATUS_SELECTION) {
+        <button (click)="closeStatus()"
+                class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
+                style="background: linear-gradient(135deg, #EF4444, #DC2626);">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+               stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Clôturer la Période
+        </button>
+      }
 
         <div class="relative">
           <button (click)="toggleDropdown()"
@@ -182,12 +170,8 @@
     </div>
   </div>
 
-  <div class="px-4 pb-8">
+  <div class="px-4">
     <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-8">
-        <h2 class="text-2xl font-bold text-slate-900 mb-2">Tableau de Bord</h2>
-        <p class="text-slate-600">Vue d'overview des métriques importantes</p>
-      </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
         <div class="group relative">
