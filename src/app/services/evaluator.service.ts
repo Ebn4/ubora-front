@@ -55,4 +55,8 @@ export class EvaluatorService {
   isSelectorEvaluator() {
     return this.http.get<{ isSelectorEvaluator: boolean }>(`${this.baseUrl}/evaluators/is-selector-evaluator`)
   }
+
+  isPreselectorEvaluator() {
+    return this.http.get<{ isPreselectorEvaluator: boolean }>(`${this.baseUrl}/evaluators/is-preselector-evaluator`)
+  }
 }
