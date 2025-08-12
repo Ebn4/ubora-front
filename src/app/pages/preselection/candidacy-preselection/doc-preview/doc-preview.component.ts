@@ -7,8 +7,10 @@ import { FilePreviewComponent } from '../../../file-preview/file-preview.compone
   selector: 'app-doc-preview',
   imports: [FilePreviewComponent],
   template: `
-        <div class="p-3 w-full">
-          <app-file-preview [previewResult]="data.currentPreview" (onClose)="closePreview()"></app-file-preview>
+        <div class="fixed inset-0 flex items-center justify-center backdrop-blur-sm p-4">
+          <div class="w-full max-w-6xl">
+            <app-file-preview [previewResult]="data.currentPreview" (onClose)="closePreview()"></app-file-preview>
+          </div>
         </div>
   `,
 })
@@ -20,7 +22,7 @@ export class DocPreviewComponent {
     @Inject(MAT_DIALOG_DATA) public data: { currentPreview: FilePreviewResult | null }
   ) { }
 
-  ngOnInit(){
+  ngOnInit() {
     this.currentPreview = this.data.currentPreview
     console.log("data : ", this.closePreview)
   }

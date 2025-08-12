@@ -145,7 +145,7 @@ export class CandidacyPreselectionComponent {
   }
 
   docPreview(fileName: any) {
-    const actualFileName = 'image.jpg';
+    const actualFileName = fileName;
 
     this.importService.getDocument(actualFileName).subscribe((file) => {
       const blob = new Blob([file], { type: file.type });
