@@ -212,7 +212,7 @@
                       <p class="text-sm text-slate-500">Document officiel</p>
                     </div>
                   </div>
-                  <button (click)="getDocument(candidacy?.diplome_detat)"
+                  <button (click)="docPreview(candidacy?.diplome_detat)"
                     class="p-3 bg-white rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200 transform hover:scale-105 shadow-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -234,7 +234,7 @@
                       <p class="text-sm text-slate-500">Parcours professionnel</p>
                     </div>
                   </div>
-                  <button (click)="getDocument(candidacy?.cv)"
+                  <button (click)="docPreview(candidacy?.cv)"
                     class="p-3 bg-white rounded-xl text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 transform hover:scale-105 shadow-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -256,7 +256,7 @@
                       <p class="text-sm text-slate-500">Dernière année académique</p>
                     </div>
                   </div>
-                  <button (click)="getDocument(candidacy?.attestation_de_reussite_derniere_annee)"
+                  <button (click)="docPreview(candidacy?.attestation_de_reussite_derniere_annee)"
                     class="p-3 bg-white rounded-xl text-green-600 hover:bg-green-50 hover:text-green-700 transition-all duration-200 transform hover:scale-105 shadow-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
