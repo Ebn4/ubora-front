@@ -1,6 +1,6 @@
-<main class="flex-1 p-4">
+<main class="p-4">
   <div
-    class="bg-white rounded-3xl shadow-2xl p-8 mb-8 transition-all duration-300"
+    class="rounded-3xl p-8 mb-8 transition-all duration-300"
     [ngClass]="{ 'opacity-10 bg-dark': showModal }"
   >
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -8,7 +8,7 @@
       <div class="flex flex-col sm:flex-row gap-4">
         <button
           (click)="loadData()"
-          class="group flex items-center px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+          class="group flex items-center px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 transform"
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-cw h-5 w-5 mr-2 group-hover:rotate-180 transition-transform duration-300"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
@@ -16,7 +16,7 @@
         </button>
         <button
           (click)="openModal()"
-          class="group flex cursor-pointer items-center px-6 py-3 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+          class="group flex cursor-pointer items-center px-6 py-3 text-white font-semibold rounded-xl transition-all duration-300 transform"
           style="background: linear-gradient(135deg, #FF8C00, #FF7A00);"
           type="button"
         >
