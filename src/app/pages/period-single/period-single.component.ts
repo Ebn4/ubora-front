@@ -1,26 +1,26 @@
-import { CriteriaAttachComponent } from './criteria-attach/criteria-attach.component';
-import { Period } from './../../models/period';
-import { Component, inject, signal, HostListener } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { PeriodService } from '../../services/period.service';
-import { NgClass, NgIf } from '@angular/common';
-import { PeriodCandidacyComponent } from './period-candidacy/period-candidacy.component';
-import { PeriodEvaluateurComponent } from './period-evaluateur/period-evaluateur.component';
-import { MatTabsModule } from '@angular/material/tabs';
+import {CriteriaAttachComponent} from './criteria-attach/criteria-attach.component';
+import {Period} from './../../models/period';
+import {Component, inject, signal, HostListener} from '@angular/core';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {PeriodService} from '../../services/period.service';
+import {NgClass, NgIf} from '@angular/common';
+import {PeriodCandidacyComponent} from './period-candidacy/period-candidacy.component';
+import {PeriodEvaluateurComponent} from './period-evaluateur/period-evaluateur.component';
+import {MatTabsModule} from '@angular/material/tabs';
 import {
   MatDialog,
   MatDialogConfig,
 } from '@angular/material/dialog';
-import { CriteriaComponent } from '../criteria/criteria.component';
-import { CriteriaAttachSelectionComponent } from './criteria-attach-selection/criteria-attach-selection.component';
-import { ImportFileCandidaciesComponent } from '../import-file-candidacies/import-file-candidacies.component';
-import { PeriodStatus } from '../../enum/period-status.enum';
-import { PreselectionService } from '../../services/preselection.service';
-import { ListeningChangeService } from '../../services/listening-change.service';
-import { Subscription } from 'rxjs';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ImportDocumentsComponent } from './import-documents/import-documents.component';
-import { PeriodCandidacyRejectedComponent } from "./period-candidacy-rejected/period-candidacy-rejected.component";
+import {CriteriaComponent} from '../criteria/criteria.component';
+import {CriteriaAttachSelectionComponent} from './criteria-attach-selection/criteria-attach-selection.component';
+import {ImportFileCandidaciesComponent} from '../import-file-candidacies/import-file-candidacies.component';
+import {PeriodStatus} from '../../enum/period-status.enum';
+import {PreselectionService} from '../../services/preselection.service';
+import {ListeningChangeService} from '../../services/listening-change.service';
+import {Subscription} from 'rxjs';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {ImportDocumentsComponent} from './import-documents/import-documents.component';
+import {PeriodCandidacyRejectedComponent} from "./period-candidacy-rejected/period-candidacy-rejected.component";
 import {ReactiveFormsModule} from '@angular/forms';
 
 @Component({
@@ -40,10 +40,15 @@ import {ReactiveFormsModule} from '@angular/forms';
 })
 export class PeriodSingleComponent {
 
+  snackBar = inject(MatSnackBar)
   periodService: PeriodService = inject(PeriodService);
   preselectionService: PreselectionService = inject(PreselectionService)
   route: ActivatedRoute = inject(ActivatedRoute);
   readonly snackbar = inject(MatSnackBar)
+
+  validatedPreselectionPeriodStatus = PeriodStatus.STATUS_PRESELECTION
+  canValidatePreselection = signal(false)
+  isLoading = signal(false)
 
   period!: Period | undefined;
   selectedTab: string = 'tab1';
@@ -94,6 +99,7 @@ export class PeriodSingleComponent {
   }
 
   loadData() {
+    this.isLoading.set(true)
     this.periodId = Number(this.route.snapshot.paramMap.get('id'));
     this.periodService.getOnePeriod(this.periodId).subscribe({
       next: (period) => {
@@ -103,9 +109,14 @@ export class PeriodSingleComponent {
           this.selectedTab = params['tab'] || 'criteria';
           this.tabIndex = this.getTabIndex(this.selectedTab);
         });
+
+        this.checkIdCanValidatePreselection(period)
+
+        this.isLoading.set(false)
       },
       error: (error) => {
         console.error('Error fetching period:', error);
+        this.isLoading.set(false)
       },
     });
   }
@@ -144,16 +155,9 @@ export class PeriodSingleComponent {
     this.selectedTab = this.getTabName(index);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: this.selectedTab },
+      queryParams: {tab: this.selectedTab},
       queryParamsHandling: 'merge',
     });
-  }
-
-  openModal() {
-  }
-
-  closeModal() {
-    this.showModal = false;
   }
 
   sendEmails() {
@@ -164,7 +168,6 @@ export class PeriodSingleComponent {
     });
   }
 
-
   canValidateDispatch(canDispatch: boolean) {
     this.canDispatch.set(canDispatch);
   }
@@ -173,7 +176,7 @@ export class PeriodSingleComponent {
     periodId = this.periodId;
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
-    dialogConfig.data = { periodId };
+    dialogConfig.data = {periodId};
 
     const dialogRef = this._matDialog.open(
       CriteriaAttachComponent,
@@ -190,7 +193,7 @@ export class PeriodSingleComponent {
     periodId = this.periodId;
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
-    dialogConfig.data = { periodId };
+    dialogConfig.data = {periodId};
 
     const dialogRef = this._matDialog.open(
       CriteriaAttachSelectionComponent,
@@ -209,7 +212,7 @@ export class PeriodSingleComponent {
     dialogConfig.disableClose = true;
     dialogConfig.width = '900px';
     dialogConfig.maxWidth = '100vw';
-    dialogConfig.data = { periodId, year };
+    dialogConfig.data = {periodId, year};
 
     const dialogRef = this._matDialog.open(
       ImportFileCandidaciesComponent,
@@ -242,7 +245,7 @@ export class PeriodSingleComponent {
 
   validateDispatch() {
     this.periodService
-      .changePeriodStatus(this.periodId, { status: PeriodStatus.STATUS_PRESELECTION })
+      .changePeriodStatus(this.periodId, {status: PeriodStatus.STATUS_PRESELECTION})
       .subscribe({
         next: value => {
           this.loadData()
@@ -256,7 +259,7 @@ export class PeriodSingleComponent {
 
   closeStatus() {
     if (this.period) {
-      this.periodService.changePeriodStatus(this.period.id, { status: PeriodStatus.STATUS_CLOSE })
+      this.periodService.changePeriodStatus(this.period.id, {status: PeriodStatus.STATUS_CLOSE})
         .subscribe({
           next: res => {
             this.loadData()
@@ -265,6 +268,67 @@ export class PeriodSingleComponent {
             this.snackbar.open(err.error.errors, 'Fermer', {
               duration: 3000,
             });
+          }
+        })
+    }
+  }
+
+  checkIdCanValidatePreselection(period: Period) {
+
+    this.preselectionService.canValidate(period.id)
+      .subscribe({
+        next: value => {
+          this.canValidatePreselection.set(value.canValidate)
+        },
+        error: err => {
+          console.error(err)
+        }
+      })
+
+  }
+
+  validatePreselection() {
+    if (this.period) {
+      this.isLoading.set(true)
+      this.preselectionService.validatePreselection(this.period.id)
+        .subscribe({
+          next: value => {
+            this.canValidatePreselection.set(false)
+
+            this.changePeriodStatus()
+            this.snackbar.open(value.message, 'Fermer', {
+              duration: 3000,
+            });
+
+            this.isLoading.set(false)
+
+          },
+          error: err => {
+            console.error(err)
+            this.isLoading.set(false)
+          }
+        })
+    }
+  }
+
+  changePeriodStatus() {
+    if (this.period) {
+      this.isLoading.set(true)
+      this.periodService.changePeriodStatus(this.period.id, {status: PeriodStatus.STATUS_SELECTION})
+        .subscribe({
+          next: value => {
+            this.snackBar.open('Le status de la periode est maitenant en SELECTION', 'Fermer', {
+              duration: 3000
+            })
+            this.loadData()
+            this.isLoading.set(false)
+          },
+          error: err => {
+            console.error(err)
+            this.snackbar.open(err.error.message, 'Fermer', {
+              duration: 3000,
+            });
+            this.isLoading.set(false)
           }
         })
     }
