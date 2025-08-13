@@ -33,18 +33,12 @@
   </div>
 
   <div class="px-6 py-6 mb-24">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-amber-500 hover:shadow-xl transition-shadow duration-300">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-2xl shadow-lg p-3 border-l-4 border-amber-500 hover:shadow-xl transition-shadow duration-300">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-slate-600 text-sm font-medium">Total Candidats</p>
             <p class="text-3xl font-bold text-slate-900 mt-1">{{ totalCandidats }}</p>
-            <p class="text-emerald-600 text-sm mt-2 flex items-center">
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-              </svg>
-              +12% ce mois
-            </p>
           </div>
           <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -54,14 +48,11 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-amber-500 hover:shadow-xl transition-shadow duration-300">
+      <div class="bg-white rounded-2xl shadow-lg p-3 border-l-4 border-amber-500 hover:shadow-xl transition-shadow duration-300">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-slate-600 text-sm font-medium">Évalués</p>
             <p class="text-3xl font-bold text-slate-900 mt-1">{{ candidatsEvalues }}</p>
-            <p class="text-slate-500 text-sm mt-2">
-              {{ candidatsEvalues > 0 ? ((candidatsEvalues / totalCandidats) * 100).toFixed(1) : 0 }}% du total
-            </p>
           </div>
           <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,33 +62,15 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-amber-500 hover:shadow-xl transition-shadow duration-300">
+      <div class="bg-white rounded-2xl shadow-lg p-3 border-l-4 border-amber-500 hover:shadow-xl transition-shadow duration-300">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-slate-600 text-sm font-medium">En attente</p>
             <p class="text-3xl font-bold text-slate-900 mt-1">{{ totalCandidats - candidatsEvalues }}</p>
-            <p class="text-amber-600 text-sm mt-2">À évaluer</p>
           </div>
           <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-amber-500 hover:shadow-xl transition-shadow duration-300">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-slate-600 text-sm font-medium">Taux d'évaluation</p>
-            <p class="text-3xl font-bold text-slate-900 mt-1">
-              {{ totalCandidats > 0 ? ((candidatsEvalues / totalCandidats) * 100).toFixed(0) : 0 }}%
-            </p>
-            <p class="text-purple-600 text-sm mt-2">Progression</p>
-          </div>
-          <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
             </svg>
           </div>
         </div>
