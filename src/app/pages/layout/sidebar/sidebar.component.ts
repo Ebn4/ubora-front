@@ -10,7 +10,7 @@ import {EvaluatorService} from '../../../services/evaluator.service';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterOutlet, NgClass],
+  imports: [RouterLink, NgClass],
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent {
