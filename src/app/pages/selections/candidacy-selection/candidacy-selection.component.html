@@ -125,7 +125,7 @@
               </svg>
               <span class="text-sm font-medium">{{ candidacy?.diplome_detat }}</span>
             </div>
-            <button (click)="getDocument()" class="text-blue-500 cursor-pointer hover:text-blue-700">
+            <button (click)="docPreview(candidacy?.diplome_detat)" class="text-blue-500 cursor-pointer hover:text-blue-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                    stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -142,9 +142,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
               </svg>
-              <span class="text-sm font-medium">Diplome_Master_Informatique.jpg</span>
+              <span class="text-sm font-medium">Curriculum Vitae</span>
             </div>
-            <button class="text-blue-500 hover:text-blue-700">
+            <button (click)="docPreview(candidacy?.cv)" class="text-blue-500 hover:text-blue-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                    stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -161,9 +161,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
               </svg>
-              <span class="text-sm font-medium">Releve_Notes_Master.pdf</span>
+              <span class="text-sm font-medium">Attestation de Réussite</span>
             </div>
-            <button class="text-blue-500 hover:text-blue-700">
+            <button (click)="docPreview(candidacy?.attestation_de_reussite_derniere_annee)" class="text-blue-500 hover:text-blue-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                    stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
