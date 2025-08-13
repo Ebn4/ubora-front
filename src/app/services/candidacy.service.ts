@@ -151,6 +151,21 @@ export class CandidacyService {
     );
   }
 
+  getSelectionCandidates(periodId: number, page: number = 1, search: string = '', per_page: number) {
+    let params = new HttpParams()
+      .set('per_page', per_page)
+      .set('page', page)
+
+    if (search != '') {
+      params = params.set('search', search)
+    }
+
+    return this.http.get<ResponseInterfaceE<Candidacy[]>>(
+      `${this.baseUrl}/periods/${periodId}/candidates/selection`,
+      {params}
+    );
+  }
+
   getCandidateSelectionResultByCriteria(interviewId: number, criteriaId: number) {
     return this.http.get<ResponseInterface<CandidacySelectionResult>>(`${this.baseUrl}/candidates/${interviewId}/criterias/${criteriaId}/result`);
   }

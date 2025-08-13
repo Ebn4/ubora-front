@@ -53,19 +53,31 @@
             </svg>
             Valider le Dispatch
           </button>
-        } @if (period?.status === PeriodStatus.STATUS_SELECTION) {
-        <button (click)="closeStatus()"
-                class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
-                style="background: linear-gradient(135deg, #EF4444, #DC2626);">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-               stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          Clôturer la Période
-        </button>
-      }
-
+        }
+        @if (period?.status === PeriodStatus.STATUS_SELECTION) {
+          <button (click)="closeStatus()"
+                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
+                  style="background: linear-gradient(135deg, #EF4444, #DC2626);">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Clôturer la Période
+          </button>
+        }
+        @if (canValidatePreselection() && period?.status == validatedPreselectionPeriodStatus) {
+          <button (click)="validatePreselection()"
+                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-md"
+                  style="background: linear-gradient(135deg, #10B981, #059669);">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Valider la présélection
+          </button>
+        }
         <div class="relative">
           <button (click)="toggleDropdown()"
                   class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
@@ -336,6 +348,26 @@
                 </div>
               </ng-template>
               <app-period-candidacy [period]="period"></app-period-candidacy>
+            </mat-tab>
+
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <div
+                  class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
+                  [ngClass]="{
+                       'text-white ': selectedTab === 'selected-candidates',
+                       'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'selected-candidates'
+                     }"
+                  [style.background]="selectedTab === 'selected-candidates' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                  <span class="font-semibold">Candidats Sélectionnés</span>
+                </div>
+              </ng-template>
+              <app-period-candidacies-selected [period]="period"></app-period-candidacies-selected>
             </mat-tab>
 
             <mat-tab>

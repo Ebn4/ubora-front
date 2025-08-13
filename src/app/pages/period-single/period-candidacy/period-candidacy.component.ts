@@ -38,15 +38,10 @@ export class PeriodCandidacyComponent
   city_count: number = 0
   preselection_count: number = 0
   selection_count: number = 0
-  validatedPreselectionPeriodStatus = PeriodStatus.STATUS_PRESELECTION
 
   readonly snackbar = inject(MatSnackBar)
   route: ActivatedRoute = inject(ActivatedRoute);
   candidacyService: CandidacyService = inject(CandidacyService);
-  preselectionService = inject(PreselectionService);
-  periodService = inject(PeriodService);
-
-  canValidatePreselection = signal(false)
 
   constructor(private modalService: ListeningChangeService) {
     super();
@@ -58,14 +53,12 @@ export class PeriodCandidacyComponent
       this.period = current;
       if (current) {
         this.loadData();
-        this.checkIdCanValidatePreselection()
       }
     }
   }
 
   ngOnInit(): void {
     this.loadData();
-    this.checkIdCanValidatePreselection()
     this.subscription = this.modalService.modalClosed$.subscribe((modalClosed) => {
       if (modalClosed) {
         this.loadData();
@@ -109,55 +102,4 @@ export class PeriodCandidacyComponent
       });
   }
 
-  checkIdCanValidatePreselection() {
-    if (this.period) {
-      this.preselectionService.canValidate(this.period.id)
-        .subscribe({
-          next: value => {
-            this.canValidatePreselection.set(value.canValidate)
-          },
-          error: err => {
-            console.error(err)
-          }
-        })
-    }
-  }
-
-  validatePreselection() {
-    if (this.period) {
-      this.preselectionService.validatePreselection(this.period.id)
-        .subscribe({
-          next: value => {
-            this.canValidatePreselection.set(false)
-
-            this.changePeriodStatus()
-            this.snackbar.open(value.message, 'Fermer', {
-              duration: 3000,
-            });
-
-
-          },
-          error: err => {
-            console.error(err)
-          }
-        })
-    }
-  }
-
-  changePeriodStatus() {
-    if (this.period) {
-      this.periodService.changePeriodStatus(this.period.id, {status: PeriodStatus.STATUS_SELECTION})
-        .subscribe({
-          next: value => {
-          },
-          error: err => {
-            console.error(err)
-            this.snackbar.open(err.error.message, 'Fermer', {
-              duration: 3000,
-            });
-
-          }
-        })
-    }
-  }
 }

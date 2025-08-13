@@ -1,0 +1,20 @@
+.top-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+}
+
+.top-loader .mat-mdc-progress-bar {
+  height: 10px;
+}
+
+body {
+  padding-top: 3px;
+}
+
+::ng-deep .mat-mdc-progress-bar {
+  --mdc-linear-progress-active-indicator-color: orange !important;
+  --mdc-linear-progress-track-color: rgba(255, 165, 0, 0.2) !important;
+}

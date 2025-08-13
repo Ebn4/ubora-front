@@ -1,17 +1,23 @@
 <main class="p-4">
   <div
-    class="rounded-3xl p-8 mb-8 transition-all duration-300"
+    class="mb-8"
     [ngClass]="{ 'opacity-10 bg-dark': showModal }"
   >
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
       <h2 class="text-3xl font-bold text-slate-900 mb-4 md:mb-0">Gestion des Périodes</h2>
+
       <div class="flex flex-col sm:flex-row gap-4">
         <button
           (click)="loadData()"
           class="group flex items-center px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 transform"
           type="button"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-cw h-5 w-5 mr-2 group-hover:rotate-180 transition-transform duration-300"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round"
+               class="lucide lucide-rotate-cw h-5 w-5 mr-2 group-hover:rotate-180 transition-transform duration-300">
+            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/>
+          </svg>
           Actualiser
         </button>
         <button
@@ -20,12 +26,18 @@
           style="background: linear-gradient(135deg, #FF8C00, #FF7A00);"
           type="button"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus h-5 w-5 mr-2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus h-5 w-5 mr-2">
+            <path d="M12 5v14"/>
+            <path d="M5 12h14"/>
+          </svg>
           Ajouter une période
         </button>
       </div>
+
     </div>
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
+
+    <div class="flex items-center mb-8 gap-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 w-full">
         <div>
           <label for="search" class="block text-sm font-semibold text-slate-700 mb-2">Rechercher</label>
@@ -38,7 +50,12 @@
               class="w-full pl-10 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-purple-400 transition-colors duration-200 bg-slate-50 focus:bg-white"
               placeholder="Nom de la période..."
             />
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search h-5 w-5 absolute left-3 top-4 text-slate-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="lucide lucide-search h-5 w-5 absolute left-3 top-4 text-slate-400">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.3-4.3"/>
+            </svg>
           </div>
         </div>
         <div>
@@ -55,11 +72,15 @@
               <option value="PRESELECTION">PRESELECTION</option>
               <option value="SELECTION">SELECTION</option>
             </select>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down h-5 w-5 absolute right-3 top-4 text-slate-400 pointer-events-none"><path d="m6 9 6 6 6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="lucide lucide-chevron-down h-5 w-5 absolute right-3 top-4 text-slate-400 pointer-events-none">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 mt-6">
         <label for="per_page" class="text-sm font-semibold text-slate-700">Afficher</label>
         <div class="relative">
           <select
@@ -68,55 +89,87 @@
             (change)="paginationChange()"
             class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-purple-400 transition-colors duration-200 appearance-none bg-slate-50 focus:bg-white"
           >
-            @for(option of countPerPageList; track option) {
-            <option [value]="option.value" [selected]="option.value === per_page">
-              {{ option.label }}
-            </option>
+            @for (option of countPerPageList; track option) {
+              <option [value]="option.value" [selected]="option.value === per_page">
+                {{ option.label }}
+              </option>
             }
           </select>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down h-5 w-5 absolute right-3 top-4 text-slate-400 pointer-events-none"><path d="m6 9 6 6 6-6"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round"
+               class="lucide lucide-chevron-down h-5 w-5 absolute right-3 top-4 text-slate-400 pointer-events-none">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
         </div>
       </div>
     </div>
-    <div class="overflow-x-auto rounded-xl shadow-lg border border-slate-200">
+
+    <div class="overflow-x-auto rounded-md border border-slate-200">
       <table class="min-w-full divide-y divide-slate-200">
         <thead class="bg-slate-800 text-white">
-          <tr>
-            <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
-              <div class="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar h-4 w-4"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                <span>Nom de la période</span>
-              </div>
-            </th>
-            <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
-              <div class="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users h-4 w-4"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <span>Candidatures</span>
-              </div>
-            </th>
-            <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
-              <div class="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-search h-4 w-4"><circle cx="10" cy="8" r="5"/><path d="M2 21a8 8 0 0 1 16 0"/><path d="m22 22-3.5-3.5"/><path d="M17.5 14.5c.97.97 2.27 1.47 3.5 1.5 0 0 .5.01.5-.5s-.5-1-1-1.5c-1.4-.7-2.3-2-3.5-3.5-.5-.5-1-1-1.5-1.5s-1-.5-1.5-1c-1.4-.7-2.3-2-3.5-3.5"/></svg>
-                <span>Evaluateurs</span>
-              </div>
-            </th>
-            <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
-              <div class="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-check h-4 w-4"><path d="M2 21a8 8 0 0 1 16 0"/><circle cx="10" cy="8" r="5"/><path d="m16 11 2 2 4-4"/></svg>
-                <span>Pré sélestionnés</span>
-              </div>
-            </th>
-            <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">Statut</th>
-            <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">Actions</th>
-          </tr>
+        <tr>
+          <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
+            <div class="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   class="lucide lucide-calendar h-4 w-4">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                <line x1="16" x2="16" y1="2" y2="6"/>
+                <line x1="8" x2="8" y1="2" y2="6"/>
+                <line x1="3" x2="21" y1="10" y2="10"/>
+              </svg>
+              <span>Nom de la période</span>
+            </div>
+          </th>
+          <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
+            <div class="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users h-4 w-4">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <span>Candidatures</span>
+            </div>
+          </th>
+          <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
+            <div class="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   class="lucide lucide-user-round-search h-4 w-4">
+                <circle cx="10" cy="8" r="5"/>
+                <path d="M2 21a8 8 0 0 1 16 0"/>
+                <path d="m22 22-3.5-3.5"/>
+                <path
+                  d="M17.5 14.5c.97.97 2.27 1.47 3.5 1.5 0 0 .5.01.5-.5s-.5-1-1-1.5c-1.4-.7-2.3-2-3.5-3.5-.5-.5-1-1-1.5-1.5s-1-.5-1.5-1c-1.4-.7-2.3-2-3.5-3.5"/>
+              </svg>
+              <span>Evaluateurs</span>
+            </div>
+          </th>
+          <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
+            <div class="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   class="lucide lucide-user-round-check h-4 w-4">
+                <path d="M2 21a8 8 0 0 1 16 0"/>
+                <circle cx="10" cy="8" r="5"/>
+                <path d="m16 11 2 2 4-4"/>
+              </svg>
+              <span>Pré sélestionnés</span>
+            </div>
+          </th>
+          <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">Statut</th>
+          <th class="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">Actions</th>
+        </tr>
         </thead>
         <tbody class="bg-white divide-y divide-slate-200">
-          <tr *ngFor="let period of periods" class="hover:bg-slate-50 transition-colors duration-200">
-            <td class="py-3 px-6 text-slate-900 font-medium">Bourses {{ period.year }}</td>
-            <td class="py-3 px-6 text-slate-700">{{ period.candidats_count }}</td>
-            <td class="py-3 px-6 text-slate-700">{{ period.evaluators_count }}</td>
-            <td class="py-3 px-6 text-slate-700">{{ period.preselection_count }}</td>
-            <td class="py-3 px-6">
+        <tr *ngFor="let period of periods" class="hover:bg-slate-50 transition-colors duration-200">
+          <td class="py-3 px-6 text-slate-900 font-medium">Bourses {{ period.year }}</td>
+          <td class="py-3 px-6 text-slate-700">{{ period.candidats_count }}</td>
+          <td class="py-3 px-6 text-slate-700">{{ period.evaluators_count }}</td>
+          <td class="py-3 px-6 text-slate-700">{{ period.preselection_count }}</td>
+          <td class="py-3 px-6">
               <span
                 class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
                 [ngClass]="{
@@ -125,31 +178,43 @@
                   'bg-purple-100 text-purple-800': period.status === 'PRESELECTION',
                   'bg-red-100 text-red-800': period.status === 'CLOSE'
                 }"
-                >{{ period.status }}</span
+              >{{ period.status }}</span
               >
-            </td>
-            <td class="py-3 px-6">
-              <div class="flex space-x-2">
-                <a
-                  [routerLink]="['/period-single', period.id]"
-                  class="group inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                  style="background: linear-gradient(135deg, #FF8C00, #FF7A00);"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye h-4 w-4 mr-2 group-hover:scale-110 transition-transform"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                  Voir détails
-                </a>
-              </div>
-            </td>
-          </tr>
+          </td>
+          <td class="py-3 px-6">
+            <div class="flex space-x-2">
+              <a
+                [routerLink]="['/period-single', period.id]"
+                class="group inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                style="background: linear-gradient(135deg, #FF8C00, #FF7A00);"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="lucide lucide-eye h-4 w-4 mr-2 group-hover:scale-110 transition-transform">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                Voir détails
+              </a>
+            </div>
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>
-    <div class="bg-slate-50 px-8 py-6 border-t border-slate-200 rounded-b-3xl">
+
+    <div class="px-8 py-6 border-t border-slate-200 rounded-b-md">
       <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
         <div class="flex items-center text-sm text-slate-600">
           <div class="flex items-center space-x-2">
             <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info h-4 w-4 text-orange-600"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   class="lucide lucide-info h-4 w-4 text-orange-600">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
             </div>
             <span>Affichage de 1 à 3 sur 3 entrées</span>
           </div>
@@ -160,7 +225,11 @@
             [disabled]="currentPage === 1"
             class="flex items-center px-4 py-2 text-sm font-medium text-slate-700 bg-white border-2 border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-orange-300"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left h-4 w-4 mr-1"><path d="m15 18-6-6 6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="lucide lucide-chevron-left h-4 w-4 mr-1">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
             Précédent
           </button>
 
@@ -186,10 +255,15 @@
             class="flex items-center px-4 py-2 text-sm font-medium text-slate-700 bg-white border-2 border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-orange-300"
           >
             Suivant
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4 ml-1"><path d="m9 18 6-6-6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="lucide lucide-chevron-right h-4 w-4 ml-1">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
           </button>
         </div>
       </div>
     </div>
+
   </div>
 </main>

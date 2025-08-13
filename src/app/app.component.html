@@ -1,1 +1,4 @@
+<div class="top-loader" *ngIf="(loading.active$ | async)">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</div>
 <router-outlet></router-outlet>
