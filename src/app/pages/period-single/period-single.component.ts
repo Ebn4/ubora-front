@@ -22,6 +22,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {ImportDocumentsComponent} from './import-documents/import-documents.component';
 import {PeriodCandidacyRejectedComponent} from "./period-candidacy-rejected/period-candidacy-rejected.component";
 import {ReactiveFormsModule} from '@angular/forms';
+import {PeriodCandidaciesSelectedComponent} from './period-candidacies-selected/period-candidacies-selected.component';
 
 @Component({
   selector: 'app-period-single',
@@ -34,7 +35,8 @@ import {ReactiveFormsModule} from '@angular/forms';
     NgIf,
     CriteriaComponent,
     PeriodCandidacyRejectedComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    PeriodCandidaciesSelectedComponent
   ],
   templateUrl: './period-single.component.html',
 })
@@ -127,10 +129,12 @@ export class PeriodSingleComponent {
         return 0;
       case 'candidacy':
         return 1;
-      case 'candidacy-rejected':
+      case 'selected-candidates':
         return 2;
-      case 'evaluateur':
+      case 'candidacy-rejected':
         return 3;
+      case 'evaluateur':
+        return 4;
       default:
         return 0;
     }
@@ -143,8 +147,10 @@ export class PeriodSingleComponent {
       case 1:
         return 'candidacy';
       case 2:
-        return 'candidacy-rejected';
+        return 'selected-candidates';
       case 3:
+        return 'candidacy-rejected';
+      case 4:
         return 'evaluateur';
       default:
         return 'criteria';
