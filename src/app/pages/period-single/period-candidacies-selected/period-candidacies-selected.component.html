@@ -1,0 +1,216 @@
+<!-- Container principal avec nouveau layout -->
+<div class="min-h-screen p-6" style="background-color: white;">
+  <div class="">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 w-full">
+        <div>
+          <label for="search" class="block text-sm font-semibold text-slate-700 mb-2">Rechercher un candidat</label>
+          <div class="relative">
+            <input type="text" id="search" [(ngModel)]="search" (input)="onSearchChange()"
+                   class="w-full pl-10 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-orange-400 transition-colors duration-200 bg-slate-50 focus:bg-white"
+                   placeholder="Nom, prénom, email..."/>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-4 text-slate-400" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <button (click)="loadData()"
+                class="group flex items-center px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+                type="button">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="h-5 w-5 mr-2 group-hover:rotate-180 transition-transform duration-300" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 4v5h.582M20 20v-5h-.581M5.419 19A9 9 0 0021 12.082M18.364 5.636A9 9 0 003 11.918"/>
+          </svg>
+          Actualiser
+        </button>
+        <div class="flex items-center gap-2">
+          <label for="per_page" class="text-sm font-semibold text-slate-700">Afficher</label>
+          <div class="relative">
+            <select id="per_page" [(ngModel)]="per_page" (change)="paginationChange()"
+                    class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-orange-400 transition-colors duration-200 appearance-none bg-slate-50 focus:bg-white">
+              @for (option of countPerPageList; track option) {
+                <option [value]="option.value" [selected]="option.value === per_page">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="h-5 w-5 absolute right-3 top-4 text-slate-400 pointer-events-none" fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-md overflow-hidden">
+    <div class="px-8 py-6 border-b border-slate-200" style="background: linear-gradient(135deg, #0F172A, #374151);">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold text-white flex items-center">
+          <div class="w-12 h-12 bg-opacity-20 bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8m-5 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          Liste des Candidatures Sélectionnés
+        </h3>
+
+        <div class="flex items-center space-x-6 text-white text-sm">
+          <span class="opacity-75">{{ candidacies!.length || 0 }} résultats</span>
+          <div class="w-px h-6 bg-white opacity-25"></div>
+          <span class="opacity-75">Page {{ currentPage }} sur {{ lastPage }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+        <tr>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+            <div class="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+              <span>Candidat</span>
+            </div>
+          </th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Ville</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Genre</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Université
+          </th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Moyenne obtenue
+          </th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Actions</th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-slate-200">
+        <tr *ngFor="let candidacie of candidacies(); let i = index"
+            class="hover:bg-slate-50 transition-colors duration-200 group">
+
+          <td class="px-6 py-4">
+            <div class="flex items-center">
+              <div>
+                <div class="text-sm font-semibold text-slate-900">
+                  {{ candidacie.etn_nom }} {{ candidacie.etn_postnom }}
+                </div>
+                <div class="text-sm text-slate-500">
+                  {{ candidacie.etn_prenom }}
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-slate-400" fill="none"
+                   viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              </svg>
+              <span class="text-sm text-slate-900 capitalize">{{ candidacie.ville }}</span>
+            </div>
+          </td>
+
+          <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+                    [class.bg-blue-100]="candidacie.sexe === 'Homme'"
+                    [class.text-blue-800]="candidacie.sexe === 'Homme'"
+                    [class.bg-pink-100]="candidacie.sexe === 'Femme'"
+                    [class.text-pink-800]="candidacie.sexe === 'Femme'">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                {{ candidacie.sexe === 'Homme' ? 'Masculin' : 'Féminin' }}
+              </span>
+          </td>
+
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+            {{ candidacie.universite_institut_sup }}
+          </td>
+
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <span class="text-sm font-medium text-slate-900">
+                  {{ candidacie.selectionMean }}
+                </span>
+            </div>
+          </td>
+
+          <td class="px-6 py-4 whitespace-nowrap">
+            <a [routerLink]="['/candidacy-single', candidacie.id, period?.id]"
+               class="group inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+               style="background: linear-gradient(135deg, #FF8C00, #FF7A00);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 group-hover:scale-110 transition-transform"
+                   fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              Voir détails
+            </a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bg-slate-50 px-8 py-6 border-t border-slate-200">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div></div>
+
+        <div class="flex items-center space-x-2">
+          <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"
+                  class="flex items-center px-4 py-2 text-sm font-medium text-slate-700 bg-white border-2 border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-orange-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Précédent
+          </button>
+
+          <div class="flex items-center space-x-1">
+            <span *ngFor="let page of [].constructor(lastPage); let i = index">
+              <button (click)="changePage(i + 1)"
+                      class="w-10 h-10 text-sm font-medium rounded-xl transition-all duration-200 flex items-center justify-center"
+                      [class.text-white]="currentPage === i + 1" [class.shadow-lg]="currentPage === i + 1"
+                      [class.text-slate-700]="currentPage !== i + 1" [class.bg-white]="currentPage !== i + 1"
+                      [class.border-2]="currentPage !== i + 1" [class.border-slate-200]="currentPage !== i + 1"
+                      [class.hover:bg-slate-50]="currentPage !== i + 1"
+                      [class.hover:border-orange-300]="currentPage !== i + 1"
+                      [style.background]="currentPage === i + 1 ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
+                {{ i + 1 }}
+              </button>
+            </span>
+          </div>
+
+          <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === lastPage"
+                  class="flex items-center px-4 py-2 text-sm font-medium text-slate-700 bg-white border-2 border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-orange-300">
+            Suivant
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
