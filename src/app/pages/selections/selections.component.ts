@@ -2,7 +2,7 @@ import {Component, inject, OnChanges, signal} from '@angular/core';
 import {single} from 'rxjs';
 import {Candidacy} from '../../models/candidacy';
 import {CandidacyService} from '../../services/candidacy.service';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BaseListWidget} from '../../widgets/base-list-widget';
 import {RouterLink} from '@angular/router';
@@ -16,6 +16,7 @@ import {MatIcon} from '@angular/material/icon';
     FormsModule,
     RouterLink,
     MatIcon,
+    NgClass
   ],
   templateUrl: './selections.component.html',
   styles: ``,
