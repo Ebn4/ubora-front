@@ -48,4 +48,5 @@ export interface Candidacy {
   selection_count: number
   candidacy_preselection: boolean,
   hasSelected: boolean
+  selectionMean: number
 }
