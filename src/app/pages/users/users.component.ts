@@ -1,5 +1,5 @@
 import {Component, inject, signal} from '@angular/core';
-import {NgForOf} from '@angular/common';
+import { NgForOf, NgClass } from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BaseListWidget} from '../../widgets/base-list-widget';
 import {User} from '../../models/user.model';
@@ -15,6 +15,7 @@ import {DeleteUserDialogComponent} from './delete-user-dialog/delete-user-dialog
     ReactiveFormsModule,
     FormsModule,
     MatIcon,
+    NgClass
   ],
   templateUrl: './users.component.html',
   standalone: true,
