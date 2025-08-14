@@ -1,4 +1,4 @@
-<main class="flex-1 p-8 bg-gray-100 min-h-screen">
+<main class="flex-1 p-8 bg-white min-h-screen">
   <div class="max-w-7xl mx-auto">
     <div class="flex items-center justify-between mb-8">
       <div class="flex items-center space-x-4">
@@ -13,7 +13,7 @@
           <span class="sr-only">Retour</span>
         </a>
         <div>
-          <h1 class="text-3xl font-extrabold text-gray-900">Information de Candidat</h1>
+          <h1 class="text-3xl font-extrabold text-gray-900">Information du Candidat</h1>
           <p class="text-gray-600 flex items-center mt-1">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -29,9 +29,9 @@
       </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <div class="">
       <!-- Tabs -->
-      <mat-tab-group class="mb-6 border-b border-gray-200" [(selectedIndex)]="tabIndex"
+      <mat-tab-group class="mb-6" [(selectedIndex)]="tabIndex"
         (selectedIndexChange)="onTabChange($event)">
         <mat-tab>
           <ng-template mat-tab-label>
