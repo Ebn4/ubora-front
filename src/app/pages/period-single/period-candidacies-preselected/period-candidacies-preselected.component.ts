@@ -1,12 +1,12 @@
-import {Component, inject, Input, signal, SimpleChanges} from '@angular/core';
-import {BaseListWidget} from '../../../widgets/base-list-widget';
-import {Candidacy} from '../../../models/candidacy';
-import {Period} from '../../../models/period';
-import {CandidacyService} from '../../../services/candidacy.service';
-import {NgForOf} from '@angular/common';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {RouterLink} from '@angular/router';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { Component, inject, Input, signal, SimpleChanges } from '@angular/core';
+import { BaseListWidget } from '../../../widgets/base-list-widget';
+import { Candidacy } from '../../../models/candidacy';
+import { Period } from '../../../models/period';
+import { CandidacyService } from '../../../services/candidacy.service';
+import { NgForOf } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-period-candidacies-preselected',
@@ -29,7 +29,9 @@ export class PeriodCandidaciesPreselectedComponent extends BaseListWidget {
   snackbar = inject(MatSnackBar)
 
   ngOnInit() {
-    this.loadData()
+    if (this.period != null) {
+      this.loadData()
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
