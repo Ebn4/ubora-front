@@ -7,7 +7,10 @@ import { Interview } from '../../../models/interview';
 import { PeriodService } from '../../../services/period.service';
 import { Period } from '../../../models/period';
 import { PeriodStatus } from '../../../enum/period-status.enum';
+import { FilePreviewService } from '../../../services/file-preview.service';
 import { ImportService } from '../../../services/import.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DocPreviewComponent } from '../../preselection/candidacy-preselection/doc-preview/doc-preview.component';
 
 @Component({
   selector: 'app-candidacy-informations',
@@ -15,6 +18,9 @@ import { ImportService } from '../../../services/import.service';
   templateUrl: './candidacy-informations.component.html',
 })
 export class CandidacyInformationsComponent extends BaseListWidget {
+  constructor(private _matDialog: MatDialog) {
+    super();
+  }
   protected readonly PeriodStatus = PeriodStatus;
 
   candidacyId!: number;
@@ -25,6 +31,7 @@ export class CandidacyInformationsComponent extends BaseListWidget {
   period = signal<Period | null>(null)
 
   candidacyService = inject(CandidacyService);
+  filePreviewService = inject(FilePreviewService)
   periodService = inject(PeriodService);
   importService: ImportService = inject(ImportService);
   route: ActivatedRoute = inject(ActivatedRoute);
@@ -90,12 +97,30 @@ export class CandidacyInformationsComponent extends BaseListWidget {
     this.candidateHasSelected.set(true)
   }
 
-  getDocument(fileName: any) {
-    const actualFileName = 'Adonai MUKE CV.pdf';
+  docPreview(fileName: any) {
+    const actualFileName = fileName;
+
     this.importService.getDocument(actualFileName).subscribe((file) => {
       const blob = new Blob([file], { type: file.type });
-      const url = window.URL.createObjectURL(blob);
-      window.open(url);
+      const fileFromUrl = new File([blob], "test-doc.docx", { type: blob.type });
+
+      this.filePreviewService.previewFile(fileFromUrl).subscribe({
+        next: (result) => {
+          const dialogConfig = new MatDialogConfig();
+          dialogConfig.disableClose = true;
+          dialogConfig.data = { currentPreview: result };
+
+          const dialogRef = this._matDialog.open(DocPreviewComponent, dialogConfig);
+
+          dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+            }
+          });
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
     });
   }
 

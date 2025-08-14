@@ -22,7 +22,8 @@ export class CandidacyPreselectionComponent {
   candidacyId!: number;
   dispatch_preselections_id!: number;
   preselectionCheck = false
-  period_status: string = "PRESELECTION"
+  period_status: string = PeriodStatus.STATUS_PRESELECTION
+  period_status_true: boolean = false;
 
   candidacy?: Candidacy;
   candidacyService: CandidacyService = inject(CandidacyService);
@@ -60,6 +61,9 @@ export class CandidacyPreselectionComponent {
       next: (response) => {
         this.candidacy = response.data;
         this.period_status = this.candidacy.period_status;
+        if(this.period_status != PeriodStatus.STATUS_PRESELECTION) {
+          this.period_status_true = true;
+        }
       },
       error: (error) => {
         console.error('Erreur chargement candidature:', error);
