@@ -1,303 +1,552 @@
 <!-- Container principal avec nouveau layout -->
 <div class="min-h-screen bg-slate-50">
-
   <div class="sticky top-0 z-10 bg-white border-b border-slate-200 shadow-sm">
     <div class="px-6 py-4">
+
+      <!-- Year Period -->
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
-          <a [routerLink]="['/period']"
-             class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all duration-200 transform hover:scale-105">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          <a
+            [routerLink]="['/period']"
+            class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all duration-200 transform hover:scale-105"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
           </a>
 
           <nav class="flex items-center space-x-2 text-sm text-slate-500">
             <span>Accueil</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              ></path>
             </svg>
-            <a [routerLink]="['/period']" class="hover:text-slate-700 transition-colors">Périodes</a>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            <a
+              [routerLink]="['/period']"
+              class="hover:text-slate-700 transition-colors"
+              >Périodes</a
+            >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              ></path>
             </svg>
             <span class="text-primary font-medium">{{ period?.year }}</span>
           </nav>
         </div>
 
-        <div class="flex items-center px-4 py-2 rounded-xl font-semibold text-sm shadow-lg"
-             [ngClass]="{
-               'bg-green-500 text-white': period?.status !== PeriodStatus.STATUS_CLOSE,
-               'bg-gray-500 text-white': period?.status === PeriodStatus.STATUS_CLOSE
-             }">
-          <div class="w-2 h-2 bg-white rounded-full mr-2"
-               [class.animate-pulse]="period?.status !== PeriodStatus.STATUS_CLOSE"></div>
-          {{ period?.status == PeriodStatus.STATUS_CLOSE ? 'CLÔTURÉ' : period?.status }}
-        </div>
-      </div>
-    </div>
-  </div>
+        <!-- Drop down -->
+        <div class="px-6 pt-4">
+          <div class="max-w-7xl mx-auto">
+            <div class="flex flex-wrap justify-center gap-4 mb-2">
+              @if (canDispatch() && validateDispatchPeriodStatus ==
+              period?.status) {
+              <button
+                (click)="validateDispatch()"
+                class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl kkkktransition-all duration-300 transform jjjhover:scale-105 kkkhover:shadow-xl"
+                style="background: linear-gradient(135deg, #10b981, #059669)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Valider le Dispatch
+              </button>
+              } @if (period?.status === PeriodStatus.STATUS_SELECTION) {
+              <button
+                (click)="closeStatus()"
+                class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+                style="background: linear-gradient(135deg, #ef4444, #dc2626)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Clôturer la Période
+              </button>
+              } @if (canValidatePreselection() && period?.status ==
+              validatedPreselectionPeriodStatus) {
+              <button
+                (click)="validatePreselection()"
+                class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-md"
+                style="background: linear-gradient(135deg, #10b981, #059669)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Valider la présélection
+              </button>
+              }
+              <div class="relative">
+                <button
+                  (click)="toggleDropdown()"
+                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+                  style="background: linear-gradient(135deg, #ff8c00, #ff7a00)"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    />
+                  </svg>
+                  Actions Avancées
+                  <svg
+                    class="w-4 h-4 ml-2 transition-transform duration-200"
+                    [class.rotate-180]="isDropdownVisible"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
 
-  <div class="px-6 pt-4">
-    <div class="max-w-7xl mx-auto">
-      <div class="flex flex-wrap justify-center gap-4 mb-12">
-        @if (canDispatch() && validateDispatchPeriodStatus == period?.status) {
-          <button (click)="validateDispatch()"
-                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
-                  style="background: linear-gradient(135deg, #10B981, #059669);">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            Valider le Dispatch
-          </button>
-        }
-        @if (period?.status === PeriodStatus.STATUS_SELECTION) {
-          <button (click)="closeStatus()"
-                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
-                  style="background: linear-gradient(135deg, #EF4444, #DC2626);">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            Clôturer la Période
-          </button>
-        }
-        @if (canValidatePreselection() && period?.status == validatedPreselectionPeriodStatus) {
-          <button (click)="validatePreselection()"
-                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-md"
-                  style="background: linear-gradient(135deg, #10B981, #059669);">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            Valider la présélection
-          </button>
-        }
-        <div class="relative">
-          <button (click)="toggleDropdown()"
-                  class="flex items-center px-6 py-3 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105  hover:shadow-xl"
-                  style="background: linear-gradient(135deg, #FF8C00, #FF7A00);">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
-            </svg>
-            Actions Avancées
-            <svg class="w-4 h-4 ml-2 transition-transform duration-200"
-                 [class.rotate-180]="isDropdownVisible"
-                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
+                <div
+                  *ngIf="isDropdownVisible"
+                  class="absolute top-full left-1/2 transform -translate-x-1/2 mt-4 z-30 w-80 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden"
+                >
+                  <div
+                    class="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-l border-t border-slate-200"
+                  ></div>
 
-          <div *ngIf="isDropdownVisible"
-               class="absolute top-full left-1/2 transform -translate-x-1/2 mt-4 z-30 w-80 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
-            <div
-              class="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-l border-t border-slate-200"></div>
+                  <div class="p-6">
+                    <div class="text-center mb-4">
+                      <h3 class="text-lg font-semibold text-slate-900">
+                        Actions Disponibles
+                      </h3>
+                      <p class="text-sm text-slate-500">
+                        Gérez les paramètres de la période
+                      </p>
+                    </div>
 
-            <div class="p-6">
-              <div class="text-center mb-4">
-                <h3 class="text-lg font-semibold text-slate-900">Actions Disponibles</h3>
-                <p class="text-sm text-slate-500">Gérez les paramètres de la période</p>
-              </div>
-
-              <div class="space-y-3">
-                <button *ngIf="period?.status == dispatchStatus()"
+                    <div class="space-y-3">
+                      <button
+                        *ngIf="period?.status == dispatchStatus()"
                         (click)="openModalAttach(period?.id)"
-                        class="w-full text-left flex items-center p-4 hover:bg-orange-50 rounded-2xl transition-all duration-200 group border border-transparent hover:border-orange-200">
-                  <div class="w-12 h-12 rounded-2xl flex items-center justify-center mr-4"
-                       style="background: linear-gradient(135deg, #FFF7ED, #FFEDD5); color: #FF8C00;">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                  </div>
-                  <div class="flex-1">
-                    <div class="font-semibold text-slate-900 group-hover:text-orange-700">Critères Présélection</div>
-                    <div class="text-sm text-slate-500">Configurer les critères d'évaluation</div>
-                  </div>
-                </button>
+                        class="w-full text-left flex items-center p-4 hover:bg-orange-50 rounded-2xl transition-all duration-200 group border border-transparent hover:border-orange-200"
+                      >
+                        <div
+                          class="w-12 h-12 rounded-2xl flex items-center justify-center mr-4"
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              #fff7ed,
+                              #ffedd5
+                            );
+                            color: #ff8c00;
+                          "
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                            />
+                          </svg>
+                        </div>
+                        <div class="flex-1">
+                          <div
+                            class="font-semibold text-slate-900 group-hover:text-orange-700"
+                          >
+                            Critères Présélection
+                          </div>
+                          <div class="text-sm text-slate-500">
+                            Configurer les critères d'évaluation
+                          </div>
+                        </div>
+                      </button>
 
-                <button *ngIf="period?.status == dispatchStatus() || period?.status == preselectionStatus()"
+                      <button
+                        *ngIf="
+                          period?.status == dispatchStatus() ||
+                          period?.status == preselectionStatus()
+                        "
                         (click)="openModalAttachSelection(period?.id)"
-                        class="w-full text-left flex items-center p-4 hover:bg-blue-50 rounded-2xl transition-all duration-200 group border border-transparent hover:border-blue-200">
-                  <div class="w-12 h-12 rounded-2xl flex items-center justify-center mr-4"
-                       style="background: linear-gradient(135deg, #EFF6FF, #DBEAFE); color: #3B82F6;">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                  </div>
-                  <div class="flex-1">
-                    <div class="font-semibold text-slate-900 group-hover:text-blue-700">Critères Sélection</div>
-                    <div class="text-sm text-slate-500">Définir les critères finaux</div>
-                  </div>
-                </button>
+                        class="w-full text-left flex items-center p-4 hover:bg-blue-50 rounded-2xl transition-all duration-200 group border border-transparent hover:border-blue-200"
+                      >
+                        <div
+                          class="w-12 h-12 rounded-2xl flex items-center justify-center mr-4"
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              #eff6ff,
+                              #dbeafe
+                            );
+                            color: #3b82f6;
+                          "
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </div>
+                        <div class="flex-1">
+                          <div
+                            class="font-semibold text-slate-900 group-hover:text-blue-700"
+                          >
+                            Critères Sélection
+                          </div>
+                          <div class="text-sm text-slate-500">
+                            Définir les critères finaux
+                          </div>
+                        </div>
+                      </button>
 
-                <button *ngIf="period?.status == dispatchStatus()"
-                        (click)="importFileCandidacies(period?.id, period?.year)"
-                        class="w-full text-left flex items-center p-4 hover:bg-green-50 rounded-2xl transition-all duration-200 group border border-transparent hover:border-green-200">
-                  <div class="w-12 h-12 rounded-2xl flex items-center justify-center mr-4"
-                       style="background: linear-gradient(135deg, #F0FDF4, #DCFCE7); color: #10B981;">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                    </svg>
-                  </div>
-                  <div class="flex-1">
-                    <div class="font-semibold text-slate-900 group-hover:text-green-700">Importer Candidats</div>
-                    <div class="text-sm text-slate-500">Charger les candidatures</div>
-                  </div>
-                </button>
+                      <button
+                        *ngIf="period?.status == dispatchStatus()"
+                        (click)="
+                          importFileCandidacies(period?.id, period?.year)
+                        "
+                        class="w-full text-left flex items-center p-4 hover:bg-green-50 rounded-2xl transition-all duration-200 group border border-transparent hover:border-green-200"
+                      >
+                        <div
+                          class="w-12 h-12 rounded-2xl flex items-center justify-center mr-4"
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              #f0fdf4,
+                              #dcfce7
+                            );
+                            color: #10b981;
+                          "
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                            />
+                          </svg>
+                        </div>
+                        <div class="flex-1">
+                          <div
+                            class="font-semibold text-slate-900 group-hover:text-green-700"
+                          >
+                            Importer Candidats
+                          </div>
+                          <div class="text-sm text-slate-500">
+                            Charger les candidatures
+                          </div>
+                        </div>
+                      </button>
 
-                <button *ngIf="period?.status == dispatchStatus()"
+                      <button
+                        *ngIf="period?.status == dispatchStatus()"
                         (click)="importDocumentsCandidacies()"
-                        class="w-full text-left flex items-center p-4 hover:bg-purple-50 rounded-2xl transition-all duration-200 group border border-transparent hover:border-purple-200">
-                  <div class="w-12 h-12 rounded-2xl flex items-center justify-center mr-4"
-                       style="background: linear-gradient(135deg, #FAF5FF, #F3E8FF); color: #8B5CF6;">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
+                        class="w-full text-left flex items-center p-4 hover:bg-purple-50 rounded-2xl transition-all duration-200 group border border-transparent hover:border-purple-200"
+                      >
+                        <div
+                          class="w-12 h-12 rounded-2xl flex items-center justify-center mr-4"
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              #faf5ff,
+                              #f3e8ff
+                            );
+                            color: #8b5cf6;
+                          "
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div class="flex-1">
+                          <div
+                            class="font-semibold text-slate-900 group-hover:text-purple-700"
+                          >
+                            Importer Documents
+                          </div>
+                          <div class="text-sm text-slate-500">
+                            Charger les pièces jointes
+                          </div>
+                        </div>
+                      </button>
+                    </div>
                   </div>
-                  <div class="flex-1">
-                    <div class="font-semibold text-slate-900 group-hover:text-purple-700">Importer Documents</div>
-                    <div class="text-sm text-slate-500">Charger les pièces jointes</div>
-                  </div>
-                </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Stactus Period -->
+        <div
+          class="flex items-center px-4 py-2 rounded-xl font-semibold text-sm shadow-lg"
+          [ngClass]="{
+            'bg-green-500 text-white':
+              period?.status !== PeriodStatus.STATUS_CLOSE,
+            'bg-gray-500 text-white':
+              period?.status === PeriodStatus.STATUS_CLOSE
+          }"
+        >
+          <div
+            class="w-2 h-2 bg-white rounded-full mr-2"
+            [class.animate-pulse]="period?.status !== PeriodStatus.STATUS_CLOSE"
+          ></div>
+          {{
+            period?.status == PeriodStatus.STATUS_CLOSE
+              ? "CLÔTURÉ"
+              : period?.status
+          }}
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="px-4">
+  <div class="px-4 mt-4">
     <div class="max-w-7xl mx-auto">
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-6">
         <div class="group relative">
           <div
-            class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+            class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+          ></div>
           <div
-            class="relative bg-white rounded-3xl  p-8 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-            <div class="flex items-center justify-between mb-6">
+            class="relative bg-white rounded-3xl p-3 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+          >
+            <div class="flex items-center justify-between mb-3">
               <div
-                class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
                 </svg>
               </div>
               <div class="text-right">
-                <div class="text-3xl font-bold text-slate-900">{{ period?.evaluators_count }}</div>
+                <div class="text-3xl font-bold text-slate-900">
+                  {{ period?.evaluators_count }}
+                </div>
                 <div class="text-sm text-blue-600 font-medium">Évaluateurs</div>
               </div>
             </div>
-            <div class="flex items-center text-sm text-slate-500">
-              <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-              </svg>
-              Experts assignés
-            </div>
           </div>
         </div>
 
         <div class="group relative">
           <div
-            class="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+            class="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+          ></div>
           <div
-            class="relative bg-white rounded-3xl  p-8 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-            <div class="flex items-center justify-between mb-6">
+            class="relative bg-white rounded-3xl p-3 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+          >
+            <div class="flex items-center justify-between mb-3">
               <div
-                class="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                class="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
                 </svg>
               </div>
               <div class="text-right">
-                <div class="text-3xl font-bold text-slate-900">{{ period?.criteria_count }}</div>
+                <div class="text-3xl font-bold text-slate-900">
+                  {{ period?.criteria_count }}
+                </div>
                 <div class="text-sm text-amber-600 font-medium">Critères</div>
               </div>
             </div>
-            <div class="flex items-center text-sm text-slate-500">
-              <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              Paramètres définis
+          </div>
+        </div>
+
+        <div class="group relative">
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+          ></div>
+          <div
+            class="relative bg-white rounded-3xl p-3 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+          >
+            <div class="flex items-center justify-between mb-3">
+              <div
+                class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <div class="text-right">
+                <div class="text-3xl font-bold text-slate-900">
+                  {{ period?.candidats_count }}
+                </div>
+                <div class="text-sm text-emerald-600 font-medium">
+                  Candidatures
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="group relative">
           <div
-            class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+            class="absolute inset-0 bg-gradient-to-r from-purple-500 to-purple-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+          ></div>
           <div
-            class="relative bg-white rounded-3xl  p-8 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-            <div class="flex items-center justify-between mb-6">
+            class="relative bg-white rounded-3xl p-3 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+          >
+            <div class="flex items-center justify-between mb-3">
               <div
-                class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 17v-2a4 4 0 018 0v2M12 12a4 4 0 100-8 4 4 0 000 8z"
+                  />
                 </svg>
               </div>
               <div class="text-right">
-                <div class="text-3xl font-bold text-slate-900">{{ period?.candidats_count }}</div>
-                <div class="text-sm text-emerald-600 font-medium">Candidatures</div>
+                <div class="text-3xl font-bold text-slate-900">
+                  {{ period?.preselection_count }}
+                </div>
+                <div class="text-sm text-purple-600 font-medium">
+                  Présélectionnés
+                </div>
               </div>
-            </div>
-            <div class="flex items-center text-sm text-slate-500">
-              <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-              </svg>
-              Dossiers reçus
-            </div>
-          </div>
-        </div>
-
-        <div class="group relative">
-          <div
-            class="absolute inset-0 bg-gradient-to-r from-purple-500 to-purple-600 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          <div
-            class="relative bg-white rounded-3xl  p-8 border border-slate-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-            <div class="flex items-center justify-between mb-6">
-              <div
-                class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 17v-2a4 4 0 018 0v2M12 12a4 4 0 100-8 4 4 0 000 8z"/>
-                </svg>
-              </div>
-              <div class="text-right">
-                <div class="text-3xl font-bold text-slate-900">{{ period?.preselection_count }}</div>
-                <div class="text-sm text-purple-600 font-medium">Présélectionnés</div>
-              </div>
-            </div>
-            <div class="flex items-center text-sm text-slate-500">
-              <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              Candidats retenus
             </div>
           </div>
         </div>
@@ -309,20 +558,39 @@
     <div class="w-full">
       <div class="overflow-hidden" [ngClass]="{ 'opacity-10': showModal }">
         <div class="px-1 py-3">
-          <mat-tab-group class="mb-6" [(selectedIndex)]="tabIndex" (selectedIndexChange)="onTabChange($event)">
+          <mat-tab-group
+            class="mb-6"
+            [(selectedIndex)]="tabIndex"
+            (selectedIndexChange)="onTabChange($event)"
+          >
             <mat-tab>
               <ng-template mat-tab-label>
                 <div
                   class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105 w-full"
                   [ngClass]="{
-                       'text-white ': selectedTab === 'criteria',
-                       'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'criteria'
-                     }"
-                  [style.background]="selectedTab === 'criteria' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24"
-                       stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    'text-white ': selectedTab === 'criteria',
+                    'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg':
+                      selectedTab !== 'criteria'
+                  }"
+                  [style.background]="
+                    selectedTab === 'criteria'
+                      ? 'linear-gradient(135deg, #FF8C00, #FF7A00)'
+                      : ''
+                  "
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
                   </svg>
                   <span class="font-semibold">Critères d'Évaluation</span>
                 </div>
@@ -335,16 +603,31 @@
                 <div
                   class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
                   [ngClass]="{
-                       'text-white ': selectedTab === 'candidacy',
-                       'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'candidacy'
-                     }"
-                  [style.background]="selectedTab === 'candidacy' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24"
-                       stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    'text-white ': selectedTab === 'candidacy',
+                    'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg':
+                      selectedTab !== 'candidacy'
+                  }"
+                  [style.background]="
+                    selectedTab === 'candidacy'
+                      ? 'linear-gradient(135deg, #FF8C00, #FF7A00)'
+                      : ''
+                  "
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
-                  <span class="font-semibold">Candidats Retenus</span>
+                  <span class="font-semibold">Candidats Eligibles</span>
                 </div>
               </ng-template>
               <app-period-candidacy [period]="period"></app-period-candidacy>
@@ -355,19 +638,36 @@
                 <div
                   class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
                   [ngClass]="{
-                       'text-white ': selectedTab === 'preselected-candidates',
-                       'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'preselected-candidates'
-                     }"
-                  [style.background]="selectedTab === 'preselected-candidates' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24"
-                       stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    'text-white ': selectedTab === 'preselected-candidates',
+                    'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg':
+                      selectedTab !== 'preselected-candidates'
+                  }"
+                  [style.background]="
+                    selectedTab === 'preselected-candidates'
+                      ? 'linear-gradient(135deg, #FF8C00, #FF7A00)'
+                      : ''
+                  "
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                   <span class="font-semibold">Candidats Presélectionnés</span>
                 </div>
               </ng-template>
-              <app-period-candidacies-preselected [period]="period"></app-period-candidacies-preselected>
+              <app-period-candidacies-preselected
+                [period]="period"
+              ></app-period-candidacies-preselected>
             </mat-tab>
 
             <mat-tab>
@@ -375,19 +675,36 @@
                 <div
                   class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
                   [ngClass]="{
-                       'text-white ': selectedTab === 'selected-candidates',
-                       'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'selected-candidates'
-                     }"
-                  [style.background]="selectedTab === 'selected-candidates' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24"
-                       stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    'text-white ': selectedTab === 'selected-candidates',
+                    'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg':
+                      selectedTab !== 'selected-candidates'
+                  }"
+                  [style.background]="
+                    selectedTab === 'selected-candidates'
+                      ? 'linear-gradient(135deg, #FF8C00, #FF7A00)'
+                      : ''
+                  "
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                   <span class="font-semibold">Candidats Sélectionnés</span>
                 </div>
               </ng-template>
-              <app-period-candidacies-selected [period]="period"></app-period-candidacies-selected>
+              <app-period-candidacies-selected
+                [period]="period"
+              ></app-period-candidacies-selected>
             </mat-tab>
 
             <mat-tab>
@@ -395,18 +712,36 @@
                 <div
                   class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
                   [ngClass]="{
-                       'text-white ': selectedTab === 'candidacy-rejected',
-                       'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'candidacy-rejected'
-                     }"
-                  [style.background]="selectedTab === 'candidacy-rejected' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24"
-                       stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    'text-white ': selectedTab === 'candidacy-rejected',
+                    'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg':
+                      selectedTab !== 'candidacy-rejected'
+                  }"
+                  [style.background]="
+                    selectedTab === 'candidacy-rejected'
+                      ? 'linear-gradient(135deg, #FF8C00, #FF7A00)'
+                      : ''
+                  "
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                   <span class="font-semibold">Candidats Rejetés</span>
                 </div>
               </ng-template>
-              <app-period-candidacy-rejected [period]="period"></app-period-candidacy-rejected>
+              <app-period-candidacy-rejected
+                [period]="period"
+              ></app-period-candidacy-rejected>
             </mat-tab>
 
             <mat-tab>
@@ -414,22 +749,41 @@
                 <div
                   class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
                   [ngClass]="{
-                       'text-white ': selectedTab === 'evaluateur',
-                       'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'evaluateur'
-                     }"
-                  [style.background]="selectedTab === 'evaluateur' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24"
-                       stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    'text-white ': selectedTab === 'evaluateur',
+                    'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg':
+                      selectedTab !== 'evaluateur'
+                  }"
+                  [style.background]="
+                    selectedTab === 'evaluateur'
+                      ? 'linear-gradient(135deg, #FF8C00, #FF7A00)'
+                      : ''
+                  "
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                    />
                   </svg>
                   <span class="font-semibold">Équipe d'Évaluateurs</span>
                 </div>
               </ng-template>
               <div>
-                <app-period-evaluateur [period]="period"
-                                       [candidatesCount]="period?.candidats_count ? period?.candidats_count : 0"
-                                       (canValidateDispatch)="canValidateDispatch($event.valueOf())">
+                <app-period-evaluateur
+                  [period]="period"
+                  [candidatesCount]="
+                    period?.candidats_count ? period?.candidats_count : 0
+                  "
+                  (canValidateDispatch)="canValidateDispatch($event.valueOf())"
+                >
                 </app-period-evaluateur>
               </div>
             </mat-tab>
