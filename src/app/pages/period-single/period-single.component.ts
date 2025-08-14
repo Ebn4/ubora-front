@@ -23,6 +23,9 @@ import {ImportDocumentsComponent} from './import-documents/import-documents.comp
 import {PeriodCandidacyRejectedComponent} from "./period-candidacy-rejected/period-candidacy-rejected.component";
 import {ReactiveFormsModule} from '@angular/forms';
 import {PeriodCandidaciesSelectedComponent} from './period-candidacies-selected/period-candidacies-selected.component';
+import {
+  PeriodCandidaciesPreselectedComponent
+} from './period-candidacies-preselected/period-candidacies-preselected.component';
 
 @Component({
   selector: 'app-period-single',
@@ -36,7 +39,8 @@ import {PeriodCandidaciesSelectedComponent} from './period-candidacies-selected/
     CriteriaComponent,
     PeriodCandidacyRejectedComponent,
     ReactiveFormsModule,
-    PeriodCandidaciesSelectedComponent
+    PeriodCandidaciesSelectedComponent,
+    PeriodCandidaciesPreselectedComponent
   ],
   templateUrl: './period-single.component.html',
 })
@@ -129,12 +133,14 @@ export class PeriodSingleComponent {
         return 0;
       case 'candidacy':
         return 1;
-      case 'selected-candidates':
+      case 'preselected-candidates':
         return 2;
-      case 'candidacy-rejected':
+      case 'selected-candidates':
         return 3;
-      case 'evaluateur':
+      case 'candidacy-rejected':
         return 4;
+      case 'evaluateur':
+        return 5;
       default:
         return 0;
     }
@@ -147,10 +153,12 @@ export class PeriodSingleComponent {
       case 1:
         return 'candidacy';
       case 2:
-        return 'selected-candidates';
+        return 'preselected-candidates';
       case 3:
-        return 'candidacy-rejected';
+        return 'selected-candidates';
       case 4:
+        return 'candidacy-rejected';
+      case 5:
         return 'evaluateur';
       default:
         return 'criteria';

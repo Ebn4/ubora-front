@@ -355,6 +355,26 @@
                 <div
                   class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
                   [ngClass]="{
+                       'text-white ': selectedTab === 'preselected-candidates',
+                       'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'preselected-candidates'
+                     }"
+                  [style.background]="selectedTab === 'preselected-candidates' ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                  <span class="font-semibold">Candidats Presélectionnés</span>
+                </div>
+              </ng-template>
+              <app-period-candidacies-preselected [period]="period"></app-period-candidacies-preselected>
+            </mat-tab>
+
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <div
+                  class="flex items-center px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105"
+                  [ngClass]="{
                        'text-white ': selectedTab === 'selected-candidates',
                        'text-slate-600 hover:text-slate-800 hover:bg-white hover:shadow-lg': selectedTab !== 'selected-candidates'
                      }"

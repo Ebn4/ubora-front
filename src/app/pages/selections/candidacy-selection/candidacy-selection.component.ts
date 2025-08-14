@@ -12,6 +12,9 @@ import {Interview} from '../../../models/interview';
 import {Period} from '../../../models/period';
 import {EvaluationComponent} from '../../evaluation/evaluation.component';
 import {PeriodService} from '../../../services/period.service';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {DocPreviewComponent} from '../../preselection/candidacy-preselection/doc-preview/doc-preview.component';
+import {FilePreviewService} from '../../../services/file-preview.service';
 
 @Component({
   selector: 'app-candidacy-preselection',
@@ -20,7 +23,10 @@ import {PeriodService} from '../../../services/period.service';
 })
 export class CandidacySelectionComponent {
 
+  constructor(private _matDialog: MatDialog) {
+  }
   periodService = inject(PeriodService);
+  filePreviewService = inject(FilePreviewService)
   candidacyService: CandidacyService = inject(CandidacyService);
   route: ActivatedRoute = inject(ActivatedRoute);
 
@@ -103,6 +109,33 @@ export class CandidacySelectionComponent {
   onEvaluated() {
     this.loadDataCandidacy(this.candidateId())
     this.candidateHasSelected.set(true)
+  }
+
+  docPreview(fileName: any) {
+    const actualFileName = fileName;
+
+    this.importService.getDocument(actualFileName).subscribe((file) => {
+      const blob = new Blob([file], { type: file.type });
+      const fileFromUrl = new File([blob], "test-doc.docx", { type: blob.type });
+
+      this.filePreviewService.previewFile(fileFromUrl).subscribe({
+        next: (result) => {
+          const dialogConfig = new MatDialogConfig();
+          dialogConfig.disableClose = true;
+          dialogConfig.data = { currentPreview: result };
+
+          const dialogRef = this._matDialog.open(DocPreviewComponent, dialogConfig);
+
+          dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+            }
+          });
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
+    });
   }
 
   protected readonly PeriodStatus = PeriodStatus;

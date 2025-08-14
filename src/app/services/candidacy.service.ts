@@ -136,7 +136,7 @@ export class CandidacyService {
     );
   }
 
-  getPreselectedCandidates(page: number = 1, search: string = '', per_page: number) {
+  getPreselectedCandidates(page: number = 1, search: string = '', per_page: number, periodId: number | null = null) {
     let params = new HttpParams()
       .set('per_page', per_page)
       .set('page', page)
@@ -145,7 +145,11 @@ export class CandidacyService {
       params = params.set('search', search)
     }
 
-    return this.http.get<ResponseInterface<Candidacy[]>>(
+    if (periodId != null) {
+      params = params.set('periodId', periodId)
+    }
+
+    return this.http.get<ResponseInterfaceE<Candidacy[]>>(
       `${this.baseUrl}/candidates/interviews`,
       {params}
     );
