@@ -9,6 +9,7 @@ import { ImportService } from '../../services/import.service';
 import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ListeningChangeService } from '../../services/listening-change.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class ImportFileCandidaciesComponent {
   isLoading = false;
   isLoadingDoc = false;
   importService: ImportService = inject(ImportService);
+  readonly snackbar = inject(MatSnackBar)
   router: Router = inject(Router);
   periodId: number;
   year!: number;
@@ -371,6 +373,7 @@ export class ImportFileCandidaciesComponent {
         })
         .subscribe({
           next: (response) => {
+            this.snackbar.open("Candidatures uploadées avec succè", "Fermer", {duration:3000})
             this.closeModal();
           },
           error: (error) => {
