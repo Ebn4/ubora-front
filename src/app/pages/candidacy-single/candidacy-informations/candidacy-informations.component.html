@@ -1,174 +1,175 @@
-<!-- Informations Section -->
-<div class="px-6 py-8">
+<!-- Container principal avec fond doux -->
+<div class="min-h-screen bg-gray-50 px-4 py-8">
   <div class="max-w-7xl mx-auto">
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-      <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border-l-4 border-orange-500">
-        <div class="px-8 py-6 border-b border-gray-200 bg-gray-800 text-white">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center">
-              <div class="w-12 h-12 bg-amber-500 bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round h-6 w-6 text-white">
-                  <circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>
-                </svg>
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-white">Profil du Candidat</h3>
-                <p class="text-gray-300 text-sm">Informations personnelles et académiques</p>
-              </div>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <!-- Colonne gauche - Profil complet -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+        <!-- En-tête de section -->
+        <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-800 to-gray-900 text-white">
+          <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-amber-500 bg-opacity-20 rounded-xl text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold">Profil du Candidat</h3>
+              <p class="text-gray-300 text-sm">Informations personnelles et académiques</p>
             </div>
           </div>
         </div>
 
-        <div class="p-8">
-          <div class="flex items-center mb-8 p-6 bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl border border-orange-200">
-            <div class="w-20 h-20 bg-amber-500 bg-opacity-20 from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mr-6 shadow-lg">
-              <span class="text-white font-bold text-2xl">{{ candidacy?.etn_nom!.charAt(0) }}{{ candidacy?.etn_prenom!.charAt(0)  }}</span>
+        <!-- Carte d'identité du candidat -->
+        <div class="p-6">
+          <div class="flex items-center gap-6 mb-8 p-5 bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl border border-amber-200 shadow-sm">
+            <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-md">
+              {{ candidacy?.etn_nom?.charAt(0) }}{{ candidacy?.etn_prenom?.charAt(0) }}
             </div>
-            <div>
-              <h4 class="text-2xl font-bold text-gray-900 mb-1">
-                {{ candidacy?.etn_nom }} {{ candidacy?.etn_postnom }}
-              </h4>
-              <p class="text-lg text-gray-600 mb-2">{{ candidacy?.etn_prenom }}</p>
-              <div class="flex items-center text-sm text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail h-4 w-4 mr-2">
-                  <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            <div class="min-w-0">
+              <h4 class="text-xl font-bold text-gray-800 truncate">{{ candidacy?.etn_nom }} {{ candidacy?.etn_postnom }}</h4>
+              <p class="text-gray-600 truncate">{{ candidacy?.etn_prenom }}</p>
+              <p class="text-sm text-gray-500 flex items-center mt-1.5 truncate">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
                 </svg>
-                john.doeexample.com
-              </div>
+                <span class="truncate">{{ candidacy?.etn_email }}</span>
+              </p>
             </div>
           </div>
 
-          <!-- Informations Personnelles et Académiques -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
-              <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info h-4 w-4 text-blue-600">
-                    <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
-                  </svg>
-                </div>
+          <!-- Grille d'informations -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Informations personnelles -->
+            <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-xs">
+              <h3 class="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+                </svg>
                 Informations Personnelles
               </h3>
-              <div class="space-y-4">
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user h-5 w-5 text-orange-500 mr-3">
-                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              
+              <div class="space-y-3.5">
+                <!-- Nom complet -->
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
                   </svg>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Nom complet</p>
-                    <p class="font-semibold text-gray-900">{{ candidacy?.etn_nom }} {{ candidacy?.etn_postnom }} {{ candidacy?.etn_prenom }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">Nom complet</p>
+                    <p class="font-medium text-gray-800">{{ candidacy?.etn_nom }} {{ candidacy?.etn_postnom }} {{ candidacy?.etn_prenom }}</p>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail h-5 w-5 text-orange-500 mr-3">
-                    <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                
+                <!-- Téléphone -->
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
                   </svg>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Email</p>
-                    <p class="font-semibold text-gray-900">{{ candidacy?.etn_email }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">Téléphone</p>
+                    <p class="font-medium text-gray-800">{{ candidacy?.telephone || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone h-5 w-5 text-orange-500 mr-3">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-3.94-3.94A19.79 19.79 0 0 1 2 2.18 2 2 0 0 1 4.18 0h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-1.18 2.19l-.7.35a16 16 0 0 0 6.06 6.06l.35-.7a2 2 0 0 1 2.19-1.18 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                
+                <!-- Date de naissance -->
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
                   </svg>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Téléphone</p>
-                    <p class="font-semibold text-gray-900">{{ candidacy?.telephone }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">Date de naissance</p>
+                    <p class="font-medium text-gray-800">{{ candidacy?.etn_naissance || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar h-5 w-5 text-orange-500 mr-3">
-                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
+                
+                <!-- Genre -->
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
                   </svg>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Date de naissance</p>
-                    <p class="font-semibold text-gray-900">{{ candidacy?.etn_naissance }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">Genre</p>
+                    <p class="font-medium text-gray-800">{{ candidacy?.sexe || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-venus-and-mars h-5 w-5 text-orange-500 mr-3">
-                    <path d="M18 10a6 6 0 0 0-12 0v2h12v-2"/><path d="M12 20v-8"/><path d="M18 22h-4"/><path d="M6 22h4"/>
+                
+                <!-- Adresse -->
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
                   </svg>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Genre</p>
-                    <p class="font-semibold text-gray-900">{{ candidacy?.sexe }}</p>
-                  </div>
-                </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin h-5 w-5 text-orange-500 mr-3">
-                    <path d="M12 12.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M12 22.5c-3.31 0-6-2.7-6-6.01V10c0-4.42 3.58-8 8-8s8 3.58 8 8v6.49c0 3.31-2.69 6-6 6Z"/>
-                  </svg>
-                  <div>
-                    <p class="text-sm font-medium text-gray-500">Adresse</p>
-                    <p class="font-semibold text-gray-900">{{ candidacy?.adresse }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">Adresse</p>
+                    <p class="font-medium text-gray-800">{{ candidacy?.adresse || 'Non renseigné' }}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
-              <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap h-4 w-4 text-green-600">
-                    <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.084a1 1 0 0 0 0 1.838l8.85 4.007a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
-                  </svg>
-                </div>
-                Informations Académiques
+            <!-- Informations académiques -->
+            <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-xs">
+              <h3 class="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/>
+                </svg>
+                Formation Académique
               </h3>
-              <div class="space-y-4">
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe h-5 w-5 text-orange-500 mr-3">
-                    <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+              
+              <div class="space-y-3.5">
+                <!-- Nationalité -->
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/>
                   </svg>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Nationalité</p>
-                    <p class="font-semibold text-gray-900">{{ candidacy?.nationalite }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">Nationalité</p>
+                    <p class="font-medium text-gray-800">{{ candidacy?.nationalite || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map h-5 w-5 text-orange-500 mr-3">
-                    <path d="M14.5 4l2.06 3.42A10 10 0 0 1 20 12c0 2.23-.5 4.3-1.38 6.18L14.5 20l-2.06-3.42A10 10 0 0 1 4 12c0-2.23.5-4.3 1.38-6.18L9.5 4Z"/><path d="M12 2v20"/><path d="M20 12H4"/>
+                
+                <!-- Province -->
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
                   </svg>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Province</p>
-                    <p class="font-semibold text-gray-900">{{ candidacy?.province }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">Province</p>
+                    <p class="font-medium text-gray-800">{{ candidacy?.province || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open-text h-5 w-5 text-orange-500 mr-3">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h6z"/><path d="M10 12H8"/><path d="M16 12h-2"/><path d="M16 16h-2"/><path d="M10 16H8"/>
+                
+                <!-- Section/Option -->
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
                   </svg>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Section</p>
-                    <p class="font-semibold text-gray-900">{{ candidacy?.section_option }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">Section/Option</p>
+                    <p class="font-medium text-gray-800">{{ candidacy?.section_option || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building h-5 w-5 text-orange-500 mr-3">
-                    <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M12 18h.01"/>
+                
+                <!-- Établissement -->
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/>
                   </svg>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Établissement actuel</p>
-                    <p class="font-semibold">{{ candidacy?.universite_institut_sup }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">Établissement</p>
+                    <p class="font-medium text-gray-800">{{ candidacy?.universite_institut_sup || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-percent h-5 w-5 text-orange-500 mr-3">
-                    <line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>
+                
+                <!-- Pourcentage -->
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 4.5h.008v.008h-.008V13.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
                   </svg>
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Pourcentage obtenu</p>
-                    <p class="font-semibold">{{ candidacy?.pourcentage_obtenu }}%</p>
-                  </div>
-                </div>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin h-5 w-5 text-orange-500 mr-3">
-                    <path d="M12 12.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M12 22.5c-3.31 0-6-2.7-6-6.01V10c0-4.42 3.58-8 8-8s8 3.58 8 8v6.49c0 3.31-2.69 6-6 6Z"/>
-                  </svg>
-                  <div>
-                    <p class="text-sm font-medium text-gray-500">Adresse université</p>
-                    <p class="font-semibold">{{ candidacy?.adresse_universite }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">Pourcentage</p>
+                    <p class="font-medium text-gray-800">{{ candidacy?.pourcentage_obtenu || '0' }}%</p>
                   </div>
                 </div>
               </div>
@@ -177,77 +178,103 @@
         </div>
       </div>
 
-      <!-- Bloc droit - Documents et Évaluations -->
-      <div>
-        <!-- Documents Section -->
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border-l-4 border-orange-500 mb-8">
-          <div class="px-8 py-6 border-b border-gray-200 bg-gray-800 text-white">
-            <h3 class="text-xl font-bold text-white flex items-center">
-              <div class="w-12 h-12 bg-amber-500 bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-open h-6 w-6 text-white">
-                  <path d="M6 17a3 3 0 0 1-3-3V7a2 2 0 0 1 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H19a2 2 0 0 1 2 2v.27a2 2 0 0 1-1 1.73L16 21H6a3 3 0 0 1-3-3v-2"/>
-                </svg>
-              </div>
-              Documents Soumis
-            </h3>
+      <!-- Colonne droite - Documents -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+        <!-- En-tête de section -->
+        <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-800 to-gray-900 text-white">
+          <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-blue-500 bg-opacity-20 rounded-xl text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold">Documents Soumis</h3>
+              <p class="text-gray-300 text-sm">Fichiers fournis par le candidat</p>
+            </div>
           </div>
-          <div class="p-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div class="bg-gray-50 p-4 rounded-lg flex items-center shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text h-10 w-10 text-red-500 mr-3">
-                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>
-                </svg>
-                <div class="flex-1">
-                  <p class="font-semibold">Relevé de notes dernière année.pdf</p>
-                  <p class="text-sm text-gray-500">Rélevé</p>
-                </div>
-                <a href="#" class="text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download h-6 w-6">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+        </div>
+
+        <!-- Liste des documents -->
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Relevé de notes -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors duration-200 group">
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-red-100 rounded-lg text-red-500 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
                   </svg>
-                </a>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-800 truncate">Relevé de notes dernière année.pdf</p>
+                  <p class="text-xs text-gray-500 mt-1">Rélevé</p>
+                </div>
+                <button class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+                  </svg>
+                </button>
               </div>
-              <div class="bg-gray-50 p-4 rounded-lg flex items-center shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award h-10 w-10 text-red-500 mr-3">
-                  <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17.76 2.54l-2.924-.66c-.603-.136-1.25-.09-1.779.159L12 2.54l-1.057-.477c-.529-.249-1.176-.295-1.779-.159L6.24 2.54l2.283 10.35L7.5 22l4.5-2 4.5 2-1.283-9.11Z"/>
-                </svg>
-                <div class="flex-1">
-                  <p class="font-semibold">Diplôme d'Etat.pdf</p>
-                  <p class="text-sm text-gray-500">Diplôme d'Etat</p>
-                </div>
-                <a href="#" class="text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download h-6 w-6">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+            </div>
+
+            <!-- Diplôme d'Etat -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors duration-200 group">
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-amber-100 rounded-lg text-amber-500 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.546.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"/>
                   </svg>
-                </a>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-800 truncate">Diplôme d'Etat.pdf</p>
+                  <p class="text-xs text-gray-500 mt-1">Diplôme d'Etat</p>
+                </div>
+                <button class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+                  </svg>
+                </button>
               </div>
-              <div class="bg-gray-50 p-4 rounded-lg flex items-center shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-check h-10 w-10 text-blue-500 mr-3">
-                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/>
-                </svg>
-                <div class="flex-1">
-                  <p class="font-semibold">Attestation de réussite dernière année.pdf</p>
-                  <p class="text-sm text-gray-500">Attestation de réussite</p>
-                </div>
-                <a href="#" class="text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download h-6 w-6">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+            </div>
+
+            <!-- Attestation de réussite -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors duration-200 group">
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-blue-100 rounded-lg text-blue-500 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
                   </svg>
-                </a>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-800 truncate">Attestation de réussite dernière année.pdf</p>
+                  <p class="text-xs text-gray-500 mt-1">Attestation de réussite</p>
+                </div>
+                <button class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+                  </svg>
+                </button>
               </div>
-              <div class="bg-gray-50 p-4 rounded-lg flex items-center shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-pen h-10 w-10 text-green-500 mr-3">
-                  <path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10.4 12.6a2.1 2.1 0 1 1 3 3L8 21l-4 1 1-4Z"/>
-                </svg>
-                <div class="flex-1">
-                  <p class="font-semibold">Lettre de motivation.pdf</p>
-                  <p class="text-sm text-gray-500">Lettre de motivation</p>
-                </div>
-                <a href="#" class="text-blue-500 hover:text-blue-700 cursor-pointer p-2 rounded-full hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download h-6 w-6">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+            </div>
+
+            <!-- Lettre de motivation -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors duration-200 group">
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-green-100 rounded-lg text-green-500 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
                   </svg>
-                </a>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-800 truncate">Lettre de motivation.pdf</p>
+                  <p class="text-xs text-gray-500 mt-1">Lettre de motivation</p>
+                </div>
+                <button class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
