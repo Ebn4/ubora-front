@@ -6,7 +6,6 @@ import {SidebarComponent} from '../sidebar/sidebar.component';
 @Component({
   selector: 'app-default-layout',
   imports: [
-    RouterLink,
     RouterOutlet,
     HeaderComponent,
     SidebarComponent
