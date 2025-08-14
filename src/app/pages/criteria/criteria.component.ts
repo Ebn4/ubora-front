@@ -44,9 +44,9 @@ export class CriteriaComponent extends BaseListWidget {
     });
   }
 
-  changeStatus(id: number) {
+  changeStatus(id: number, message: string) {
     const dialogRef = this._matDialog.open(CriteriaConfirmComponent, {
-      data: { message: 'Voulez-vous vraiment exécuter cette action ?' },
+      data: { message: `Voulez-vous ${message} Ce Critère ?` },
       disableClose: true,
     });
 
