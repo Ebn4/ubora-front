@@ -15,29 +15,25 @@
       </div>
 
       <div class="flex items-center space-x-4">
-        <div class="text-sm text-gray-600">
-          Candidat <span class="font-bold">{{ currentIndex + 1 }}</span> sur
-          <span class="font-bold">1</span>
-        </div>
-        <div class="flex space-x-2">
-          <button
-            class="bg-gray-200 hover:bg-primary hover:text-white text-gray-700 px-3 py-2 rounded-lg transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Précédent">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-          </button>
-
-          <button
-            class="bg-gray-200 hover:bg-primary hover:text-white text-gray-700 px-3 py-2 rounded-lg transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Suivant">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </button>
-        </div>
+        <form>
+          <div class="mb-4">
+            <input type="text"
+                   aria-label="id"
+                   matInput
+                   id="user"
+                   placeholder="Recherche..."
+                   class="w-[400px] pl-10 pr-4 py-3 border-2 border-primary/50 rounded-xl focus:outline-none focus:border-orange-400 transition-colors duration-200 bg-slate-50 focus:bg-white"
+                   [formControl]="query"
+                   [matAutocomplete]="auto">
+            <mat-autocomplete
+              (optionSelected)="onSelectedCandidate($event.option.value)"
+              autoActiveFirstOption #auto="matAutocomplete" [displayWith]="displayFn">
+              @for (option of filterCandidates | async; track option) {
+                <mat-option [value]="option">{{ option.etn_nom }} {{ option.etn_prenom }}</mat-option>
+              }
+            </mat-autocomplete>
+          </div>
+        </form>
       </div>
 
     </div>
@@ -125,7 +121,8 @@
               </svg>
               <span class="text-sm font-medium">{{ candidacy?.diplome_detat }}</span>
             </div>
-            <button (click)="docPreview(candidacy?.diplome_detat)" class="text-blue-500 cursor-pointer hover:text-blue-700">
+            <button (click)="docPreview(candidacy?.diplome_detat)"
+                    class="text-blue-500 cursor-pointer hover:text-blue-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                    stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -163,7 +160,8 @@
               </svg>
               <span class="text-sm font-medium">Attestation de Réussite</span>
             </div>
-            <button (click)="docPreview(candidacy?.attestation_de_reussite_derniere_annee)" class="text-blue-500 hover:text-blue-700">
+            <button (click)="docPreview(candidacy?.attestation_de_reussite_derniere_annee)"
+                    class="text-blue-500 hover:text-blue-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                    stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -185,7 +183,8 @@
 
 
       @if ((period()?.status == PeriodStatus.STATUS_SELECTION)) {
-        <app-evaluation [periodId]="period()?.id ??0" [interviewId]="interview()?.id??0" [hasSelected]="candidateHasSelected()" (onEvaluated)="onEvaluated()"/>
+        <app-evaluation [periodId]="period()?.id ??0" [interviewId]="interview()?.id??0"
+                        [hasSelected]="candidateHasSelected()" (onEvaluated)="onEvaluated()"/>
       }
     </div>
 
