@@ -133,6 +133,8 @@ export class EvaluationComponent implements OnInit {
               this.showSnackbar(value.errors)
             }
             if (value.data) {
+              this.isCandidateHasSelected.set(true)
+              this.loadPeriod()
               this.showSnackbar('evaluation effectuer')
               this.onEvaluated.emit()
             }
