@@ -184,6 +184,7 @@
 
       @if ((period()?.status == PeriodStatus.STATUS_SELECTION)) {
         <app-evaluation [periodId]="period()?.id ??0" [interviewId]="interview()?.id??0"
+                        [candidateId]="candidacy?.id??0"
                         [hasSelected]="candidateHasSelected()" (onEvaluated)="onEvaluated()"/>
       }
     </div>
