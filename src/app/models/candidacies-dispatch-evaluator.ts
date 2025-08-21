@@ -43,6 +43,7 @@ export interface CandidaciesDispatchEvaluator {
   candidaciesPreselection: number
   statusCandidacy: boolean
   totalCandidats: number;
+  periodStatus: string;
   dispatch: [
     {
       id: number,
