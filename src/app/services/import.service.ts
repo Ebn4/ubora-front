@@ -13,7 +13,7 @@ export class ImportService {
   constructor() {
   }
 
-  uploadCandidacies(data: { rows: any; periodId: number, year: number }) {
+  uploadCandidacies(data: { rows: any; id: number, year: number }) {
     return this.http.post(`${this.baseUrl}/uploadCandidacies`, data);
   }
 

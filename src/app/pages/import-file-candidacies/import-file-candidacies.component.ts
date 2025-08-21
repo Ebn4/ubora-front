@@ -368,7 +368,7 @@ export class ImportFileCandidaciesComponent {
       this.importService
         .uploadCandidacies({
           rows: this.dataSource(),
-          periodId: this.periodId,
+          id: this.periodId,
           year: this.year
         })
         .subscribe({
