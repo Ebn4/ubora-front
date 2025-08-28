@@ -13,6 +13,9 @@ import {
 import {CandidateEvaluation} from '../../models/candidate-evaluation';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {lastValueFrom} from 'rxjs';
+import {PeriodService} from '../../services/period.service';
+import {Period} from '../../models/period';
+import {PeriodStatus} from '../../enum/period-status.enum';
 
 @Component({
   selector: 'app-evaluation',
@@ -29,17 +32,21 @@ export class EvaluationComponent implements OnInit {
   @Input() periodId: number | null = null;
   @Input() hasSelected: boolean = false;
   @Input() interviewId: number | null = null;
+  @Input() candidateId: number = 0;
 
   @Output() onEvaluated = new EventEmitter()
 
   snackBar = inject(MatSnackBar)
   criterias = signal<Criteria[]>([]);
   criteriaService = inject(CriteriaService)
+  periodService = inject(PeriodService)
   candidateService = inject(CandidacyService)
   formBuilder = inject(FormBuilder)
   cdr = inject(ChangeDetectorRef)
 
   form!: FormGroup
+  isPeriodHasSelectionStatus = signal(false)
+  isCandidateHasSelected = signal(false)
 
   ngOnInit() {
     this.form = this.formBuilder.group({
@@ -47,6 +54,8 @@ export class EvaluationComponent implements OnInit {
       }
     )
     this.loadCriteria();
+    this.loadPeriod()
+    this.candidateHasSelected()
   }
 
   get crv(): FormArray {
@@ -71,6 +80,30 @@ export class EvaluationComponent implements OnInit {
       this.cdr.detectChanges()
       this.criterias.set(value.data);
     }
+  }
+
+  async loadPeriod() {
+    if (this.periodId != null) {
+      this.periodService.getOnePeriod(this.periodId)
+        .subscribe({
+          next: value => {
+            if (value.status == PeriodStatus.STATUS_SELECTION) {
+              this.isPeriodHasSelectionStatus.set(true)
+            } else {
+              this.isPeriodHasSelectionStatus.set(false)
+            }
+          }
+        })
+    }
+  }
+
+  candidateHasSelected() {
+    this.candidateService.candidateHasSelected(this.candidateId)
+      .subscribe({
+        next: value => {
+          this.isCandidateHasSelected.set(value.hasSelection)
+        }
+      })
   }
 
   showSnackbar(message: string) {
@@ -100,6 +133,8 @@ export class EvaluationComponent implements OnInit {
               this.showSnackbar(value.errors)
             }
             if (value.data) {
+              this.isCandidateHasSelected.set(true)
+              this.loadPeriod()
               this.showSnackbar('evaluation effectuer')
               this.onEvaluated.emit()
             }
@@ -117,4 +152,5 @@ export class EvaluationComponent implements OnInit {
 
   }
 
+  protected readonly PeriodStatus = PeriodStatus;
 }

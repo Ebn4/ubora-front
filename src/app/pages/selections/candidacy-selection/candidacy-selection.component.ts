@@ -97,14 +97,6 @@ export class CandidacySelectionComponent {
       })
   }
 
-  getDocument() {
-    this.importService.getDocument('30 DBA.docx').subscribe((file) => {
-      const blob = new Blob([file], {type: file.type});
-      const url = window.URL.createObjectURL(blob);
-      window.open(url);
-    });
-  }
-
   checkIfCandidateHasSelected() {
     this.candidacyService
       .candidateHasSelected(this.candidateId())
@@ -118,6 +110,9 @@ export class CandidacySelectionComponent {
   onEvaluated() {
     this.loadDataCandidacy(this.candidateId())
     this.candidateHasSelected.set(true)
+    this.loadDataCandidacy(this.candidateId())
+    this.loadCandidateInterviewInfo()
+    this.checkIfCandidateHasSelected()
   }
 
   docPreview(fileName: any) {
