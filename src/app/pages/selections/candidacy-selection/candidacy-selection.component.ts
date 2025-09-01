@@ -120,7 +120,7 @@ export class CandidacySelectionComponent {
 
     this.importService.getDocument(actualFileName).subscribe((file) => {
       const blob = new Blob([file], {type: file.type});
-      const fileFromUrl = new File([blob], "test-doc.docx", {type: blob.type});
+      const fileFromUrl = new File([blob], fileName, {type: blob.type});
 
       this.filePreviewService.previewFile(fileFromUrl).subscribe({
         next: (result) => {
