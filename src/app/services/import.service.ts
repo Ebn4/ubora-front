@@ -24,7 +24,7 @@ export class ImportService {
   }
 
   getDocument(docName: string): Observable<Blob> {
-    const url = `http://localhost:8000/api/getDoc?docName=${encodeURIComponent(
+    const url = `${this.baseUrl}/getDoc?docName=${encodeURIComponent(
       docName
     )}`;
     return this.http.get(url, {responseType: 'blob'});
