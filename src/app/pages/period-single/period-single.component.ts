@@ -1,6 +1,6 @@
 import {CriteriaAttachComponent} from './criteria-attach/criteria-attach.component';
 import {Period} from './../../models/period';
-import {Component, inject, signal, HostListener} from '@angular/core';
+import {Component, inject, signal, HostListener, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {PeriodService} from '../../services/period.service';
 import {NgClass, NgIf} from '@angular/common';
@@ -26,6 +26,8 @@ import {PeriodCandidaciesSelectedComponent} from './period-candidacies-selected/
 import {
   PeriodCandidaciesPreselectedComponent
 } from './period-candidacies-preselected/period-candidacies-preselected.component';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'app-period-single',
@@ -40,9 +42,32 @@ import {
     PeriodCandidacyRejectedComponent,
     ReactiveFormsModule,
     PeriodCandidaciesSelectedComponent,
-    PeriodCandidaciesPreselectedComponent
+    PeriodCandidaciesPreselectedComponent,
+    MatMenuModule,
+    MatButtonModule
   ],
   templateUrl: './period-single.component.html',
+  encapsulation: ViewEncapsulation.None,
+  styles: [`
+    .tab-selected {
+      background: white;
+      color: #FF9000 !important;
+    }
+
+    .tab-default {
+      color: #475569; /* slate-600 */
+    }
+
+    .tab-default:hover {
+      color: #1e293b; /* slate-800 */
+      background-color: white;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .mat-ripple.mat-mdc-tab-header-pagination  .mat-mdc-tab-header-pagination-chevron {
+      border-color: #FF9000 !important;
+    }
+  `]
 })
 export class PeriodSingleComponent {
 
@@ -62,7 +87,6 @@ export class PeriodSingleComponent {
   periodId!: number;
   year!: number
   showModal = false;
-  isDropdownVisible = false;
 
   canDispatch = signal(false);
   validateDispatchPeriodStatus = PeriodStatus.STATUS_DISPATCH
@@ -74,24 +98,6 @@ export class PeriodSingleComponent {
   event = false;
 
   constructor(private router: Router, private _matDialog: MatDialog, private modalService: ListeningChangeService) {
-  }
-
-  toggleDropdown() {
-    this.isDropdownVisible = !this.isDropdownVisible;
-  }
-
-  @HostListener('document:click', ['$event'])
-  closeDropdownOnClick(event: MouseEvent) {
-    const dropdownDefaultButton = document.getElementById(
-      'dropdownDefaultButton'
-    );
-
-    if (
-      dropdownDefaultButton &&
-      !dropdownDefaultButton.contains(event.target as Node)
-    ) {
-      this.isDropdownVisible = false;
-    }
   }
 
   ngOnInit() {
