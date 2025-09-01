@@ -10,13 +10,15 @@ export const HasAdminRoleGuard: CanActivateFn = (route, state) => {
   return userService.hasAdminRole().pipe(
     map(res => {
       if (!res.hasAdminRole) {
-        return router.parseUrl('/evaluator-candidacies');
+        return router.parseUrl('/login');
       }
       return true;
     }),
-    catchError(() => of(false))
+    catchError(() => {
+      // On error, redirect to evaluator-candidacies instead of blocking the route
+      return of(router.parseUrl('/login'));
+    })
   );
-
 }
 
 
