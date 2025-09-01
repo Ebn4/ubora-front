@@ -7,7 +7,7 @@ export const AuthGuard = async () => {
   const router = inject(Router)
 
   if (!localStorageService.getData("token")) {
-    await router.navigateByUrl('/login')
+    router.navigateByUrl('/login')
     return false
   }
 
