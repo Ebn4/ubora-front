@@ -67,6 +67,10 @@ import {MatButtonModule} from '@angular/material/button';
     .mat-ripple.mat-mdc-tab-header-pagination  .mat-mdc-tab-header-pagination-chevron {
       border-color: #FF9000 !important;
     }
+
+    .mat-mdc-menu-content{
+      background-color: white !important;
+    }
   `]
 })
 export class PeriodSingleComponent {
