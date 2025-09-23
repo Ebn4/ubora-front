@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, Inject, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PeriodService } from '../../../services/period.service';
 
@@ -11,6 +11,7 @@ import { PeriodService } from '../../../services/period.service';
 export class PeriodModalComponent {
 
   periodService:PeriodService = inject(PeriodService);
+  currentYear = new Date().getFullYear();
 
 
   constructor(
@@ -21,7 +22,10 @@ export class PeriodModalComponent {
   }
 
   form = new FormGroup({
-    year: new FormControl(new Date().getFullYear(), [Validators.required])
+    year: new FormControl(new Date().getFullYear(), [Validators.required,
+      Validators.pattern('^[0-9]{4}$'), // ← Doit être un nombre à 4 chiffres
+      this.minYearValidator(this.currentYear)
+    ])
   });
 
   closeModal() {
@@ -45,5 +49,12 @@ export class PeriodModalComponent {
         this.dialogRef.close(false);
       }
     });
+  }
+
+  minYearValidator(minYear: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const year = control.value;
+      return year && year < minYear ? { minYear: { required: minYear, actual: year } } : null;
+    };
   }
 }
