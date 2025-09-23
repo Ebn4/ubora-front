@@ -49,7 +49,14 @@ export default class LoginComponent {
 
         this.localStorageService.saveData("token", user.token)
 
-        this.router.navigate(['/'])
+        if (user.role === 'ADMIN') {
+          this.router.navigate(['/period']);
+        } else if (user.role === 'EVALUATOR') {
+          this.router.navigate(['/evaluator-candidacies']);
+        } else {
+          // rôle inconnu → déconnexion ou page par défaut
+          this.router.navigate(['/login']);
+        }
       },
       error: err => {
         this.isLoading = false
