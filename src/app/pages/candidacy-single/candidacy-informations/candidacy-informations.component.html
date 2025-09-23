@@ -47,7 +47,7 @@
                 </svg>
                 Informations Personnelles
               </h3>
-              
+
               <div class="space-y-3.5">
                 <!-- Nom complet -->
                 <div class="flex items-start gap-3">
@@ -59,7 +59,7 @@
                     <p class="font-medium text-gray-800">{{ candidacy?.etn_nom }} {{ candidacy?.etn_postnom }} {{ candidacy?.etn_prenom }}</p>
                   </div>
                 </div>
-                
+
                 <!-- Téléphone -->
                 <div class="flex items-start gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -70,7 +70,7 @@
                     <p class="font-medium text-gray-800">{{ candidacy?.telephone || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                
+
                 <!-- Date de naissance -->
                 <div class="flex items-start gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -81,7 +81,7 @@
                     <p class="font-medium text-gray-800">{{ candidacy?.etn_naissance || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                
+
                 <!-- Genre -->
                 <div class="flex items-start gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -92,7 +92,7 @@
                     <p class="font-medium text-gray-800">{{ candidacy?.sexe || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                
+
                 <!-- Adresse -->
                 <div class="flex items-start gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -115,7 +115,7 @@
                 </svg>
                 Formation Académique
               </h3>
-              
+
               <div class="space-y-3.5">
                 <!-- Nationalité -->
                 <div class="flex items-start gap-3">
@@ -127,7 +127,7 @@
                     <p class="font-medium text-gray-800">{{ candidacy?.nationalite || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                
+
                 <!-- Province -->
                 <div class="flex items-start gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -139,7 +139,7 @@
                     <p class="font-medium text-gray-800">{{ candidacy?.province || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                
+
                 <!-- Section/Option -->
                 <div class="flex items-start gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -150,7 +150,7 @@
                     <p class="font-medium text-gray-800">{{ candidacy?.section_option || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                
+
                 <!-- Établissement -->
                 <div class="flex items-start gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -161,7 +161,7 @@
                     <p class="font-medium text-gray-800">{{ candidacy?.universite_institut_sup || 'Non renseigné' }}</p>
                   </div>
                 </div>
-                
+
                 <!-- Pourcentage -->
                 <div class="flex items-start gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -210,11 +210,18 @@
                   <p class="font-medium text-gray-800 truncate">Relevé de notes dernière année.pdf</p>
                   <p class="text-xs text-gray-500 mt-1">Rélevé</p>
                 </div>
-                <button class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                  </svg>
-                </button>
+                <ng-container *ngIf="candidacy?.releve_note_derniere_annee; else noReleve">
+                  <button (click)="docPreview(candidacy?.releve_note_derniere_annee)" class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+                    </svg>
+                  </button>
+                </ng-container>
+                <ng-template #noReleve>
+                <div class="flex items-center justify-center" >
+                  <span class="text-sm mt-3 mr-2 text-red-500 font-medium" title="Fichier non fourni par le candidat">❌</span>
+                </div>
+              </ng-template>
               </div>
             </div>
 
@@ -230,11 +237,18 @@
                   <p class="font-medium text-gray-800 truncate">Diplôme d'Etat.pdf</p>
                   <p class="text-xs text-gray-500 mt-1">Diplôme d'Etat</p>
                 </div>
-                <button class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                  </svg>
-                </button>
+                <ng-container *ngIf="candidacy?.diplome_detat; else noDiplome">
+                  <button (click)="docPreview(candidacy?.diplome_detat)" class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+                    </svg>
+                  </button>
+                </ng-container>
+                <ng-template #noDiplome>
+                <div class="flex items-center justify-center" >
+                  <span class="text-sm mt-3 mr-2 text-red-500 font-medium" title="Fichier non fourni par le candidat">❌</span>
+                </div>
+              </ng-template>
               </div>
             </div>
 
@@ -250,11 +264,18 @@
                   <p class="font-medium text-gray-800 truncate">Attestation de réussite dernière année.pdf</p>
                   <p class="text-xs text-gray-500 mt-1">Attestation de réussite</p>
                 </div>
-                <button class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                  </svg>
-                </button>
+                <ng-container *ngIf="candidacy?.attestation_de_reussite_derniere_annee; else noAttestation">
+                  <button (click)="docPreview(candidacy?.attestation_de_reussite_derniere_annee)" class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+                    </svg>
+                  </button>
+                </ng-container>
+                <ng-template #noAttestation>
+                <div class="flex items-center justify-center" >
+                  <span class="text-sm mt-3 mr-2 text-red-500 font-medium" title="Fichier non fourni par le candidat">❌</span>
+                </div>
+              </ng-template>
               </div>
             </div>
 
@@ -270,11 +291,18 @@
                   <p class="font-medium text-gray-800 truncate">Lettre de motivation.pdf</p>
                   <p class="text-xs text-gray-500 mt-1">Lettre de motivation</p>
                 </div>
-                <button class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
+                <ng-container *ngIf="candidacy?.lettre_motivation; else nolettre">
+                <button (click)="docPreview(candidacy?.lettre_motivation)" class="p-2 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-colors duration-200" title="Télécharger">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
                   </svg>
                 </button>
+                </ng-container>
+                <ng-template #nolettre>
+                  <div class="flex items-center justify-center" >
+                    <span class="text-sm mt-3 mr-2 text-red-500 font-medium" title="Fichier non fourni par le candidat">❌</span>
+                  </div>
+              </ng-template>
               </div>
             </div>
           </div>

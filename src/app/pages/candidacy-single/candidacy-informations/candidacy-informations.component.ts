@@ -11,10 +11,11 @@ import { FilePreviewService } from '../../../services/file-preview.service';
 import { ImportService } from '../../../services/import.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DocPreviewComponent } from '../../preselection/candidacy-preselection/doc-preview/doc-preview.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-candidacy-informations',
-  imports: [],
+  imports: [NgIf],
   templateUrl: './candidacy-informations.component.html',
 })
 export class CandidacyInformationsComponent extends BaseListWidget {
