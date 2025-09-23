@@ -1,4 +1,4 @@
-import {Component, inject, OnChanges, signal} from '@angular/core';
+import {Component, computed, inject, OnChanges, signal} from '@angular/core';
 import {single} from 'rxjs';
 import {Candidacy} from '../../models/candidacy';
 import {CandidacyService} from '../../services/candidacy.service';
@@ -28,6 +28,12 @@ export class SelectionsComponent extends BaseListWidget {
 
   candidates = signal<Candidacy[]>([])
 
+  totalCandidates = signal(0);
+  evaluatedCandidates = signal(0);
+  pendingCandidates = computed(() => this.totalCandidates() - this.evaluatedCandidates());
+
+  protected readonly Math = Math;
+
   ngOnInit() {
     this.loadData()
   }
@@ -44,11 +50,34 @@ export class SelectionsComponent extends BaseListWidget {
         next: value => {
           this.candidates.set(value.data)
           console.log(value.data)
+          this.currentPage = value.meta.current_page;
+          this.lastPage = value.meta.last_page;
+          this.totalCandidates.set(value.meta?.total || value.data.length);
+          console.log("valeur recue", this.candidates().length)
+          // Charge les stats globales
+          this.loadSelectionStats();
         },
         error: err => {
           console.error(err)
         }
       })
+  }
+
+  loadSelectionStats() {
+    // Récupère periodId — soit depuis une propriété, soit depuis la première candidature
+    const periodId = this.candidates()?.[0]?.period_id;
+
+    if (!periodId) return;
+
+    this.candidateService.getAllSelectedStats(periodId).subscribe({
+      next: (stats) => {
+        this.totalCandidates.set(stats.total);
+        this.evaluatedCandidates.set(stats.evaluated);
+      },
+      error: (err) => {
+        console.error('Erreur chargement stats:', err);
+      }
+    });
   }
 
 

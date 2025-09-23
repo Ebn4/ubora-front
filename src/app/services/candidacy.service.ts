@@ -173,4 +173,11 @@ export class CandidacyService {
   getCandidateSelectionResultByCriteria(interviewId: number, criteriaId: number) {
     return this.http.get<ResponseInterface<CandidacySelectionResult>>(`${this.baseUrl}/candidates/${interviewId}/criterias/${criteriaId}/result`);
   }
+
+  getAllSelectedStats(periodId: number) {
+    let params = new HttpParams()
+      .set('periodId', periodId);
+
+    return this.http.get<any>(`${this.baseUrl}/candidacies/selection-stats`, { params });
+  }
 }
