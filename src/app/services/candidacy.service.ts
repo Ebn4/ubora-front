@@ -136,7 +136,7 @@ export class CandidacyService {
     );
   }
 
-  getPreselectedCandidates(page: number = 1, search: string = '', per_page: number, periodId: number | null = null) {
+  getPreselectedCandidates(page: number = 1, search: string = '', per_page: any, periodId: number | null = null) {
     let params = new HttpParams()
       .set('per_page', per_page)
       .set('page', page)
@@ -155,7 +155,7 @@ export class CandidacyService {
     );
   }
 
-  getSelectionCandidates(periodId: number, page: number = 1, search: string = '', per_page: number) {
+  getSelectionCandidates(periodId: number, page: number = 1, search: string = '', per_page: any) {
     let params = new HttpParams()
       .set('per_page', per_page)
       .set('page', page)
