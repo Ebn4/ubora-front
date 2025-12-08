@@ -21,6 +21,7 @@ export class PreselectionComponent extends BaseListWidget {
   showModal = false;
 
   candidacies: CandidaciesDispatchEvaluator[] = [];
+  allCandidacies: CandidaciesDispatchEvaluator[] = [];
   periods: Period[] = [];
   @Input() period?: Period;
   evaluateurId!: number;
@@ -67,6 +68,7 @@ export class PreselectionComponent extends BaseListWidget {
         this.user = user;
         this.evaluateurId = this.user.id;
         this.loadData();
+        this.loadAllCandidacies();
       },
       error: (error) => {
         console.error("Erreur lors de la récupération de l'utilisateur :", error);
@@ -75,13 +77,58 @@ export class PreselectionComponent extends BaseListWidget {
   }
 
   goToCandidacyDetails(candidacie: any) {
-    this.preselectionService.setCandidacy(candidacie);
+    let index = this.allCandidacies.findIndex(c => c.id === candidacie.id);
+
+    if (index === -1) {
+      console.warn('Candidat non trouvé dans la liste complète — fallback sur paginé');
+      index = this.candidacies.findIndex(c => c.id === candidacie.id);
+    }
+
+    this.preselectionService.setCandidacy({
+      current: candidacie,
+      all: this.allCandidacies,
+      currentIndex: index
+    });
   }
 
   onPeriodSelect() {
     if (this.periodId) {
       this.loadData();
+      this.loadAllCandidacies();
     }
+  }
+
+  loadAllCandidacies() {
+    this.candidacyService.CandidaciesDispatchEvaluator(
+      this.periodId,
+      1,
+      '',
+      '',
+      this.evaluateurId,
+      'all'
+    ).subscribe({
+      next: (response) => {
+        // Vérifier si la réponse est un tableau (per_page=all) ou un objet paginé
+        let candidacies: any[] = [];
+
+        if (Array.isArray(response)) {
+          // Cas per_page=all : réponse directe est un tableau
+          candidacies = response;
+        } else if (response && response.data && Array.isArray(response.data)) {
+          // Cas normal avec pagination
+          candidacies = response.data;
+        } else {
+          console.error('Format de réponse inattendu:', response);
+          return;
+        }
+
+        this.allCandidacies = candidacies;
+        console.log('✅ Liste complète chargée:', this.allCandidacies.length, 'candidats');
+      },
+      error: (error) => {
+        console.error('Erreur chargement liste complète:', error);
+      }
+    });
   }
 
   override loadData() {
