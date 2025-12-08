@@ -48,10 +48,23 @@ export class CandidacyPreselectionComponent {
   constructor(private router: Router, private _matDialog: MatDialog) { }
 
   ngOnInit() {
-    this.candidaciesList = this.preselectionService.getCandidacy();
-    const currentId = Number(this.route.snapshot.paramMap.get('id'));
-    this.currentIndex = this.candidaciesList.findIndex((c: any) => c.id === currentId);
-    this.loadDataCandidacy()
+    const navData = this.preselectionService.getCandidacy();
+
+    // Vérification de sécurité
+    if (!navData || !navData.all || !Array.isArray(navData.all) || navData.all.length === 0) {
+      console.error('Données de navigation invalides :', navData);
+      this.router.navigate(['/evaluator-candidacies']);
+      return;
+    }
+
+    // Récupération des données transmises
+    this.candidaciesList = navData.all;
+    this.currentIndex = navData.currentIndex;
+    this.periodId = Number(this.route.snapshot.paramMap.get('periodId'));
+    this.evaluateurId = Number(this.route.snapshot.paramMap.get('evaluateurId'));
+
+    // Charger la candidature + critères
+    this.loadDataCandidacy();
     this.loadDataCriteria();
   }
 
@@ -86,13 +99,17 @@ export class CandidacyPreselectionComponent {
   }
 
   updateRouteAndLoad() {
-    const candidacy = this.candidaciesList[this.currentIndex];
+     const candidacy = this.candidaciesList[this.currentIndex];
+
+    // Mettre à jour l'URL sans recharger le composant
     this.router.navigate(
       ['/evaluator-candidacies-single', candidacy.id, candidacy.dispatch[0].pivot?.id || 0, this.periodId, this.evaluateurId],
-      { replaceUrl: true }
+      { replaceUrl: true } // ← modifie l’URL sans push dans history
     );
+
+    // Mettre à jour les données locales
     this.loadDataCandidacy();
-    this.loadDataCriteria()
+    this.loadDataCriteria();
   }
 
   loadDataCriteria() {
