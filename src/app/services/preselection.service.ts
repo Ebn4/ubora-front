@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BASE_URL } from '../app.tokens';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,24 +12,15 @@ export class PreselectionService {
   baseUrl = inject(BASE_URL);
 
   private candidacy: any;
+  private _candidacy = new BehaviorSubject<any>(null);
+  candidacy$ = this._candidacy.asObservable();
 
   setCandidacy(data: any) {
-    this.candidacy = data;
-    sessionStorage.setItem('candidacy', JSON.stringify(data));
+    this._candidacy.next(data);
   }
 
   getCandidacy(): any {
-    if (this.candidacy) {
-      return this.candidacy;
-    }
-
-    const stored = sessionStorage.getItem('candidacy');
-    if (stored) {
-      this.candidacy = JSON.parse(stored);
-      return this.candidacy;
-    }
-
-    return null;
+    return this._candidacy.value;
   }
 
   canValidate(periodId: number) {
