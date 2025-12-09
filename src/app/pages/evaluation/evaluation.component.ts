@@ -27,7 +27,12 @@ export class EvaluationComponent implements OnInit, OnChanges {
   @Input() resetTrigger = 0;
   @Input() readonly = false;
 
-  @Output() onEvaluated = new EventEmitter()
+  @Output() onEvaluated = new EventEmitter<{
+    success: boolean;
+    candidateId: number;
+    autoNavigate?: boolean;
+    error?: string;
+  }>();
 
   snackBar = inject(MatSnackBar)
   criterias = signal<Criteria[]>([]);
@@ -57,7 +62,7 @@ export class EvaluationComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     // Réinitialiser seulement quand le candidat change vraiment
     if (changes['candidateId'] && !changes['candidateId'].firstChange) {
-      console.log('🔄 Candidat changé:', this.candidateId);
+      console.log('Candidat changé:', this.candidateId);
       this.initializeData();
     }
 
@@ -100,7 +105,7 @@ export class EvaluationComponent implements OnInit, OnChanges {
 
   private async loadCriteriaAsync() {
     if (!this.periodId || !this.interviewId) {
-      console.warn('⚠️ Données manquantes pour charger les critères');
+      console.warn('Données manquantes pour charger les critères');
       return;
     }
 
@@ -251,14 +256,39 @@ export class EvaluationComponent implements OnInit, OnChanges {
             }
             if (value.data) {
               this.isCandidateHasSelected.set(true);
-              this.onEvaluated.emit();
+
+              // Émettre un événement avec plus d'information
+              this.onEvaluated.emit({
+                success: true,
+                candidateId: this.candidateId,
+                autoNavigate: true  // Flag pour indiquer qu'on veut naviguer automatiquement
+              });
+
               this.showSnackbar('Évaluation effectuée avec succès');
+
+              // Optionnel : réinitialiser le formulaire après soumission
+              setTimeout(() => {
+                if (this.hasAnyResults()) {
+                  this.form.reset();
+                  // Réinitialiser chaque contrôle individuellement
+                  this.crv.controls.forEach(control => {
+                    control.get('result')?.setValue('0');
+                  });
+                }
+              }, 50);
             }
           },
           error: (err) => {
             if (err.error?.errors) {
               this.snackBar.open(err.error.errors[0], 'Fermer', { duration: 3000 });
             }
+
+            // Émettre un événement d'erreur
+            this.onEvaluated.emit({
+              success: false,
+              candidateId: this.candidateId,
+              error: err.error?.errors?.[0] || 'Erreur lors de la soumission'
+            });
           }
         });
       }

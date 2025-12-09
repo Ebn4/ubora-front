@@ -18,6 +18,7 @@ import { MatInput } from '@angular/material/input';
 import { Observable, of, Subject } from 'rxjs';
 import { SelectionService } from '../../../services/selection.service';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil, catchError, tap } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-candidacy-selection',
@@ -35,6 +36,7 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
   selectionService = inject(SelectionService);
   router = inject(Router);
   importService = inject(ImportService);
+  snackBar = inject(MatSnackBar);
 
   // Données principales
   candidacy?: Candidacy;
@@ -432,28 +434,45 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
   showSuccessMessage = false;
 
   // Modifiez la méthode onEvaluated pour gérer le message de succès
-  onEvaluationSubmitted() {
-    console.log('Évaluation soumise pour:', this.candidacy?.id);
+  onEvaluationSubmitted(event: { success: boolean; candidateId: number; autoNavigate?: boolean }) {
+    console.log('🎯 Évaluation soumise pour:', event.candidateId, 'Succès:', event.success);
 
-    // Afficher le message de succès
-    this.showSuccessMessage = true;
+    if (event.success) {
+      // Afficher le message de succès
+      this.showSuccessMessage = true;
 
-    // Mettre à jour l'état du candidat
-    this.candidateHasSelected.set(true);
+      // Mettre à jour l'état du candidat
+      this.candidateHasSelected.set(true);
 
-    if (this.candidacy) {
-      this.candidacy.hasSelected = true;
+      if (this.candidacy) {
+        this.candidacy.hasSelected = true;
 
-      const index = this.candidatesList.findIndex(c => c.id === this.candidacy!.id);
-      if (index !== -1) {
-        this.candidatesList[index].hasSelected = true;
+        const index = this.candidatesList.findIndex(c => c.id === this.candidacy!.id);
+        if (index !== -1) {
+          this.candidatesList[index].hasSelected = true;
+        }
+      }
+
+      // Si autoNavigate est true ou undefined, passer automatiquement au suivant
+      if (event.autoNavigate !== false) {
+        // Attendre 2 secondes puis passer au suivant
+        setTimeout(() => {
+          this.showSuccessMessage = false;
+
+          // Passer au candidat suivant s'il existe
+          if (this.currentIndex < this.candidatesList.length - 1) {
+            this.currentIndex++;
+            this.updateRouteAndLoad();
+          } else {
+            // Si c'est le dernier, juste un message console
+            // Optionnel : afficher un message à l'utilisateur
+            this.snackBar.open('Le dernier été évalué !', 'Fermer', {
+              duration: 3000
+            });
+          }
+        }, 2000);
       }
     }
-
-    // Masquer le message après 5 secondes
-    setTimeout(() => {
-      this.showSuccessMessage = false;
-    }, 5000);
   }
 
 }
