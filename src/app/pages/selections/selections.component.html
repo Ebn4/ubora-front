@@ -1,7 +1,29 @@
 <!-- Candidatures Section -->
 <div class="flex-1 p-6 bg-white rounded-2xl shadow-sm border border-gray-200 m-4 min-h-screen">
-  <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold text-slate-900 mb-4 md:mb-0">Gestion des candidats de sélection</h2>
+  <div class="px-6 py-4 bg-white border-b border-slate-200">
+    <div class="flex items-center justify-between">
+      <div>
+        <nav class="flex items-center space-x-2 text-sm text-slate-500 mb-2">
+          <span>Accueil</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+          <span class="text-primary font-medium">Gestion des candidatures</span>
+        </nav>
+        <h1 class="text-3xl font-bold text-slate-900">Sélection des candidats</h1>
+        <p class="text-slate-600 mt-1">Évaluez et gérez les candidatures de bourses</p>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <button (click)="loadData()"
+          class="group flex items-center px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-all duration-200 transform hover:scale-105">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582M20 20v-5h-.581M5.419 19A9 9 0 0021 12.082M18.364 5.636A9 9 0 003 11.918" />
+          </svg>
+          Actualiser
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- STATS BANNER -->
@@ -204,7 +226,7 @@
             </td>
             <td class="py-3 px-6">
               @if (candidate.hasSelected) {
-                <a [routerLink]="['/selections/candidates', candidate.id]"
+                <a (click)="goToCandidateDetail(candidate)" [routerLink]="['/selections/candidates', candidate.id]"
                    class="group inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl bg-primary">
                   <svg xmlns="http://www.w3.org/2000/svg"
                        class="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24"
@@ -217,7 +239,7 @@
                   Évaluer
                 </a>
               } @else {
-                <a [routerLink]="['/selections/candidates', candidate.id]"
+                <a  [routerLink]="['/selections/candidates', candidate.id]"
                    class="group inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl bg-primary">
                   <svg xmlns="http://www.w3.org/2000/svg"
                        class="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24"
