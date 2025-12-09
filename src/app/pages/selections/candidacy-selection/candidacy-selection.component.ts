@@ -1,169 +1,459 @@
-import {Component, inject, signal} from '@angular/core';
-import {Candidacy} from '../../../models/candidacy';
-import {CandidacyService} from '../../../services/candidacy.service';
-import {ActivatedRoute, RouterLink} from '@angular/router';
-import {PeriodStatus} from '../../../enum/period-status.enum';
-import {ImportService} from '../../../services/import.service';
-import {AsyncPipe} from '@angular/common';
-import {Interview} from '../../../models/interview';
-import {Period} from '../../../models/period';
-import {EvaluationComponent} from '../../evaluation/evaluation.component';
-import {PeriodService} from '../../../services/period.service';
-import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {DocPreviewComponent} from '../../preselection/candidacy-preselection/doc-preview/doc-preview.component';
-import {FilePreviewService} from '../../../services/file-preview.service';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatAutocomplete, MatAutocompleteTrigger, MatOption} from '@angular/material/autocomplete';
-import {MatInput} from '@angular/material/input';
-import {Observable, of} from 'rxjs';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Candidacy } from '../../../models/candidacy';
+import { CandidacyService } from '../../../services/candidacy.service';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { PeriodStatus } from '../../../enum/period-status.enum';
+import { ImportService } from '../../../services/import.service';
+import { AsyncPipe } from '@angular/common';
+import { Interview } from '../../../models/interview';
+import { Period } from '../../../models/period';
+import { EvaluationComponent } from '../../evaluation/evaluation.component';
+import { PeriodService } from '../../../services/period.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DocPreviewComponent } from '../../preselection/candidacy-preselection/doc-preview/doc-preview.component';
+import { FilePreviewService } from '../../../services/file-preview.service';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
+import { MatInput } from '@angular/material/input';
+import { Observable, of, Subject } from 'rxjs';
+import { SelectionService } from '../../../services/selection.service';
+import { debounceTime, distinctUntilChanged, switchMap, takeUntil, catchError, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-candidacy-preselection',
+  selector: 'app-candidacy-selection',
   imports: [RouterLink, EvaluationComponent, AsyncPipe, FormsModule, MatAutocomplete, MatAutocompleteTrigger, MatInput, MatOption, ReactiveFormsModule],
   templateUrl: './candidacy-selection.component.html',
 })
-export class CandidacySelectionComponent {
+export class CandidacySelectionComponent implements OnInit, OnDestroy {
 
-  constructor(private _matDialog: MatDialog) {
-  }
+  constructor(private _matDialog: MatDialog) {}
 
   periodService = inject(PeriodService);
-  filePreviewService = inject(FilePreviewService)
-  candidacyService: CandidacyService = inject(CandidacyService);
-  route: ActivatedRoute = inject(ActivatedRoute);
-
+  filePreviewService = inject(FilePreviewService);
+  candidacyService = inject(CandidacyService);
+  route = inject(ActivatedRoute);
+  selectionService = inject(SelectionService);
+  router = inject(Router);
   importService = inject(ImportService);
 
-  periodId: number = 4;
-  type: string = PeriodStatus.STATUS_PRESELECTION;
-  search: string = '';
-
+  // Données principales
   candidacy?: Candidacy;
+  candidatesList: Candidacy[] = [];
   currentIndex: number = 0;
-  query = new FormControl('')
+
+  // Signaux pour les données asynchrones
+  interview = signal<Interview | null>(null);
+  period = signal<Period | null>(null);
+  candidateHasSelected = signal(false);
+  isLoading = signal(false);
+
+  // Pour réinitialiser le formulaire
+  resetEvaluationForm = signal(0);
+
+  // Pour la recherche avec debounce
+  query = new FormControl('');
   filterCandidates: Observable<Candidacy[]> | undefined;
 
-  candidateHasSelected = signal(true)
-  candidateId = signal(0)
-  interview = signal<Interview | null>(null)
-  candidates = signal<Candidacy[]>([])
-  period = signal<Period | null>(null)
+  // Cache pour éviter les requêtes répétées
+  private periodCache = new Map<number, Period>();
+  private interviewCache = new Map<number, Interview | null>();
+  private destroy$ = new Subject<void>();
 
   ngOnInit() {
-    const currentId = Number(this.route.snapshot.paramMap.get('id'));
-    this.candidateId.set(currentId)
-    this.loadDataCandidacy(currentId)
-    this.loadCandidateInterviewInfo()
-    this.checkIfCandidateHasSelected()
+    // this.setupSearch();
 
-    this.query.valueChanges.subscribe(value => {
-      this.onSearchCandidate(value ?? '')
+    this.route.paramMap.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(params => {
+      const id = Number(params.get('id'));
+      this.loadCandidateData(id);
     });
   }
 
-  loadDataCandidacy(candidacyId: number) {
-    this.candidacyService.getOneCandidacy(candidacyId).subscribe({
-      next: (response) => {
-        const candidate = response.data
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadCandidateData(candidateId: number) {
+    console.log('Chargement candidat ID:', candidateId);
+
+    // Vérifier le cache du service d'abord
+    const navData = this.selectionService.getCandidate();
+
+    if (navData?.all && navData.all.length > 0) {
+      this.handleNavigationData(navData, candidateId);
+    } else {
+      this.loadAllCandidates(candidateId);
+    }
+  }
+
+  private handleNavigationData(navData: any, candidateId: number) {
+    const index = navData.all.findIndex((c: Candidacy) => c.id === candidateId);
+
+    if (index !== -1) {
+      console.log('Candidat trouvé dans cache service, index:', index);
+      this.candidatesList = navData.all;
+      this.currentIndex = index;
+      this.loadCurrentCandidate();
+    } else {
+      console.warn('Candidat non trouvé dans cache service');
+      this.loadAllCandidates(candidateId);
+    }
+  }
+
+  private loadAllCandidates(candidateId: number) {
+    this.isLoading.set(true);
+
+    // Utiliser le cache local si disponible
+    if (this.candidatesList.length > 0) {
+      const index = this.candidatesList.findIndex(c => c.id === candidateId);
+      if (index !== -1) {
+        console.log('Candidat trouvé dans cache local');
+        this.currentIndex = index;
+        this.loadCurrentCandidate();
+        return;
+      }
+    }
+
+    // Sinon charger depuis l'API
+    this.candidacyService.getPreselectedCandidates(1, '', 'all').pipe(
+      takeUntil(this.destroy$),
+      catchError(error => {
+        console.error('Erreur chargement liste:', error);
+        this.loadCandidateDirectly(candidateId);
+        return of(null);
+      })
+    ).subscribe(response => {
+      if (!response) return;
+
+      const candidates = this.extractCandidatesFromResponse(response);
+
+      if (candidates.length === 0) {
+        this.loadCandidateDirectly(candidateId);
+        return;
+      }
+
+      this.processCandidateList(candidates, candidateId);
+    });
+  }
+
+  private extractCandidatesFromResponse(response: any): Candidacy[] {
+    if (Array.isArray(response)) {
+      return response;
+    } else if (response?.data && Array.isArray(response.data)) {
+      return response.data;
+    } else if (response?.candidates && Array.isArray(response.candidates)) {
+      return response.candidates;
+    }
+    return [];
+  }
+
+  private processCandidateList(candidates: Candidacy[], candidateId: number) {
+    this.candidatesList = candidates;
+    console.log('Liste chargée:', candidates.length, 'candidats');
+
+    const index = this.candidatesList.findIndex(c => c.id === candidateId);
+
+    if (index !== -1) {
+      this.currentIndex = index;
+      this.updateServiceCache();
+      this.loadCurrentCandidate();
+    } else {
+      console.warn('Candidat non trouvé dans liste');
+      this.loadCandidateDirectly(candidateId);
+    }
+  }
+
+  private loadCandidateDirectly(id: number) {
+    this.isLoading.set(true);
+
+    this.candidacyService.getOneCandidacy(id).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (resp) => {
+        const candidate = (resp as any)?.data ?? resp;
+        if (!candidate) {
+          this.handleCandidateError();
+          return;
+        }
+
         this.candidacy = candidate;
-        this.loadPeriodById(candidate.period_id)
+        this.mergeCandidateIntoList(candidate, id);
       },
       error: (error) => {
-        console.error('Erreur chargement candidature:', error);
+        console.error('Erreur chargement candidat:', error);
+        this.handleCandidateError();
       }
     });
   }
 
-  loadCandidateInterviewInfo() {
-    this.candidacyService.getCandidateInterview(this.candidateId())
-      .subscribe({
-        next: value => {
-          this.interview.set(value.data)
-        }, error: err => {
-          console.error(err)
-        }
-      })
+  private mergeCandidateIntoList(candidate: Candidacy, candidateId: number) {
+    // Vérifier si le candidat est déjà dans la liste
+    const existingIndex = this.candidatesList.findIndex(c => c.id === candidateId);
+
+    if (existingIndex !== -1) {
+      // Mettre à jour le candidat existant
+      this.candidatesList[existingIndex] = { ...this.candidatesList[existingIndex], ...candidate };
+      this.currentIndex = existingIndex;
+    } else {
+      // Ajouter le candidat à la liste
+      this.candidatesList = [candidate, ...this.candidatesList];
+      this.currentIndex = 0;
+    }
+
+    this.updateServiceCache();
+    this.loadCandidateDetails();
   }
 
-  loadPeriodById(periodId: number) {
-    this.periodService.getOnePeriod(periodId)
-      .subscribe({
-        next: value => {
-          this.period.set(value)
+  private updateServiceCache() {
+    if (this.candidatesList.length > 0 && this.currentIndex >= 0) {
+      this.selectionService.setCandidate({
+        current: this.candidatesList[this.currentIndex],
+        all: this.candidatesList,
+        currentIndex: this.currentIndex
+      });
+    }
+  }
+
+  private loadCurrentCandidate() {
+    this.isLoading.set(true);
+
+    // Réinitialiser le message de succès
+    this.showSuccessMessage = false;
+
+    const candidate = this.candidatesList[this.currentIndex];
+    if (!candidate) {
+      this.handleCandidateError();
+      return;
+    }
+
+    this.candidacy = candidate;
+    console.log('Chargement candidat:', candidate.id, 'Index:', this.currentIndex + 1, '/', this.candidatesList.length);
+
+    this.resetEvaluationForm.update(v => v + 1);
+    this.loadCandidateDetails();
+  }
+
+  private loadCandidateDetails() {
+    if (!this.candidacy) return;
+
+    // Charger la période (avec cache)
+    this.loadPeriodDetails();
+
+    // Charger l'interview (avec cache)
+    this.loadInterviewDetails();
+
+    // Vérifier si sélectionné
+    this.checkCandidateSelection();
+  }
+
+  private loadPeriodDetails() {
+    if (!this.candidacy?.period_id) return;
+
+    // Vérifier le cache
+    const cachedPeriod = this.periodCache.get(this.candidacy.period_id);
+    if (cachedPeriod) {
+      this.period.set(cachedPeriod);
+    } else {
+      this.periodService.getOnePeriod(this.candidacy.period_id).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (p) => {
+          this.periodCache.set(this.candidacy!.period_id, p);
+          this.period.set(p);
         },
-        error: err => {
-          console.error(err)
-        }
-      })
+        error: () => this.period.set(null)
+      });
+    }
   }
 
-  checkIfCandidateHasSelected() {
-    this.candidacyService
-      .candidateHasSelected(this.candidateId())
-      .subscribe({
-        next: value => {
-          this.candidateHasSelected.set(value.hasSelection)
-        }
-      })
-  }
+  private loadInterviewDetails() {
+    if (!this.candidacy?.id) return;
 
-  onEvaluated() {
-    this.loadDataCandidacy(this.candidateId())
-    this.candidateHasSelected.set(true)
-    this.loadDataCandidacy(this.candidateId())
-    this.loadCandidateInterviewInfo()
-    this.checkIfCandidateHasSelected()
-  }
-
-  docPreview(fileName: any) {
-    const actualFileName = fileName;
-
-    this.importService.getDocument(actualFileName).subscribe((file) => {
-      const blob = new Blob([file], {type: file.type});
-      const fileFromUrl = new File([blob], fileName, {type: blob.type});
-
-      this.filePreviewService.previewFile(fileFromUrl).subscribe({
-        next: (result) => {
-          const dialogConfig = new MatDialogConfig();
-          dialogConfig.disableClose = true;
-          dialogConfig.data = {currentPreview: result};
-
-          const dialogRef = this._matDialog.open(DocPreviewComponent, dialogConfig);
-
-          dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
-            }
-          });
+    const cachedInterview = this.interviewCache.get(this.candidacy.id);
+    if (cachedInterview !== undefined) {
+      this.interview.set(cachedInterview);
+    } else {
+      this.candidacyService.getCandidateInterview(this.candidacy.id).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (res) => {
+          const interview = res.data ?? null;
+          this.interviewCache.set(this.candidacy!.id, interview);
+          this.interview.set(interview);
         },
-        error: (error) => {
-          console.log(error);
+        error: () => {
+          this.interviewCache.set(this.candidacy!.id, null);
+          this.interview.set(null);
         }
       });
+    }
+  }
+
+  private checkCandidateSelection() {
+    if (!this.candidacy?.id) return;
+
+    this.candidacyService.candidateHasSelected(this.candidacy.id).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (res) => {
+        this.candidateHasSelected.set(res.hasSelection ?? false);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.candidateHasSelected.set(false);
+        this.isLoading.set(false);
+      }
     });
   }
 
-  onSearchCandidate(query: string) {
-    if (query != "") {
-      this.candidacyService.getPreselectedCandidates(1, query, 10).subscribe({
-        next: value => {
-          console.log(value)
-          this.candidates.set(value.data)
-          this.filterCandidates = of(value.data)
-        },
-        error: err => {
-          console.log(err)
-        }
-      })
+  private handleSearchResults(results: Candidacy[]) {
+    this.candidatesList = results;
+    this.currentIndex = 0;
+
+    if (results.length > 0) {
+      this.updateServiceCache();
+      this.loadCurrentCandidate();
+    }
+  }
+
+  private handleCandidateError() {
+    console.warn('Candidat introuvable');
+    this.router.navigate(['/selections']);
+  }
+
+  // Navigation
+  goToPrevious() {
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+      this.updateRouteAndLoad();
+    }
+  }
+
+  goToNext() {
+    if (this.currentIndex < this.candidatesList.length - 1) {
+      this.currentIndex++;
+      this.updateRouteAndLoad();
+    }
+  }
+
+  private updateRouteAndLoad() {
+    const candidate = this.candidatesList[this.currentIndex];
+    if (!candidate) return;
+
+    this.router.navigate(['/selections/candidates', candidate.id], { replaceUrl: true });
+    this.updateServiceCache();
+    this.loadCurrentCandidate();
+  }
+
+  // Évaluation soumise
+  onEvaluated() {
+    console.log('🎯 Évaluation soumise pour:', this.candidacy?.id);
+    this.candidateHasSelected.set(true);
+
+    if (this.candidacy) {
+      this.candidacy.hasSelected = true;
+
+      const index = this.candidatesList.findIndex(c => c.id === this.candidacy!.id);
+      if (index !== -1) {
+        this.candidatesList[index].hasSelected = true;
+      }
     }
   }
 
   displayFn(candidacy: Candidacy): string {
-    return candidacy && candidacy.etn_nom ? candidacy.etn_prenom : '';
+    return candidacy && candidacy.etn_nom ? `${candidacy.etn_prenom} ${candidacy.etn_nom}` : '';
   }
 
   onSelectedCandidate(candidate: Candidacy) {
-    this.candidacy = candidate
+    const index = this.candidatesList.findIndex(c => c.id === candidate.id);
+    if (index !== -1) {
+      this.currentIndex = index;
+      this.resetEvaluationForm.update(v => v + 1);
+      this.updateRouteAndLoad();
+    }
+  }
+
+  // Getter pour l'affichage
+  get currentPosition(): string {
+    return `${this.currentIndex + 1} / ${this.candidatesList.length}`;
+  }
+
+  get hasPrevious(): boolean {
+    return this.currentIndex > 0;
+  }
+
+  get hasNext(): boolean {
+    return this.currentIndex < this.candidatesList.length - 1;
+  }
+
+  docPreview(fileName: any) {
+    if (!fileName) return;
+
+    this.importService.getDocument(fileName).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (file) => {
+        const blob = new Blob([file], { type: file.type });
+        const fileFromUrl = new File([blob], fileName, { type: blob.type });
+
+        this.filePreviewService.previewFile(fileFromUrl).subscribe({
+          next: (result) => {
+            const dialogConfig = new MatDialogConfig();
+            dialogConfig.disableClose = true;
+            dialogConfig.data = { currentPreview: result };
+
+            const dialogRef = this._matDialog.open(DocPreviewComponent, dialogConfig);
+
+            dialogRef.afterClosed().pipe(
+              takeUntil(this.destroy$)
+            ).subscribe();
+          },
+          error: (error) => {
+            console.log('Erreur preview:', error);
+          }
+        });
+      },
+      error: (error) => {
+        console.log('Erreur chargement document:', error);
+      }
+    });
+  }
+
+  get isSelectionPhase(): boolean {
+    const currentPeriod = this.period();
+    return currentPeriod?.status === PeriodStatus.STATUS_SELECTION;
   }
 
   protected readonly PeriodStatus = PeriodStatus;
+
+  showSuccessMessage = false;
+
+  // Modifiez la méthode onEvaluated pour gérer le message de succès
+  onEvaluationSubmitted() {
+    console.log('Évaluation soumise pour:', this.candidacy?.id);
+
+    // Afficher le message de succès
+    this.showSuccessMessage = true;
+
+    // Mettre à jour l'état du candidat
+    this.candidateHasSelected.set(true);
+
+    if (this.candidacy) {
+      this.candidacy.hasSelected = true;
+
+      const index = this.candidatesList.findIndex(c => c.id === this.candidacy!.id);
+      if (index !== -1) {
+        this.candidatesList[index].hasSelected = true;
+      }
+    }
+
+    // Masquer le message après 5 secondes
+    setTimeout(() => {
+      this.showSuccessMessage = false;
+    }, 5000);
+  }
+
 }
