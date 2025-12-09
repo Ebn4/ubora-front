@@ -1,31 +1,42 @@
 <form action="" [formGroup]="form" class="my-2" (submit)="onSubmit()">
 
-  <div class="grid  gap-4" formArrayName="crv">
+  <!-- Contenu principal -->
+  <div class="grid gap-4" formArrayName="crv">
     @for (c of crv.controls; track $index) {
       <div class="mb-4" [formGroupName]="$index">
-        <label class="block text-gray-700 font-medium mb-2"
-               [for]="criterias().at($index)?.name">{{ criterias().at($index)?.name }}
-          (sur {{ criterias().at($index)?.ponderation }})</label>
+        <label class="block text-gray-700 font-medium mb-2">
+          {{ criterias().at($index)?.name }}
+          <span class="text-gray-500 font-normal">(sur {{ criterias().at($index)?.ponderation }})</span>
+        </label>
 
-        <input type="number" formControlName="result" [id]="criterias().at($index)?.name"
-               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"/>
+        @if (readonly) {
+          <!-- Mode lecture seule -->
+          <div class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700">
+            {{ c.get('result')?.value || 'Non noté' }}
+          </div>
+        } @else {
+          <!-- Mode éditable -->
+          <input
+            type="number"
+            formControlName="result"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            step="0.5"
+            min="0.5"
+            [max]="criterias().at($index)?.ponderation ?? null"
+          />
+        }
       </div>
     }
   </div>
 
-  @if (isPeriodHasSelectionStatus() && !isCandidateHasSelected()) {
-    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-      <button type="submit" [disabled]="form.invalid"
-              class="flex-1 bg-primary hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
-        Soumettre la sélection
-      </button>
-
-    </div>
+  <!-- Bouton seulement si éditable -->
+  @if (!readonly && !hasSelected) {
+    <button
+      type="submit"
+      [disabled]="!form.valid"
+      class="w-full bg-primary hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+      Soumettre la sélection
+    </button>
   }
-
 
 </form>
