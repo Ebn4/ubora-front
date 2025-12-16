@@ -168,6 +168,10 @@
                 <p class="text-xs font-medium text-gray-500 mb-1.5">Age</p>
                 <p class="font-medium text-gray-800">{{ age !== undefined ? age + ' ans' : 'Non renseigné' }}</p>
               </div>
+              <div>
+                <p class="text-xs font-medium text-gray-500 mb-1.5">Genre</p>
+                <p class="font-medium text-gray-800">{{ candidacy?.sexe === 'M' ? 'Masculin' : 'Féminin' }}</p>
+              </div>
             </div>
           </div>
 
