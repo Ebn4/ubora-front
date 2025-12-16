@@ -11,11 +11,10 @@ import { FilePreviewService } from '../../../services/file-preview.service';
 import { ImportService } from '../../../services/import.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DocPreviewComponent } from '../../preselection/candidacy-preselection/doc-preview/doc-preview.component';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-candidacy-informations',
-  imports: [NgIf],
+  imports: [],
   templateUrl: './candidacy-informations.component.html',
 })
 export class CandidacyInformationsComponent extends BaseListWidget {
@@ -37,6 +36,8 @@ export class CandidacyInformationsComponent extends BaseListWidget {
   importService: ImportService = inject(ImportService);
   route: ActivatedRoute = inject(ActivatedRoute);
 
+  age! : number;
+
   ngOnInit(): void {
     this.loadData();
     this.loadCandidateInterviewInfo()
@@ -52,6 +53,7 @@ export class CandidacyInformationsComponent extends BaseListWidget {
           const candidate = response.data;
           this.candidacy = candidate
           this.loadPeriodById(candidate.period_id)
+          this.age = this.calculateAge(this.candidacy?.etn_naissance ?? '');
         },
         error: (error) => {
           console.error('Error loading candidacies:', error);
@@ -123,6 +125,23 @@ export class CandidacyInformationsComponent extends BaseListWidget {
         }
       });
     });
+  }
+
+  calculateAge(dateNaissance: string): number {
+    const birthDate = new Date(dateNaissance);
+    const today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const dayDiff = today.getDate() - birthDate.getDate();
+
+    // Si l'anniversaire n'est pas encore passé cette année
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    return age;
   }
 
 }

@@ -49,4 +49,5 @@ export interface Candidacy {
   candidacy_preselection: boolean,
   hasSelected: boolean
   selectionMean: number
+  promotion_academique : string
 }

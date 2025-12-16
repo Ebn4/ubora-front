@@ -155,8 +155,24 @@
                 <p class="font-medium text-gray-800">{{ candidacy?.universite_institut_sup || 'Non renseigné' }}</p>
               </div>
               <div>
+                <p class="text-xs font-medium text-gray-500 mb-1.5">Faculté</p>
+                <p class="font-medium text-gray-800">{{ candidacy?.faculte || 'Non renseigné' }}</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-500 mb-1.5">Promotion</p>
+                <p class="font-medium text-gray-800">{{ candidacy?.promotion_academique || 'Non renseigné' }}</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-500 mb-1.5">Pourcentage</p>
+                <p class="font-medium text-gray-800">{{ candidacy?.pourcentage_obtenu || 'Non renseigné' }} %</p>
+              </div>
+              <div>
                 <p class="text-xs font-medium text-gray-500 mb-1.5">Nationalité</p>
                 <p class="font-medium text-gray-800">{{ candidacy?.nationalite || 'Non renseigné' }}</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-500 mb-1.5">Age</p>
+                <p class="font-medium text-gray-800">{{ age !== undefined ? age + ' ans' : 'Non renseigné' }}</p>
               </div>
             </div>
           </div>
@@ -252,6 +268,31 @@
                 <ng-template #noAttestation>
                  <span class="text-sm text-red-500 font-medium">❌  Non disponible</span>
                 </ng-template>
+              </div>
+
+              <!-- Bloc pour autre_document -->
+              <div *ngIf="candidacy?.autres_diplomes_atttestation"
+                  class="flex items-center justify-between bg-gray-50 p-3.5 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors duration-200 mt-3">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-gray-100 rounded-lg text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-800">Autre document</p>
+                    <p class="text-xs text-gray-500">Si disponible</p>
+                  </div>
+                </div>
+                <button (click)="docPreview(candidacy?.autres_diplomes_atttestation)"
+                        class="p-2 bg-white rounded-lg text-gray-600 hover:bg-gray-100 transition-colors duration-200 shadow-sm border border-gray-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
