@@ -44,6 +44,7 @@ export class CandidacyPreselectionComponent {
 
   candidaciesList: any;
   currentIndex: number = 0;
+  age! : number;
 
   constructor(private router: Router, private _matDialog: MatDialog) { }
 
@@ -76,6 +77,11 @@ export class CandidacyPreselectionComponent {
         this.period_status = this.candidacy.period_status;
         if(this.period_status != PeriodStatus.STATUS_PRESELECTION) {
           this.period_status_true = true;
+        }
+
+        if(this.candidacy?.etn_naissance) {
+          this.age = this.calculateAge(this.candidacy.etn_naissance);
+          console.log("L'âge du candidat :", this.age);
         }
       },
       error: (error) => {
@@ -194,5 +200,22 @@ export class CandidacyPreselectionComponent {
 
   closePreview() {
     this.currentPreview = null;
+  }
+
+  calculateAge(dateNaissance: string): number {
+    const birthDate = new Date(dateNaissance);
+    const today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const dayDiff = today.getDate() - birthDate.getDate();
+
+    // Si l'anniversaire n'est pas encore passé cette année
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    return age;
   }
 }

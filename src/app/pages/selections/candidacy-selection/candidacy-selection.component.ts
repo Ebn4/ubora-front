@@ -51,6 +51,7 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
 
   // Pour réinitialiser le formulaire
   resetEvaluationForm = signal(0);
+  age!:number;
 
   // Pour la recherche avec debounce
   query = new FormControl('');
@@ -232,6 +233,10 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
     }
 
     this.candidacy = candidate;
+    if (candidate.etn_naissance) {
+        this.age = this.calculateAge(candidate.etn_naissance);
+        console.log('Âge du candidat:', this.age);
+    }
     console.log('Chargement candidat:', candidate.id, 'Index:', this.currentIndex + 1, '/', this.candidatesList.length);
 
     this.resetEvaluationForm.update(v => v + 1);
@@ -473,6 +478,24 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
         }, 2000);
       }
     }
+  }
+
+
+  calculateAge(dateNaissance: string): number {
+    const birthDate = new Date(dateNaissance);
+    const today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const dayDiff = today.getDate() - birthDate.getDate();
+
+    // Si l'anniversaire n'est pas encore passé cette année
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    return age;
   }
 
 }
