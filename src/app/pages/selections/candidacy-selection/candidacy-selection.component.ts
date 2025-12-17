@@ -4,7 +4,7 @@ import { CandidacyService } from '../../../services/candidacy.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PeriodStatus } from '../../../enum/period-status.enum';
 import { ImportService } from '../../../services/import.service';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { Interview } from '../../../models/interview';
 import { Period } from '../../../models/period';
 import { EvaluationComponent } from '../../evaluation/evaluation.component';
@@ -19,10 +19,11 @@ import { Observable, of, Subject } from 'rxjs';
 import { SelectionService } from '../../../services/selection.service';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil, catchError, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TextPreviewDialogComponent } from '../../layout/shared/text-preview-dialog/text-preview-dialog.component';
 
 @Component({
   selector: 'app-candidacy-selection',
-  imports: [RouterLink, EvaluationComponent, AsyncPipe, FormsModule, MatAutocomplete, MatAutocompleteTrigger, MatInput, MatOption, ReactiveFormsModule],
+  imports: [RouterLink, EvaluationComponent, AsyncPipe, FormsModule, MatAutocomplete, MatAutocompleteTrigger, MatInput, MatOption, ReactiveFormsModule,CommonModule],
   templateUrl: './candidacy-selection.component.html',
 })
 export class CandidacySelectionComponent implements OnInit, OnDestroy {
@@ -496,6 +497,53 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
     }
 
     return age;
+  }
+
+  promotionMap: { [key: string]: string } = {
+    'L0' : 'Préparatoire',
+    'L1': 'Licence 1',
+    'L2': 'Licence 2',
+    'L3': 'Licence 3',
+    'L4' : 'LICENCE 4',
+    'B1' : 'BACHELOR 1',
+    'B2' : 'Bachelor 2',
+    'B3' : 'Bachelor 3',
+    'B4' : 'Bachelor 4',
+    'M1': 'Master 1',
+    'M2': 'Master 2',
+    'D1': 'Doctorat 1',
+    'D2': 'Doctorat 2',
+    'D3': 'Doctorat 3',
+    'D4': 'Doctorat 4',
+    'D5': 'Doctorat 5',
+    'D6': 'Doctorat 6'
+  };
+
+  getPromotionName(promo?: string): string {
+    return this.promotionMap[promo || ''] || promo || 'Non renseigné';
+  }
+
+  openLetterDialog(content: string | null | undefined) {
+    if (!content) {
+      this.snackBar.open('Lettre de motivation indisponible', 'Fermer', {
+        duration: 3000
+      });
+      return;
+    }
+
+    this._matDialog.open(TextPreviewDialogComponent, {
+      width: '600px',
+      maxHeight: '80vh',
+      data: { content }
+    });
+  }
+
+  isFile(value: string | null | undefined): boolean {
+    if (!value) return false;
+
+    // On considère que si c'est une URL ou un nom de fichier avec extension, c'est un "fichier"
+    const fileExtensions = ['.pdf', '.doc', '.docx', '.txt'];
+    return fileExtensions.some(ext => value.toLowerCase().endsWith(ext));
   }
 
 }
