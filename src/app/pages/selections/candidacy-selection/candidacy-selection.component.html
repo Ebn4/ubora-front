@@ -154,7 +154,7 @@
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 mb-1.5">Niveau d'études</p>
-                <p class="font-medium text-gray-800">{{ candidacy?.promotion_academique || 'Non renseigné' }}</p>
+                <p class="font-medium text-gray-800">{{ getPromotionName(candidacy?.promotion_academique) }}</p>
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 mb-1.5">Spécialisation</p>

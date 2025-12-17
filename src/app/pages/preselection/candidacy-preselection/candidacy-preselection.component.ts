@@ -220,7 +220,7 @@ export class CandidacyPreselectionComponent {
   }
 
   promotionMap: { [key: string]: string } = {
-    'L0' : 'Préparatoir',
+    'L0' : 'Préparatoire',
     'L1': 'Licence 1',
     'L2': 'Licence 2',
     'L3': 'Licence 3',

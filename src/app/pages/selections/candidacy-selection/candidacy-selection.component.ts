@@ -498,4 +498,28 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
     return age;
   }
 
+  promotionMap: { [key: string]: string } = {
+    'L0' : 'Préparatoire',
+    'L1': 'Licence 1',
+    'L2': 'Licence 2',
+    'L3': 'Licence 3',
+    'L4' : 'LICENCE 4',
+    'B1' : 'BACHELOR 1',
+    'B2' : 'Bachelor 2',
+    'B3' : 'Bachelor 3',
+    'B4' : 'Bachelor 4',
+    'M1': 'Master 1',
+    'M2': 'Master 2',
+    'D1': 'Doctorat 1',
+    'D2': 'Doctorat 2',
+    'D3': 'Doctorat 3',
+    'D4': 'Doctorat 4',
+    'D5': 'Doctorat 5',
+    'D6': 'Doctorat 6'
+  };
+
+  getPromotionName(promo?: string): string {
+    return this.promotionMap[promo || ''] || promo || 'Non renseigné';
+  }
+
 }
