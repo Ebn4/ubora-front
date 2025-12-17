@@ -4,7 +4,7 @@ import { CandidacyService } from '../../../services/candidacy.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PeriodStatus } from '../../../enum/period-status.enum';
 import { ImportService } from '../../../services/import.service';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { Interview } from '../../../models/interview';
 import { Period } from '../../../models/period';
 import { EvaluationComponent } from '../../evaluation/evaluation.component';
@@ -19,10 +19,11 @@ import { Observable, of, Subject } from 'rxjs';
 import { SelectionService } from '../../../services/selection.service';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil, catchError, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TextPreviewDialogComponent } from '../../layout/shared/text-preview-dialog/text-preview-dialog.component';
 
 @Component({
   selector: 'app-candidacy-selection',
-  imports: [RouterLink, EvaluationComponent, AsyncPipe, FormsModule, MatAutocomplete, MatAutocompleteTrigger, MatInput, MatOption, ReactiveFormsModule],
+  imports: [RouterLink, EvaluationComponent, AsyncPipe, FormsModule, MatAutocomplete, MatAutocompleteTrigger, MatInput, MatOption, ReactiveFormsModule,CommonModule],
   templateUrl: './candidacy-selection.component.html',
 })
 export class CandidacySelectionComponent implements OnInit, OnDestroy {
@@ -520,6 +521,29 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
 
   getPromotionName(promo?: string): string {
     return this.promotionMap[promo || ''] || promo || 'Non renseigné';
+  }
+
+  openLetterDialog(content: string | null | undefined) {
+    if (!content) {
+      this.snackBar.open('Lettre de motivation indisponible', 'Fermer', {
+        duration: 3000
+      });
+      return;
+    }
+
+    this._matDialog.open(TextPreviewDialogComponent, {
+      width: '600px',
+      maxHeight: '80vh',
+      data: { content }
+    });
+  }
+
+  isFile(value: string | null | undefined): boolean {
+    if (!value) return false;
+
+    // On considère que si c'est une URL ou un nom de fichier avec extension, c'est un "fichier"
+    const fileExtensions = ['.pdf', '.doc', '.docx', '.txt'];
+    return fileExtensions.some(ext => value.toLowerCase().endsWith(ext));
   }
 
 }
