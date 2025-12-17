@@ -11,6 +11,8 @@ import { PreselectionService } from '../../../services/preselection.service';
 import { FilePreviewResult, FilePreviewService } from '../../../services/file-preview.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DocPreviewComponent } from './doc-preview/doc-preview.component';
+import { TextPreviewDialogComponent } from '../../layout/shared/text-preview-dialog/text-preview-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-candidacy-preselection',
@@ -31,6 +33,8 @@ export class CandidacyPreselectionComponent {
   route: ActivatedRoute = inject(ActivatedRoute);
   importService: ImportService = inject(ImportService);
   preselectionService: PreselectionService = inject(PreselectionService);
+  snackBar = inject(MatSnackBar);
+
 
 
   criterias: CriteriaPeriod[] = [];
@@ -242,4 +246,27 @@ export class CandidacyPreselectionComponent {
   getPromotionName(promo?: string): string {
     return this.promotionMap[promo || ''] || promo || 'Non renseigné';
   }
+
+  openLetterDialog(content: string | null | undefined) {
+      if (!content) {
+        this.snackBar.open('Lettre de motivation indisponible', 'Fermer', {
+          duration: 3000
+        });
+        return;
+      }
+
+      this._matDialog.open(TextPreviewDialogComponent, {
+        width: '600px',
+        maxHeight: '80vh',
+        data: { content }
+      });
+    }
+
+    isFile(value: string | null | undefined): boolean {
+      if (!value) return false;
+
+      // On considère que si c'est une URL ou un nom de fichier avec extension, c'est un "fichier"
+      const fileExtensions = ['.pdf', '.doc', '.docx', '.txt'];
+      return fileExtensions.some(ext => value.toLowerCase().endsWith(ext));
+    }
 }

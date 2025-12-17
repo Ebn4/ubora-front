@@ -246,6 +246,33 @@
                 </ng-template>
               </div>
 
+              <!-- releve des notes -->
+              <div class="flex items-center justify-between bg-gray-50 p-3.5 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors duration-200">
+                <div class="flex items-center gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                  </svg>
+                  <div>
+                    <p class="font-medium text-gray-800">Relevé de notes</p>
+                    <p class="text-xs text-gray-500">Dernière année académique</p>
+                  </div>
+                </div>
+                <ng-container *ngIf="candidacy?.releve_note_derniere_annee; else noReleve">
+                  <button (click)="docPreview(candidacy?.releve_note_derniere_annee)"
+                    class="p-2 bg-white rounded-lg text-gray-600 hover:bg-gray-100 transition-colors duration-200 shadow-sm border border-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                  </button>
+                </ng-container>
+
+                <ng-template #noReleve>
+                 <span class="text-sm text-red-500 font-medium">❌  Non disponible</span>
+                </ng-template>
+              </div>
+
+
               <!-- Attestation -->
               <div class="flex items-center justify-between bg-gray-50 p-3.5 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors duration-200">
                 <div class="flex items-center gap-3">
@@ -272,6 +299,53 @@
                 <ng-template #noAttestation>
                  <span class="text-sm text-red-500 font-medium">❌  Non disponible</span>
                 </ng-template>
+              </div>
+
+              <!-- Lettre de motivation -->
+              <div class="flex items-center justify-between bg-gray-50 p-3.5 rounded-xl border border-gray-100
+            hover:border-gray-200 transition-colors duration-200">
+
+                <div class="flex items-center gap-3">
+                  <div class="p-2 rounded-lg"
+                      [ngClass]="isFile(candidacy?.lettre_motivation) ? 'bg-blue-50 text-blue-500' : 'bg-green-50 text-green-500'">
+                    <svg *ngIf="isFile(candidacy?.lettre_motivation)" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke="black"
+                                d="M7 7h10M7 11h10M7 15h6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+
+                    </svg>
+                    <svg *ngIf="!isFile(candidacy?.lettre_motivation)" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke="black"
+                              d="M7 7h10M7 11h10M7 15h6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                      </svg>
+
+                    </svg>
+                  </div>
+
+                  <div>
+                    <p class="font-medium text-gray-800">Lettre de motivation</p>
+                    <p class="text-xs text-gray-500">Texte ou document</p>
+                  </div>
+                </div>
+
+                <button *ngIf="candidacy?.lettre_motivation"
+                        (click)="isFile(candidacy?.lettre_motivation) ? docPreview(candidacy?.lettre_motivation) : openLetterDialog(candidacy?.lettre_motivation)"
+                        class="p-2 bg-white rounded-lg text-primary-600 hover:bg-primary-50 transition-colors duration-200 shadow-sm border border-gray-200">
+                  <svg *ngIf="isFile(candidacy?.lettre_motivation)" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <svg *ngIf="!isFile(candidacy?.lettre_motivation)" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </button>
               </div>
 
               <!-- Bloc pour autre_document -->
