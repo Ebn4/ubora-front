@@ -67,7 +67,7 @@
         <div class="px-6 pt-1">
           <!-- Flex container for action buttons aligned to the right -->
           <div class="flex flex-wrap justify-end items-center gap-3">
-            
+
             <!-- Dispatch Validation Button -->
             @if (canDispatch() && validateDispatchPeriodStatus ==
             period?.status) {
@@ -92,8 +92,8 @@
               </svg>
               <span class="mr-2 text-sm">Valider le Dispatch</span>
             </button>
-            } 
-            
+            }
+
             <!-- Period Close Button -->
             @if (period?.status === PeriodStatus.STATUS_SELECTION) {
             <button
@@ -117,8 +117,8 @@
               </svg>
               <span class="mr-2 text-sm">Clôturer la Période</span>
             </button>
-            } 
-            
+            }
+
             <!-- Preselection Validation Button -->
             @if (canValidatePreselection() && period?.status ==
             validatedPreselectionPeriodStatus) {
@@ -144,7 +144,7 @@
               <span class="mr-2 text-sm">Valider la présélection</span>
             </button>
             }
-            
+
             <!-- Advanced Actions Dropdown Button -->
             <button
               [matMenuTriggerFor]="menu"
@@ -196,7 +196,7 @@
 
                 <!-- Menu Items Container -->
                 <div class="space-y-2">
-                  
+
                   <!-- Preselection Criteria Button -->
                   <button
                     *ngIf="period?.status == dispatchStatus()"
@@ -397,7 +397,7 @@
             class="w-2 h-2 bg-white rounded-full mr-2"
             [class.animate-pulse]="period?.status !== PeriodStatus.STATUS_CLOSE"
           ></div>
-          Statut : 
+          Statut :
           {{
             period?.status == PeriodStatus.STATUS_CLOSE
               ? "CLÔTURÉ"
@@ -756,6 +756,7 @@
                     period?.candidats_count ? period?.candidats_count : 0
                   "
                   (canValidateDispatch)="canValidateDispatch($event.valueOf())"
+                  (evaluatorAdded)="loadData()"
                 >
                 </app-period-evaluateur>
               </div>

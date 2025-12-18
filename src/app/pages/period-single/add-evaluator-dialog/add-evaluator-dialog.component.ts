@@ -11,6 +11,7 @@ import {MatAutocomplete, MatAutocompleteTrigger, MatOption} from '@angular/mater
 import {AsyncPipe} from '@angular/common';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ListeningChangeService } from '../../../services/listening-change.service';
 
 @Component({
   selector: 'app-add-evaluator-dialog',
@@ -30,6 +31,7 @@ export class AddEvaluatorDialogComponent {
   readonly data = inject<{ periodId: number }>(MAT_DIALOG_DATA);
   readonly snackbar = inject(MatSnackBar)
   readonly dialogRef = inject(MatDialogRef<AddEvaluatorDialogComponent>);
+  readonly listeningChangeService = inject(ListeningChangeService);
 
   evaluators = signal<Evaluator[]>([])
   error = signal<string | null>(null)
@@ -94,10 +96,15 @@ export class AddEvaluatorDialogComponent {
       cuid: formData.selectedUserCuid ?? ''
     }).subscribe({
       next: value => {
-        this.snackbar.open("L'ajout de l'evaluateur s'effectuer avec succès", 'Fermer', {
+        this.snackbar.open("L'ajout de l'évaluateur s'est effectué avec succès", 'Fermer', {
           duration: 3000,
         });
-        this.dialogRef.close()
+
+        // Notifier le service que le modal est fermé avec succès
+        this.listeningChangeService.notifyModalClosed();
+
+        // Fermer le modal avec un résultat true
+        this.dialogRef.close(true);
       },
       error: err => {
         console.log(err)
