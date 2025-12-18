@@ -10,6 +10,7 @@ import {Period} from '../../../models/period';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {PeriodStatus} from '../../../enum/period-status.enum';
 import {PeriodService} from '../../../services/period.service';
+import { ListeningChangeService } from '../../../services/listening-change.service';
 
 @Component({
   selector: 'app-period-evaluateur',
@@ -26,10 +27,13 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
 
   private _snackBar = inject(MatSnackBar);
   readonly dialog = inject(MatDialog);
+  private listeningChangeService = inject(ListeningChangeService);
 
   @Input() candidatesCount? = 0;
   @Input() period?: Period
   @Output() canValidateDispatch = new EventEmitter<boolean>()
+  @Output() evaluatorAdded = new EventEmitter<void>();
+
 
   perPage = signal(10)
   canDispatch = signal(true)
@@ -76,13 +80,17 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
     this.periodHasEvaluators()
   }
 
+
   onOpenDialog() {
     const dialogRef = this.dialog.open(AddEvaluatorDialogComponent, {
       data: {periodId: this.period?.id}
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.getEvaluators()
+      if (result) {
+        this.getEvaluators();
+        this.evaluatorAdded.emit(); // Ajouter cette ligne
+      }
     });
   }
 
@@ -196,8 +204,16 @@ export class PeriodEvaluateurComponent extends BaseListWidget implements OnChang
     this.evaluatorService.deleteEvaluator(id)
       .subscribe({
         next: value => {
-          this._snackBar.open('Evaluateur supprimer', 'Fermer', {duration: 3000})
-          this.loadData()
+          this._snackBar.open('Évaluateur supprimé', 'Fermer', {duration: 3000});
+
+          // D'abord recharger les données locales
+          this.loadData();
+
+          // Émettre l'événement pour le parent
+          this.evaluatorAdded.emit();
+
+          // 3. Ensuite notifier via le service
+          this.listeningChangeService.notifyModalClosed();
         },
         error: err => {
           this._snackBar.open(err.error.errors, 'Fermer', {
