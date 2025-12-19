@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, Input, signal, SimpleChanges } from '@angular/core';
 import { Candidacy } from '../../models/candidacy';
 import { CandidacyService } from '../../services/candidacy.service';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
@@ -7,6 +7,10 @@ import { BaseListWidget } from '../../widgets/base-list-widget';
 import { Router, RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { SelectionService } from '../../services/selection.service';
+import { PeriodService } from '../../services/period.service';
+import { UserService } from '../../services/user.service';
+import { User } from '../../models/user.model';
+import { Period } from '../../models/period';
 
 @Component({
   selector: 'app-selections',
@@ -24,22 +28,57 @@ import { SelectionService } from '../../services/selection.service';
 })
 export class SelectionsComponent extends BaseListWidget {
 
+  @Input() period?: Period;
   candidateService = inject(CandidacyService);
   selectionService = inject(SelectionService);
   router = inject(Router);
 
   allCandidates = signal<Candidacy[]>([]);
   candidates = signal<Candidacy[]>([]);
+  periods: Period[] = [];
+
 
   totalCandidates = signal(0);
   evaluatedCandidates = signal(0);
   pendingCandidates = computed(() => this.totalCandidates() - this.evaluatedCandidates());
+  periodId!: number;
+  periodService: PeriodService = inject(PeriodService);
+  userService: UserService = inject(UserService);
+  user!: User
+  evaluateurId!: number;
+
+
 
   protected readonly Math = Math;
 
   ngOnInit() {
-    this.loadData();
-    this.loadAllCandidates();
+    this.periodService.getYearsPeriod().subscribe({
+      next: (periods) => {
+        this.periods = periods;
+        if (!this.periodId && this.periods.length > 0) {
+          this.periodId = this.periods[0].id;
+          this.getUser()
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching periods:', error);
+      }
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['period']) {
+      const current = changes['period'].currentValue;
+      this.period = current;
+      if (current) this.loadData();
+    }
+  }
+
+  onPeriodSelect() {
+    if (this.periodId) {
+      this.loadData();
+      this.loadAllCandidates();
+    }
   }
 
   override loadData() {
@@ -49,6 +88,7 @@ export class SelectionsComponent extends BaseListWidget {
         this.currentPage,
         this.search,
         this.per_page,
+        this.periodId
       )
       .subscribe({
         next: value => {
@@ -102,7 +142,7 @@ export class SelectionsComponent extends BaseListWidget {
 
   loadAllCandidates() {
     // Charger TOUS les candidats (sans pagination) pour la navigation fluide
-    this.candidateService.getPreselectedCandidates(1, '', 'all').subscribe({
+    this.candidateService.getPreselectedCandidates(1, '', 'all', this.periodId).subscribe({
       next: (response) => {
         let candidates: Candidacy[] = [];
 
@@ -131,13 +171,27 @@ export class SelectionsComponent extends BaseListWidget {
 
     if (!periodId) return;
 
-    this.candidateService.getAllSelectedStats(periodId).subscribe({
+    this.candidateService.getAllSelectedStats(this.periodId).subscribe({
       next: (stats) => {
         this.totalCandidates.set(stats.total);
         this.evaluatedCandidates.set(stats.evaluated);
       },
       error: (err) => {
         console.error('Erreur chargement stats:', err);
+      }
+    });
+  }
+
+  getUser() {
+    this.userService.getUser().subscribe({
+      next: (user) => {
+        this.user = user;
+        this.evaluateurId = this.user.id;
+        this.loadData();
+        this.loadAllCandidates();
+      },
+      error: (error) => {
+        console.error("Erreur lors de la récupération de l'utilisateur :", error);
       }
     });
   }
