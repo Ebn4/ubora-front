@@ -11,10 +11,11 @@ import { FilePreviewService } from '../../../services/file-preview.service';
 import { ImportService } from '../../../services/import.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DocPreviewComponent } from '../../preselection/candidacy-preselection/doc-preview/doc-preview.component';
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-candidacy-informations',
-  imports: [],
+  imports: [NgIf,NgFor],
   templateUrl: './candidacy-informations.component.html',
 })
 export class CandidacyInformationsComponent extends BaseListWidget {
@@ -29,6 +30,8 @@ export class CandidacyInformationsComponent extends BaseListWidget {
 
   interview = signal<Interview | null>(null)
   period = signal<Period | null>(null)
+
+  rejectionReasonsList: string[] = [];
 
   candidacyService = inject(CandidacyService);
   filePreviewService = inject(FilePreviewService)
@@ -52,6 +55,9 @@ export class CandidacyInformationsComponent extends BaseListWidget {
         next: (response) => {
           const candidate = response.data;
           this.candidacy = candidate
+
+          this.parseRejectionReasons();
+
           this.loadPeriodById(candidate.period_id)
           this.age = this.calculateAge(this.candidacy?.etn_naissance ?? '');
         },
@@ -142,6 +148,34 @@ export class CandidacyInformationsComponent extends BaseListWidget {
     }
 
     return age;
+  }
+
+  parseRejectionReasons() {
+    // Réinitialiser la liste
+    this.rejectionReasonsList = [];
+
+    // Vérifier si des raisons existent
+    if (this.candidacy?.rejection_reasons) {
+      const reasons = this.candidacy.rejection_reasons;
+
+      // Debug
+      console.log('Raw rejection reasons:', reasons);
+      console.log('Contains semicolon?', reasons.includes(';'));
+
+      // Si la chaîne contient des points-virgules, séparer
+      if (reasons.includes(';')) {
+        this.rejectionReasonsList = reasons
+          .split(';')
+          .map(reason => reason.trim())
+          .filter(reason => reason.length > 0);
+      }
+      // Sinon, utiliser la chaîne complète comme une seule raison
+      else if (reasons.trim().length > 0) {
+        this.rejectionReasonsList = [reasons.trim()];
+      }
+
+      console.log('Parsed reasons list:', this.rejectionReasonsList);
+    }
   }
 
 }

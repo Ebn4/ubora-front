@@ -50,4 +50,7 @@ export interface Candidacy {
   hasSelected: boolean
   selectionMean: number
   promotion_academique : string
+  is_allowed: number;
+  rejection_reasons : string;
+  cycle?: number;
 }
