@@ -34,17 +34,6 @@ import { TextCleanerService } from "../../../../services/text-cleaner.service";
               {{ cleanedContent }}
             </div>
           </div>
-
-          <!-- Pied de page -->
-          <div class="bg-gray-50 px-10 py-4 border-t border-gray-200 text-gray-500 text-sm flex justify-between items-center">
-            <span>✍️ Générée le {{ currentDate | date:'dd MMMM yyyy' }}</span>
-            <div class="flex items-center gap-2 text-orange-600 font-medium">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l3 3 7.5-7.5" />
-              </svg>
-              Prêt·e à passer à l’action
-            </div>
-          </div>
         </div>
       </div>
     </mat-dialog-content>
