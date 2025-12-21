@@ -180,4 +180,10 @@ export class CandidacyService {
 
     return this.http.get<any>(`${this.baseUrl}/candidacies/selection-stats`, { params });
   }
+
+  getCandidateEvaluationResultsByPeriod(candidateId: number, periodId: number) {
+    return this.http.get<ResponseInterface<any>>(
+      `${this.baseUrl}/candidates/${candidateId}/periods/${periodId}/evaluation-results`
+    );
+  }
 }

@@ -68,4 +68,18 @@ export class PeriodService {
       hasEvaluators: boolean
     }>(`${this.baseUrl}/periods/${id}/has-evaluators`);
   }
+
+  getSelectionCriteriaMaxScore(periodId: number): Observable<number> {
+    return this.http.get<any>(
+      `${this.baseUrl}/periods/${periodId}/selection-criteria-max-score`
+    ).pipe(
+      map((response: any) => {
+        // Vérifier la structure de la réponse
+        if (response.success && response.data && response.data.max_score !== undefined) {
+          return response.data.max_score;
+        }
+        return 100; // Valeur par défaut si problème
+      })
+    );
+  }
 }

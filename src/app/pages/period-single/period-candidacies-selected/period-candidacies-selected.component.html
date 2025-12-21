@@ -30,25 +30,38 @@
           </svg>
           Actualiser
         </button>
+
         <button
           *ngIf="period?.status === PeriodStatus.STATUS_CLOSE"
           (click)="exportToExcel()"
           class="group flex items-center px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                    </svg>
-          Télécharger le fichier Excel
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+          </svg>
+          Excel
         </button>
+
+        <!-- Bouton pour générer tous les PDF -->
+        <button
+          *ngIf="(period?.status === PeriodStatus.STATUS_SELECTION || period?.status === PeriodStatus.STATUS_CLOSE) && candidacies().length > 0"
+          (click)="generateAllPdfs()"
+          [disabled]="isGeneratingAllPdfs()"
+          class="group flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          {{ isGeneratingAllPdfs() ? 'Génération...' : 'Tous les PDF' }}
+        </button>
+
         <div class="flex items-center gap-2">
           <label for="per_page" class="text-sm font-semibold text-slate-700">Afficher</label>
           <div class="relative">
             <select id="per_page" [(ngModel)]="per_page" (change)="paginationChange()"
                     class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-orange-400 transition-colors duration-200 appearance-none bg-slate-50 focus:bg-white">
-              @for (option of countPerPageList; track option) {
-                <option [value]="option.value" [selected]="option.value === per_page">
-                  {{ option.label }}
-                </option>
-              }
+              <option *ngFor="let option of countPerPageList" [value]="option.value" [selected]="option.value === per_page">
+                {{ option.label }}
+              </option>
             </select>
             <svg xmlns="http://www.w3.org/2000/svg"
                  class="h-5 w-5 absolute right-3 top-4 text-slate-400 pointer-events-none" fill="none"
@@ -65,9 +78,9 @@
   <div class="bg-white rounded-md overflow-hidden text-black">
     <div class="px-8 py-2 border-b border-slate-200">
       <div class="flex items-center justify-between">
-        <h3 class="text-xl font-bold  flex items-center">
-          <div class="w-12 h-12 bg-opacity-20 bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+        <h3 class="text-xl font-bold flex items-center">
+          <div class="w-12 h-12 bg-orange-100 bg-opacity-20 rounded-2xl flex items-center justify-center mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-500" fill="none" viewBox="0 0 24 24"
                  stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8m-5 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -76,8 +89,8 @@
           Liste des Candidatures Sélectionnés
         </h3>
 
-        <div class="flex items-center space-x-6  text-sm">
-          <span class="opacity-75">{{ candidacies!.length || 0 }} résultats</span>
+        <div class="flex items-center space-x-6 text-sm">
+          <span class="opacity-75">{{ candidacies().length }} résultats</span>
           <div class="w-px h-6 bg-gray-500 opacity-25"></div>
           <span class="opacity-75">Page {{ currentPage }} sur {{ lastPage }}</span>
         </div>
@@ -100,47 +113,49 @@
           </th>
           <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Ville</th>
           <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Genre</th>
-          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Université
-          </th>
-          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Moyenne obtenue
-          </th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Université</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Moyenne</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Rapport</th>
           <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Actions</th>
         </tr>
         </thead>
         <tbody class="bg-white divide-y divide-slate-200">
-        <tr *ngFor="let candidacie of candidacies(); let i = index"
-            class="hover:bg-slate-50 transition-colors duration-200 group">
-
-          <td class="px-6 py-4">
-            <div class="flex items-center">
-              <div>
-                <div class="text-sm font-semibold text-slate-900">
-                  {{ candidacie.etn_nom }} {{ candidacie.etn_postnom }}
+          <tr *ngFor="let candidacie of candidacies()" class="hover:bg-slate-50 transition-colors duration-200 group">
+            <td class="px-6 py-4">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+                  <span class="text-orange-600 font-semibold">
+                    {{ candidacie.etn_nom?.charAt(0) || 'C' }}{{ candidacie.etn_prenom?.charAt(0) }}
+                  </span>
                 </div>
-                <div class="text-sm text-slate-500">
-                  {{ candidacie.etn_prenom }}
+                <div>
+                  <div class="text-sm font-semibold text-slate-900">
+                    {{ candidacie.etn_nom }} {{ candidacie.etn_postnom }}
+                  </div>
+                  <div class="text-sm text-slate-500">
+                    {{ candidacie.etn_prenom }}
+                  </div>
                 </div>
               </div>
-            </div>
-          </td>
+            </td>
 
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-slate-400" fill="none"
-                   viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-              </svg>
-              <span class="text-sm text-slate-900 capitalize">{{ candidacie.ville }}</span>
-            </div>
-          </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-slate-400" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                </svg>
+                <span class="text-sm text-slate-900 capitalize">{{ candidacie.ville || 'Non spécifiée' }}</span>
+              </div>
+            </td>
 
-          <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-6 py-4 whitespace-nowrap">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
-                    [class.bg-blue-100]="candidacie.sexe === 'Homme'"
-                    [class.text-blue-800]="candidacie.sexe === 'Homme'"
-                    [class.bg-pink-100]="candidacie.sexe === 'Femme'"
-                    [class.text-pink-800]="candidacie.sexe === 'Femme'">
+                    [class.bg-blue-100]="candidacie.sexe === 'M'"
+                    [class.text-blue-800]="candidacie.sexe === 'M'"
+                    [class.bg-pink-100]="candidacie.sexe === 'F'"
+                    [class.text-pink-800]="candidacie.sexe === 'F'">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -148,42 +163,100 @@
                 </svg>
                 {{ candidacie.sexe === 'M' ? 'Masculin' : 'Féminin' }}
               </span>
-          </td>
+            </td>
 
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
-            {{ candidacie.universite_institut_sup }}
-          </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+              <div class="max-w-xs truncate" [title]="candidacie.universite_institut_sup">
+                {{ candidacie.universite_institut_sup || 'Non spécifiée' }}
+              </div>
+            </td>
 
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex items-center">
-              <span class="text-sm font-medium text-slate-900">
-                  {{ candidacie.selectionMean }}
-                </span>
-            </div>
-          </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex flex-col">
+                  <span class="text-sm font-medium text-slate-900">
+                    {{ candidacie.selectionMean || 0 }}/{{ maxScore() }}
+                  </span>
+                  <!-- Barre de progression -->
+                  <div class="w-24 h-2 bg-slate-200 rounded-full overflow-hidden mt-1">
+                    <div class="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"
+                         [style.width.%]="((candidacie.selectionMean || 0) / (maxScore() || 1)) * 100">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
 
-          <td class="px-6 py-4 whitespace-nowrap">
-            <a [routerLink]="['/candidacy-single', candidacie.id, period?.id]"
-               class="group inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
-               style="background: linear-gradient(135deg, #FF8C00, #FF7A00);">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 group-hover:scale-110 transition-transform"
-                   fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-              </svg>
-              Voir détails
-            </a>
-          </td>
-        </tr>
+            <!-- Colonne pour le bouton PDF -->
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex justify-center">
+                <button
+                  *ngIf="period?.status === PeriodStatus.STATUS_SELECTION || period?.status === PeriodStatus.STATUS_CLOSE"
+                  (click)="generateCandidatePdf(candidacie)"
+                  [disabled]="isGeneratingPdfForCandidate(candidacie.id)"
+                  class="flex items-center px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 hover:scale-105 shadow hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  style="background: linear-gradient(135deg, #4CAF50, #45a049);">
+
+                  <ng-container *ngIf="!isGeneratingPdfForCandidate(candidacie.id); else loading">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>PDF</span>
+                  </ng-container>
+
+                  <ng-template #loading>
+                    <div class="flex items-center">
+                      <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <span>Génération...</span>
+                    </div>
+                  </ng-template>
+                </button>
+              </div>
+            </td>
+
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-3">
+                <!-- Bouton "Voir détails" -->
+                <a [routerLink]="['/candidacy-single', candidacie.id, period?.id]"
+                   class="group inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                   style="background: linear-gradient(135deg, #FF8C00, #FF7A00);">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 group-hover:scale-110 transition-transform"
+                       fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                  Voir détails
+                </a>
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
+
+      <!-- Message si aucune donnée -->
+      <div *ngIf="candidacies().length === 0" class="text-center py-12">
+        <div class="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-slate-700 mb-2">Aucun candidat trouvé</h3>
+        <p class="text-slate-500">Aucune candidature ne correspond à vos critères de recherche.</p>
+      </div>
     </div>
 
     <div class="bg-slate-50 px-8 py-6 border-t border-slate-200">
       <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div></div>
+        <div class="text-sm text-slate-600">
+          <span *ngIf="isGeneratingAllPdfs()" class="flex items-center">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500 mr-2"></div>
+            Génération des PDF en cours...
+          </span>
+        </div>
 
         <div class="flex items-center space-x-2">
           <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"
@@ -196,16 +269,16 @@
           </button>
 
           <div class="flex items-center space-x-1">
-            <span *ngFor="let page of [].constructor(lastPage); let i = index">
-              <button (click)="changePage(i + 1)"
+            <span *ngFor="let page of getPageNumbers()">
+              <button (click)="changePage(page)"
                       class="w-10 h-10 text-sm font-medium rounded-xl transition-all duration-200 flex items-center justify-center"
-                      [class.text-white]="currentPage === i + 1" [class.shadow-lg]="currentPage === i + 1"
-                      [class.text-slate-700]="currentPage !== i + 1" [class.bg-white]="currentPage !== i + 1"
-                      [class.border-2]="currentPage !== i + 1" [class.border-slate-200]="currentPage !== i + 1"
-                      [class.hover:bg-slate-50]="currentPage !== i + 1"
-                      [class.hover:border-orange-300]="currentPage !== i + 1"
-                      [style.background]="currentPage === i + 1 ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
-                {{ i + 1 }}
+                      [class.text-white]="currentPage === page" [class.shadow-lg]="currentPage === page"
+                      [class.text-slate-700]="currentPage !== page" [class.bg-white]="currentPage !== page"
+                      [class.border-2]="currentPage !== page" [class.border-slate-200]="currentPage !== page"
+                      [class.hover:bg-slate-50]="currentPage !== page"
+                      [class.hover:border-orange-300]="currentPage !== page"
+                      [style.background]="currentPage === page ? 'linear-gradient(135deg, #FF8C00, #FF7A00)' : ''">
+                {{ page }}
               </button>
             </span>
           </div>
