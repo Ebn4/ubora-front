@@ -142,7 +142,7 @@ export class PdfService {
   async generateEvaluationReport(
     candidateData: any,
     criteriaList: any[],
-    evaluationResults: any[]
+    evaluationResults: any[],
   ): Promise<void> {
     try {
       const doc = new jsPDF('p', 'mm', 'a4');
@@ -219,7 +219,6 @@ export class PdfService {
 
         // Logo Fondation Orange à droite
         if (fondationOrange) {
-          // Essayer PNG d'abord, si problème, essayer JPEG
           try {
             doc.addImage(fondationOrange, 'PNG', 170, 12, 25, 8);
           } catch (e) {
@@ -256,7 +255,7 @@ export class PdfService {
       doc.text(
         'GRILLE D\'ÉVALUATION DE L\'ENTRETIEN',
         105,
-        28, // Position ajustée
+        28,
         { align: 'center' }
       );
 
@@ -265,14 +264,14 @@ export class PdfService {
       doc.text(
         'Bourses Ubora - Fondation Orange',
         105,
-        35, // Position ajustée
+        35,
         { align: 'center' }
       );
 
-      // Ligne séparatrice - PLACÉE APRÈS les titres
+      // Ligne séparatrice
       doc.setDrawColor(borderColor, borderColor, borderColor);
       doc.setLineWidth(0.5);
-      doc.line(15, 40, 195, 40); // À 40mm du haut
+      doc.line(15, 40, 195, 40);
 
       /* =========================
         INFORMATIONS CANDIDAT
@@ -297,20 +296,19 @@ export class PdfService {
       doc.setFont('helvetica', 'normal');
       doc.text(candidateData.universite_institut_sup || '-', 50, y);
 
-
       y += 8;
       doc.setFont('helvetica', 'bold');
       doc.text('Faculté :', 20, y);
       doc.setFont('helvetica', 'normal');
       doc.text(candidateData.faculte || '-', 50, y);
 
-      y += 8; // Descendre d'une ligne
+      y += 8;
       doc.setFont('helvetica', 'bold');
-      doc.text('Niveau d\'étude : ', 20, y); // Même colonne gauche
+      doc.text('Niveau d\'étude : ', 20, y);
       doc.setFont('helvetica', 'normal');
       doc.text(this.getPromotionName(candidateData.promotion_academique) || '-', 50, y);
 
-      y += 8; //
+      y += 8;
 
       /* =========================
         TABLEAU DES CRITÈRES
@@ -361,9 +359,9 @@ export class PdfService {
           halign: 'center'
         },
         columnStyles: {
-          0: { // Première colonne - AUGMENTEZ la largeur
+          0: {
             halign: 'left',
-            cellWidth: 100, // ◄◄◄ Augmenté de 90 à 100
+            cellWidth: 100,
             fontStyle: 'bold',
             fontSize: 9
           },
@@ -393,8 +391,9 @@ export class PdfService {
             fontSize: 9
           }
         },
-        margin: { left: 15, right: 15 } // ◄◄◄ IMPORTANT: Même marge partout
+        margin: { left: 15, right: 15 }
       });
+
       /* =========================
         RÉSULTATS FINAUX
       ========================== */
@@ -407,7 +406,7 @@ export class PdfService {
 
       const maxScore = criteriaList.length * 5;
 
-      // Augmenter la hauteur du cadre pour plus d'espace
+      // Cadre résultats
       const cadreHeight = 30;
       doc.setDrawColor(borderColor, borderColor, borderColor);
       doc.setLineWidth(0.5);
@@ -433,63 +432,125 @@ export class PdfService {
       doc.setFont('helvetica', 'bold');
       doc.text(`${totalScore}/${maxScore}`, 145, yAfterTable + 20);
 
-
       /* =========================
-        COMMENTAIRE GÉNÉRAL - AVEC ESPACE AUGMENTÉ
+        OBSERVATION GÉNÉRALE - ADAPTATIVE
       ========================== */
-      const commentY = yAfterTable + cadreHeight + 20; // ◄◄◄ ESPACE AUGMENTÉ ICI
+      let observationY = yAfterTable + cadreHeight + 15;
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
-      doc.text('COMMENTAIRE GÉNÉRAL', 15, commentY);
+      doc.text('OBSERVATION GÉNÉRALE', 15, observationY);
 
-      // Cadre pour commentaire (peut réduire la hauteur si besoin d'espace)
-      const commentCadreHeight = 35;
+
+      // Préparer le texte de l'observation
+      const observationText = candidateData.observation || 'Aucune observation saisie.';
+      const lineHeight = 5;
+      const maxWidth = 175; // Largeur disponible dans le cadre
+      const margin = 5;
+
+      // Diviser le texte en lignes
+      const splitObservation = doc.splitTextToSize(observationText, maxWidth);
+
+      // Calculer la hauteur nécessaire
+      const linesCount = splitObservation.length;
+      const textHeight = linesCount * lineHeight;
+
+      // Hauteur minimale et maximale du cadre
+      const minCadreHeight = 25;
+      const maxCadreHeight = 80; // Pour éviter de dépasser la page
+      const calculatedCadreHeight = Math.max(minCadreHeight, Math.min(textHeight + 15, maxCadreHeight));
+
+      // Dessiner le cadre - hauteur adaptative
       doc.setDrawColor(borderColor, borderColor, borderColor);
-      doc.rect(15, commentY + 5, 180, commentCadreHeight);
+      doc.rect(15, observationY + 5, 180, calculatedCadreHeight);
 
+      // Ajouter le texte dans le cadre
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(darkColor, darkColor, darkColor);
 
-      const comment = candidateData.commentaire || 'Aucun commentaire saisi.';
-      const splitComment = doc.splitTextToSize(comment, 175);
+      let textY = observationY + 13;
+      const maxLinesInCadre = Math.floor((calculatedCadreHeight - 8) / lineHeight);
+      const linesToDisplay = Math.min(splitObservation.length, maxLinesInCadre);
 
-      doc.text(splitComment, 20, commentY + 13);
+      for (let i = 0; i < linesToDisplay; i++) {
+        doc.text(splitObservation[i], 20, textY);
+        textY += lineHeight;
+      }
+
+      // Si le texte est trop long, ajouter "..." à la fin
+      if (splitObservation.length > maxLinesInCadre) {
+        doc.text('...', 20, textY);
+      }
 
       /* =========================
-        PIED DE PAGE
+        PIED DE PAGE - Position dynamique
       ========================== */
       const pageHeight = doc.internal.pageSize.height;
+      const currentY = observationY + calculatedCadreHeight + 10;
 
-      // Ligne séparatrice du pied de page
-      doc.setDrawColor(borderColor, borderColor, borderColor);
-      doc.line(15, pageHeight - 20, 195, pageHeight - 20);
+      // Vérifier si on a assez d'espace pour le pied de page
+      if (currentY < pageHeight - 25) {
+        // Ajouter une ligne séparatrice si espace suffisant
+        doc.setDrawColor(borderColor, borderColor, borderColor);
+        doc.line(15, pageHeight - 20, 195, pageHeight - 20);
 
-      doc.setFontSize(9);
-      doc.setTextColor(120, 120, 120);
-      doc.text(
-        `Document généré le ${new Date().toLocaleDateString('fr-FR', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })}`,
-        105,
-        pageHeight - 15,
-        { align: 'center' }
-      );
+        doc.setFontSize(9);
+        doc.setTextColor(120, 120, 120);
+        doc.text(
+          `Document généré le ${new Date().toLocaleDateString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}`,
+          105,
+          pageHeight - 15,
+          { align: 'center' }
+        );
 
-      doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.text(
-        'Bourses Ubora - Fondation Orange',
-        105,
-        pageHeight - 8,
-        { align: 'center' }
-      );
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(
+          'Bourses Ubora - Fondation Orange',
+          105,
+          pageHeight - 8,
+          { align: 'center' }
+        );
+      } else {
+        // Ajouter une nouvelle page pour le pied de page
+        doc.addPage();
+        const newPageY = 20;
+
+        doc.setDrawColor(borderColor, borderColor, borderColor);
+        doc.line(15, newPageY, 195, newPageY);
+
+        doc.setFontSize(9);
+        doc.setTextColor(120, 120, 120);
+        doc.text(
+          `Document généré le ${new Date().toLocaleDateString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}`,
+          105,
+          newPageY + 10,
+          { align: 'center' }
+        );
+
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(
+          'Bourses Ubora - Fondation Orange',
+          105,
+          newPageY + 20,
+          { align: 'center' }
+        );
+      }
 
       /* =========================
         SAUVEGARDE
