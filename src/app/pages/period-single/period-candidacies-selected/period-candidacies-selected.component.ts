@@ -111,7 +111,8 @@ export class PeriodCandidaciesSelectedComponent extends BaseListWidget {
         nationalite: candidate.nationalite || '',
         faculte: candidate.faculte || '',
         telephone: candidate.telephone || '',
-        promotion_academique: candidate.promotion_academique || ''
+        promotion_academique: candidate.promotion_academique || '',
+        observation : candidate.observation || ''
       };
 
       // Formater les critères et résultats
