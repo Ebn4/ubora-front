@@ -53,4 +53,6 @@ export interface Candidacy {
   is_allowed: number;
   rejection_reasons : string;
   cycle?: number;
+  interviews?: any[];
+  observation?: string;
 }

@@ -2,14 +2,14 @@ import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnInit, Outp
 import { CriteriaService } from '../../services/criteria.service';
 import { Criteria } from '../../models/criteria';
 import { CandidacyService } from '../../services/candidacy.service';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { CandidateEvaluation } from '../../models/candidate-evaluation';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PeriodService } from '../../services/period.service';
 import { Period } from '../../models/period';
 import { PeriodStatus } from '../../enum/period-status.enum';
-import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
+import { forkJoin, Observable, of, Subject } from 'rxjs';
+import { catchError, finalize, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-evaluation',
@@ -43,34 +43,37 @@ export class EvaluationComponent implements OnInit, OnChanges {
   cdr = inject(ChangeDetectorRef)
 
   form!: FormGroup
+  generalObservation = new FormControl('', [Validators.required, Validators.minLength(10)]);
+
   isPeriodHasSelectionStatus = signal(false)
   isCandidateHasSelected = signal(false)
 
-  // AJOUTER : État de chargement
   isLoading = signal(true)
-  loadingText = signal('Chargement des critères...')
+  loadingText = signal('Chargement des données...')
+
+  private destroy$ = new Subject<void>();
 
   ngOnInit() {
     this.form = this.formBuilder.group({
       crv: this.formBuilder.array([])
     });
 
-    // Charger initialement sans bloquer
     this.initializeData();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Réinitialiser seulement quand le candidat change vraiment
     if (changes['candidateId'] && !changes['candidateId'].firstChange) {
-      console.log('Candidat changé:', this.candidateId);
       this.initializeData();
     }
 
-    // ResetTrigger pour forcer un rechargement
     if (changes['resetTrigger'] && !changes['resetTrigger'].firstChange) {
-      console.log('Reset forcé');
       this.initializeData();
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private async initializeData() {
@@ -78,11 +81,12 @@ export class EvaluationComponent implements OnInit, OnChanges {
     this.loadingText.set('Chargement des données...');
 
     try {
-      // Charger en parallèle
+      // Charger tout en parallèle
       await Promise.all([
         this.loadPeriod(),
         this.checkCandidateSelection(),
-        this.loadCriteriaAsync()
+        this.loadCriteriaAsync(),
+        this.loadInterviewObservation()
       ]);
     } catch (error) {
       console.error('Erreur initialisation:', error);
@@ -91,28 +95,13 @@ export class EvaluationComponent implements OnInit, OnChanges {
     }
   }
 
-  hasAnyResults(): boolean {
-    return this.crv.controls.some(control => {
-      const value = control.get('result')?.value;
-      return value !== null && value !== undefined && value !== '';
-    });
-  }
-
-  // Getter pour le FormArray
-  get crv(): FormArray {
-    return this.form.get('crv') as FormArray;
-  }
-
   private async loadCriteriaAsync() {
     if (!this.periodId || !this.interviewId) {
       console.warn('Données manquantes pour charger les critères');
       return;
     }
 
-    this.loadingText.set('Chargement des critères...');
-
     try {
-      // 1. Charger les critères
       const criteriaResponse = await this.criteriaService.loadCriteriasByPeriodId(
         this.periodId,
         'SELECTION'
@@ -125,7 +114,6 @@ export class EvaluationComponent implements OnInit, OnChanges {
 
       this.criterias.set(criteriaResponse.data);
 
-      // Préparer les appels pour les résultats
       const resultObservables = criteriaResponse.data.map(criteria =>
         this.candidateService.getCandidateSelectionResultByCriteria(
           this.interviewId!,
@@ -133,15 +121,12 @@ export class EvaluationComponent implements OnInit, OnChanges {
         ).pipe(
           catchError(error => {
             console.error(`Erreur chargement résultat critère ${criteria.id}:`, error);
-            return of({ data: { result: '' } }); // Valeur par défaut
+            return of({ data: { result: '' } });
           })
         )
       );
 
-      // Exécuter en parallèle
       const results = await forkJoin(resultObservables).toPromise();
-
-      // Construire le formulaire
       this.buildForm(criteriaResponse.data, results || []);
 
     } catch (error) {
@@ -151,12 +136,10 @@ export class EvaluationComponent implements OnInit, OnChanges {
   }
 
   private buildForm(criterias: Criteria[], results: any[]) {
-    // Vider le formulaire
     while (this.crv.length !== 0) {
       this.crv.removeAt(0);
     }
 
-    // Ajouter les contrôles avec valeurs par défaut
     criterias.forEach((criteria, index) => {
       const resultValue = results[index]?.data?.result || '0';
 
@@ -175,7 +158,6 @@ export class EvaluationComponent implements OnInit, OnChanges {
       this.crv.push(control);
     });
 
-    // Marquer le formulaire comme "touché" pour afficher les erreurs
     this.form.markAsTouched();
     this.cdr.detectChanges();
   }
@@ -228,11 +210,45 @@ export class EvaluationComponent implements OnInit, OnChanges {
     });
   }
 
+  private loadInterviewObservation(): Promise<void> {
+    return new Promise((resolve) => {
+      if (!this.interviewId) {
+        this.generalObservation.setValue('');
+        resolve();
+        return;
+      }
+
+      this.candidateService.getInterviewObservation(this.interviewId)
+        .pipe(
+          takeUntil(this.destroy$),
+          catchError(() => of({ data: { observation: '' } }))
+        )
+        .subscribe({
+          next: (response) => {
+            this.generalObservation.setValue(response.data.observation || '');
+            resolve();
+          },
+          error: () => {
+            this.generalObservation.setValue('');
+            resolve();
+          }
+        });
+    });
+  }
+
+  get crv(): FormArray {
+    return this.form.get('crv') as FormArray;
+  }
+
   onSubmit() {
     console.log('Soumission pour le candidat:', this.candidateId);
 
-    if (!this.hasSelected && this.form.valid) {
-      const fields: CandidateEvaluation[] = this.crv.controls.map((control, index) => ({
+    // Valider tous les champs
+    this.form.markAllAsTouched();
+    this.generalObservation.markAsTouched();
+
+    if (!this.hasSelected && this.form.valid && this.generalObservation.valid) {
+      const fields: CandidateEvaluation[] = this.crv.controls.map((control) => ({
         key: control.get('critere')?.value?.id,
         value: control.get('result')?.value
       }));
@@ -241,11 +257,16 @@ export class EvaluationComponent implements OnInit, OnChanges {
         this.isLoading.set(true);
         this.loadingText.set('Soumission en cours...');
 
-        this.candidateService.evaluateCandidate({
+        const observationValue = this.generalObservation.value?.trim();
+
+        const requestData: any = {
           interviewId: this.interviewId,
           periodId: this.periodId,
-          evaluations: fields
-        })
+          evaluations: fields,
+          generalObservation: observationValue // Toujours envoyé (obligatoire)
+        };
+
+        this.candidateService.evaluateCandidate(requestData)
         .pipe(
           finalize(() => this.isLoading.set(false))
         )
@@ -257,25 +278,13 @@ export class EvaluationComponent implements OnInit, OnChanges {
             if (value.data) {
               this.isCandidateHasSelected.set(true);
 
-              // Émettre un événement avec plus d'information
               this.onEvaluated.emit({
                 success: true,
                 candidateId: this.candidateId,
-                autoNavigate: true  // Flag pour indiquer qu'on veut naviguer automatiquement
+                autoNavigate: true
               });
 
               this.showSnackbar('Évaluation effectuée avec succès');
-
-              // Optionnel : réinitialiser le formulaire après soumission
-              setTimeout(() => {
-                if (this.hasAnyResults()) {
-                  this.form.reset();
-                  // Réinitialiser chaque contrôle individuellement
-                  this.crv.controls.forEach(control => {
-                    control.get('result')?.setValue('0');
-                  });
-                }
-              }, 50);
             }
           },
           error: (err) => {
@@ -283,7 +292,6 @@ export class EvaluationComponent implements OnInit, OnChanges {
               this.snackBar.open(err.error.errors[0], 'Fermer', { duration: 3000 });
             }
 
-            // Émettre un événement d'erreur
             this.onEvaluated.emit({
               success: false,
               candidateId: this.candidateId,
@@ -291,6 +299,11 @@ export class EvaluationComponent implements OnInit, OnChanges {
             });
           }
         });
+      }
+    } else {
+      // Afficher erreur si formulaire invalide
+      if (!this.form.valid || !this.generalObservation.valid) {
+        this.snackBar.open('Veuillez remplir tous les champs obligatoires', 'Fermer', { duration: 3000 });
       }
     }
   }

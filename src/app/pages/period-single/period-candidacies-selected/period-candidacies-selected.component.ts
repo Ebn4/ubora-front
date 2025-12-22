@@ -111,7 +111,8 @@ export class PeriodCandidaciesSelectedComponent extends BaseListWidget {
         nationalite: candidate.nationalite || '',
         faculte: candidate.faculte || '',
         telephone: candidate.telephone || '',
-        promotion_academique: candidate.promotion_academique || ''
+        promotion_academique: candidate.promotion_academique || '',
+        observation : candidate.observation || ''
       };
 
       // Formater les critères et résultats
@@ -228,7 +229,7 @@ export class PeriodCandidaciesSelectedComponent extends BaseListWidget {
   exportToExcel() {
       if (!this.period?.id) return;
 
-      this.candidacyService.getSelectionCandidates(this.period.id,1, '', 0)
+      this.candidacyService.getSelectionCandidates(this.period.id,1, '', 'all')
         .subscribe({
           next: (response) => {
             const data = response.data.map((c: any) => ({
