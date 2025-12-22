@@ -11,6 +11,7 @@ import {UserService} from './user.service';
 import {switchMap} from 'rxjs/operators';
 import {Evaluator} from '../models/evaluator.model';
 import {CandidacySelectionResult} from '../models/candidacy-selection-result';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -114,7 +115,7 @@ export class CandidacyService {
   }
 
 
-  evaluateCandidate(data: { interviewId: number, periodId: number, evaluations: CandidateEvaluation[] }) {
+  evaluateCandidate(data: { interviewId: number, periodId: number, evaluations: CandidateEvaluation[],generalObservation?: string }) {
     return this.http.post<{ errors: string | null, data: boolean }>(`${this.baseUrl}/candidate/selections`, data)
   }
 
@@ -184,6 +185,12 @@ export class CandidacyService {
   getCandidateEvaluationResultsByPeriod(candidateId: number, periodId: number) {
     return this.http.get<ResponseInterface<any>>(
       `${this.baseUrl}/candidates/${candidateId}/periods/${periodId}/evaluation-results`
+    );
+  }
+
+  getInterviewObservation(interviewId: number): Observable<{data: {observation: string}}> {
+    return this.http.get<{data: {observation: string}}>(
+      `${this.baseUrl}/interviews/${interviewId}/observation`
     );
   }
 }
