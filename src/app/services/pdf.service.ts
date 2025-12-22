@@ -297,6 +297,13 @@ export class PdfService {
       doc.setFont('helvetica', 'normal');
       doc.text(candidateData.universite_institut_sup || '-', 50, y);
 
+
+      y += 8;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Faculté :', 20, y);
+      doc.setFont('helvetica', 'normal');
+      doc.text(candidateData.faculte || '-', 50, y);
+
       y += 8; // Descendre d'une ligne
       doc.setFont('helvetica', 'bold');
       doc.text('Niveau d\'étude : ', 20, y); // Même colonne gauche
