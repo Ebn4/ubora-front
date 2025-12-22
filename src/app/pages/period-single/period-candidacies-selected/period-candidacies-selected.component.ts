@@ -228,7 +228,7 @@ export class PeriodCandidaciesSelectedComponent extends BaseListWidget {
   exportToExcel() {
       if (!this.period?.id) return;
 
-      this.candidacyService.getSelectionCandidates(this.period.id,1, '', 0)
+      this.candidacyService.getSelectionCandidates(this.period.id,1, '', 'all')
         .subscribe({
           next: (response) => {
             const data = response.data.map((c: any) => ({
