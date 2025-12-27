@@ -1,50 +1,85 @@
-import {NgClass} from '@angular/common';
-import {Component, inject, signal} from '@angular/core';
-import {NavigationEnd, Router, RouterLink, RouterOutlet} from '@angular/router';
-import {filter} from 'rxjs';
-import {AuthServices} from '../../../services/auth.service';
-import {LocalStorageService} from '../../../services/local-storage.service';
-import {UserService} from '../../../services/user.service';
-import {User} from '../../../models/user.model';
-import {EvaluatorService} from '../../../services/evaluator.service';
+import { NgClass } from '@angular/common';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
+import { AuthServices } from '../../../services/auth.service';
+import { LocalStorageService } from '../../../services/local-storage.service';
+import { UserService } from '../../../services/user.service';
+import { User } from '../../../models/user.model';
+import { EvaluatorService } from '../../../services/evaluator.service';
+import { RoleChangeService } from '../../../services/role-change.service'; // Importez le service
+import { ListeningChangeService } from '../../../services/listening-change.service';
 
 @Component({
   selector: 'app-sidebar',
   imports: [RouterLink, NgClass],
   templateUrl: './sidebar.component.html',
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnDestroy {
 
   router: Router = inject(Router);
   authService = inject(AuthServices);
   userService = inject(UserService);
   evaluatorService = inject(EvaluatorService);
   localStorageService = inject(LocalStorageService);
+  roleChangeService = inject(RoleChangeService); // Injectez le service
+  listeningChangeService = inject(ListeningChangeService);
 
   hasAdminRole = signal(false)
   isSelectorEvaluator = signal(false)
   isPreselectorEvaluator = signal(false)
   user = signal<User | null>(null)
 
+  private subscriptions: Subscription = new Subscription();
+
   ngOnInit() {
     const url = this.router.url;
     this.updateActiveTab(url);
-    this.checkIfUserHasAdminRole()
-    this.checkIfIsSelectorEvaluator()
-    this.checkIfIsPreselectorEvaluator()
+    this.checkRoles(); // Méthode unique pour vérifier tous les rôles
+
     this.getCurrentUser()
 
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.updateActiveTab((event as NavigationEnd).urlAfterRedirects);
+    // Abonnement aux changements de route
+    this.subscriptions.add(
+      this.router.events
+        .pipe(filter(event => event instanceof NavigationEnd))
+        .subscribe((event: NavigationEnd) => {
+          this.updateActiveTab((event as NavigationEnd).urlAfterRedirects);
+        })
+    );
+
+    // Abonnement aux changements de rôle
+    this.subscriptions.add(
+      this.roleChangeService.roleChanged$.subscribe((roleChanged) => {
+        if (roleChanged) {
+          this.checkRoles(); // Rechargez les rôles quand un changement est détecté
+          this.roleChangeService.resetNotification(); // Réinitialisez la notification
+        }
       })
+    );
+
+    this.subscriptions.add(
+    this.listeningChangeService.modalClosed$.subscribe((modalClosed) => {
+      if (modalClosed) {
+        console.log('Modal fermé, rechargement des rôles...');
+        this.checkRoles(); // Rechargez les rôles
+        this.listeningChangeService.resetNotification(); // Réinitialisez
+      }
+    })
+  );
   }
 
   activeTab: 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'users' | 'evaluator-candidacies' | 'selections' | 'preselection-admin' = 'period';
 
   setActiveTab(tab: 'allcandidacy' | 'import' | 'presection' | 'period' | 'criteria' | 'users' | 'evaluator-candidacies' | 'preselection-admin' | 'selections') {
     this.activeTab = tab;
+  }
+
+  // Nouvelle méthode pour vérifier tous les rôles
+  checkRoles() {
+    this.checkIfUserHasAdminRole();
+    this.checkIfIsSelectorEvaluator();
+    this.checkIfIsPreselectorEvaluator();
   }
 
   checkIfUserHasAdminRole() {
@@ -126,5 +161,9 @@ export class SidebarComponent {
           console.error(err)
         }
       })
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
