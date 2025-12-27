@@ -1,225 +1,220 @@
-import {Component, EventEmitter, inject, Input, OnChanges, Output, signal, SimpleChanges} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {AddEvaluatorDialogComponent} from '../add-evaluator-dialog/add-evaluator-dialog.component';
-import {EvaluatorService} from '../../../services/evaluator.service';
-import {Evaluator} from '../../../models/evaluator.model';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {BaseListWidget} from '../../../widgets/base-list-widget';
-import {NgClass, NgForOf} from '@angular/common';
-import {Period} from '../../../models/period';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {PeriodStatus} from '../../../enum/period-status.enum';
-import {PeriodService} from '../../../services/period.service';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  signal,
+  SimpleChanges,
+  ChangeDetectionStrategy
+} from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgClass, NgForOf } from '@angular/common';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+
+import { AddEvaluatorDialogComponent } from '../add-evaluator-dialog/add-evaluator-dialog.component';
+import { EvaluatorService } from '../../../services/evaluator.service';
+import { PeriodService } from '../../../services/period.service';
 import { ListeningChangeService } from '../../../services/listening-change.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { BaseListWidget } from '../../../widgets/base-list-widget';
+import { Period } from '../../../models/period';
+import { Evaluator } from '../../../models/evaluator.model';
+import { PeriodStatus } from '../../../enum/period-status.enum';
 
 @Component({
   selector: 'app-period-evaluateur',
-  imports: [
-    FormsModule,
-    NgForOf,
-    ReactiveFormsModule,
-    NgClass
-  ],
+  standalone: true,
+  imports: [FormsModule, ReactiveFormsModule, NgForOf, NgClass],
   templateUrl: './period-evaluateur.component.html',
-  standalone: true
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PeriodEvaluateurComponent extends BaseListWidget implements OnChanges {
+export class PeriodEvaluateurComponent
+  extends BaseListWidget
+  implements OnChanges, OnDestroy {
 
+  private dialog = inject(MatDialog);
+  private evaluatorService = inject(EvaluatorService);
+  private periodService = inject(PeriodService);
+  private snackBar = inject(MatSnackBar);
+  private destroy$ = new Subject<void>();
   private _snackBar = inject(MatSnackBar);
-  readonly dialog = inject(MatDialog);
-  private listeningChangeService = inject(ListeningChangeService);
 
-  @Input() candidatesCount? = 0;
-  @Input() period?: Period
-  @Output() canValidateDispatch = new EventEmitter<boolean>()
+
+  @Input() period?: Period;
+  @Input() candidatesCount = 0;
   @Output() evaluatorAdded = new EventEmitter<void>();
+  @Output() canValidateDispatch = new EventEmitter<boolean>();
 
-
-  perPage = signal(10)
-  canDispatch = signal(true)
-  isDisableDispatchButton = signal(false)
-  evaluators = signal<Evaluator[]>([])
+  evaluators = signal<Evaluator[]>([]);
+  isLoading = signal(false);
+  canDispatch = signal(true);
+  isDisableDispatchButton = signal(false);
   dispatchStatus = signal(PeriodStatus.STATUS_DISPATCH);
-  evaluatorTypes = signal<{ name: string, type: string }[]>(
-    [
-      {
-        name: 'Selection',
-        type: 'SELECTION'
-      }, {
-      name: 'Preselection',
-      type: 'PRESELECTION'
-    }
-    ]
-  )
 
-  typeForm = new FormControl('')
+  Math = Math;
 
-  evaluatorService = inject(EvaluatorService)
-  periodService = inject(PeriodService)
+  evaluatorTypes = [
+    { name: 'Selection', type: 'SELECTION' },
+    { name: 'Preselection', type: 'PRESELECTION' }
+  ];
+
+  typeForm = new FormControl('');
 
   ngOnInit() {
-    this.getEvaluators()
-    this.isDispatchable()
-    this.periodHasEvaluators()
-    this.typeForm.valueChanges.subscribe(value => {
-      this.loadData()
-    })
+    this.typeForm.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.currentPage = 1;
+        this.loadPeriodState();
+      });
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['period']) {
-      const current = changes['period'].currentValue;
-      this.period = current;
-      if (current) this.loadData();
+    if (changes['period'] && this.period?.id) {
+      this.currentPage = 1;
+      this.loadPeriodState();
     }
   }
 
-  override loadData() {
-    this.getEvaluators()
-    this.isDispatchable();
-    this.periodHasEvaluators()
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
+  loadPeriodState() {
+    if (!this.period?.id || this.isLoading()) return;
 
-  onOpenDialog() {
-    const dialogRef = this.dialog.open(AddEvaluatorDialogComponent, {
-      data: {periodId: this.period?.id}
-    });
+    this.isLoading.set(true);
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.getEvaluators();
-        this.evaluatorAdded.emit(); // Ajouter cette ligne
-      }
-    });
-  }
-
-  onDispatchEvaluator() {
-    if (this.isDisableDispatchButton()) {
-      if (this.period?.id != null) {
-        this.evaluatorService
-          .dispatchEvaluators(this.period.id.toString())
-          .subscribe({
-            next: value => {
-              this.isDispatchable()
-              this._snackBar.open('Candidats dispatchés', 'fermer', {
-                duration: 3000
-              });
-            },
-            error: err => {
-              console.log(err)
-            }
-          })
-      }
-    } else {
-      this._snackBar.open("Vous ne pouvez pas dispatcher car vous n'avez pas encore ajouter des evaluateurs de PRESELECTION pour cette periode", 'fermer', {
-        duration: 3000
-      });
-    }
-  }
-
-  onCancelDispatch() {
-    if (this.period?.id != null) {
-      this.evaluatorService
-        .dispatchEvaluators(this.period.id.toString())
-        .subscribe({
-          next: value => {
-            this.canDispatch.set(true)
-            this.canValidateDispatch.emit(false)
-            this._snackBar.open('Dispatches annuler', 'fermer', {
-              duration: 3000
-            });
-          },
-          error: err => {
-            console.log(err)
-          }
-        })
-    }
-  }
-
-  isDispatchable() {
-
-    if (this.period?.id != null) {
-
-      this.evaluatorService
-        .hasEvaluatorBeenDispatched(this.period.id.toString())
-        .subscribe({
-          next: value => {
-            this.canDispatch.set(!value.isDispatch)
-            this.canValidateDispatch.emit(value.isDispatch)
-          },
-          error: err => {
-            console.log(err)
-          }
-        })
-    }
-
-
-  }
-
-  getEvaluators() {
-
-    this.evaluatorService.getEvaluators(
-      this.period?.id ?? null,
+    this.periodService.getPeriodState(
+      this.period.id,
       this.currentPage,
       this.per_page,
       this.search,
-      this.typeForm.value
-    )
-      .subscribe({
-        next: value => {
-          this.evaluators.set(value.data)
-          this.currentPage = value.meta.current_page;
-          this.lastPage = value.meta.last_page;
-        },
-        error: err => {
-          console.log(err)
+      this.typeForm.value || ''
+    ).subscribe({
+      next: res => {
+        if (res.success) {
+          const state = res.data;
+
+          this.evaluators.set(state.evaluators);
+          this.currentPage = state.pagination.current_page;
+          this.lastPage = state.pagination.last_page;
+
+          this.canDispatch.set(!state.isDispatched);
+          this.canValidateDispatch.emit(state.isDispatched);
+          this.isDisableDispatchButton.set(state.hasEvaluators);
         }
-      })
-
-
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+        this.snackBar.open('Erreur de chargement', 'Fermer', { duration: 3000 });
+      }
+    });
   }
 
-  periodHasEvaluators() {
-    if (this.period?.id != null) {
+  override loadData() {
+    this.loadPeriodState();
+  }
 
-      this.periodService
-        .periodHasEvaluators(this.period.id)
-        .subscribe({
-          next: value => {
-            console.log(value.hasEvaluators)
-            this.isDisableDispatchButton.set(value.hasEvaluators)
-          },
-          error: err => {
-            console.log(err)
-          }
-        })
+  private searchTimeout?: any;
 
-      console.log(this.isDisableDispatchButton())
+  override onSearchChange() {
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.currentPage = 1;
+      this.loadPeriodState();
+    }, 400);
+  }
+
+  override changePage(page: number) {
+    if (page < 1 || page > this.lastPage) return;
+    this.currentPage = page;
+    this.loadPeriodState();
+  }
+
+  override paginationChange() {
+    this.currentPage = 1;
+    this.loadPeriodState();
+  }
+
+  onOpenDialog() {
+    if (!this.period?.id) {
+      this.snackBar.open('Veuillez sélectionner une période', 'Fermer', { duration: 3000 });
+      return;
     }
 
+    this.dialog.open(AddEvaluatorDialogComponent, {
+      data: { periodId: this.period.id }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.currentPage = 1;
+        this.loadPeriodState();
+      }
+    });
   }
 
+  @Output() statsChanged = new EventEmitter<void>();
+
   deleteEvaluator(id: number) {
-    this.evaluatorService.deleteEvaluator(id)
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet évaluateur ?')) return;
+
+    this.evaluatorService.deleteEvaluator(id).subscribe({
+      next: () => {
+        // Mise à jour locale de la liste
+        this.evaluators.set(
+          this.evaluators().filter(e => e.id !== id)
+        );
+
+        // Notification utilisateur
+        this._snackBar.open('Évaluateur supprimé', 'Fermer', {
+          duration: 3000,
+        });
+
+        // Notification propre des stats
+        this.evaluatorAdded.emit();
+      },
+      error: err => {
+        this._snackBar.open(
+          err.error?.errors || 'Erreur lors de la suppression',
+          'Fermer',
+          { duration: 3000 }
+        );
+      }
+    });
+  }
+
+
+  onDispatchEvaluator() {
+    if (!this.isDisableDispatchButton() || !this.period?.id) return;
+
+    this.evaluatorService.dispatchEvaluators(this.period.id.toString())
       .subscribe({
-        next: value => {
-          this._snackBar.open('Évaluateur supprimé', 'Fermer', {duration: 3000});
-
-          // D'abord recharger les données locales
-          this.loadData();
-
-          // Émettre l'événement pour le parent
-          this.evaluatorAdded.emit();
-
-          // 3. Ensuite notifier via le service
-          this.listeningChangeService.notifyModalClosed();
+        next: () => {
+          this.snackBar.open('Candidats dispatchés', 'Fermer', { duration: 3000 });
+          this.loadPeriodState();
         },
-        error: err => {
-          this._snackBar.open(err.error.errors, 'Fermer', {
-            duration: 3000,
-          });
+        error: () => {
+          this.snackBar.open('Erreur lors du dispatch', 'Fermer', { duration: 3000 });
         }
-      })
+      });
+  }
+
+  onCancelDispatch() {
+    if (!this.period?.id) return;
+
+    this.evaluatorService.dispatchEvaluators(this.period.id.toString())
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Dispatch annulé', 'Fermer', { duration: 3000 });
+          this.loadPeriodState();
+        }
+      });
   }
 }
