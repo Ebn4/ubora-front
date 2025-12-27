@@ -6,6 +6,7 @@ import {BASE_URL} from '../app.tokens';
 import {map} from 'rxjs/operators';
 import {LocalStorageService} from './local-storage.service';
 import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
+import { PeriodStateResponse } from '../models/period-state';
 
 @Injectable({
   providedIn: 'root',
@@ -80,6 +81,36 @@ export class PeriodService {
         }
         return 100; // Valeur par défaut si problème
       })
+    );
+  }
+
+
+  getPeriodState(
+    periodId: number | null,
+    page: number = 1,
+    perPage: number = 10,
+    search: string = '',
+    type: string = ''
+  ): Observable<PeriodStateResponse> {
+    if (!periodId) {
+      throw new Error('Period ID is required');
+    }
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('perPage', perPage.toString());
+
+    if (search && search.trim()) {
+      params = params.set('search', search.trim());
+    }
+
+    if (type && type.trim()) {
+      params = params.set('type', type.trim());
+    }
+
+    return this.http.get<PeriodStateResponse>(
+      `${this.baseUrl}/periods/${periodId}/state`,
+      { params }
     );
   }
 }
