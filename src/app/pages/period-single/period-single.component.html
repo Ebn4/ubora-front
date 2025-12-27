@@ -753,7 +753,7 @@
                 <app-period-evaluateur
                   [period]="period"
                   [candidatesCount]="
-                    period?.candidats_count ? period?.candidats_count : 0
+                    period?.candidats_count ?? 0
                   "
                   (canValidateDispatch)="canValidateDispatch($event.valueOf())"
                   (evaluatorAdded)="loadData()"
