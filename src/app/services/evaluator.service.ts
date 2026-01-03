@@ -3,6 +3,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {BASE_URL} from '../app.tokens';
 import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
 import {Evaluator} from '../models/evaluator.model';
+import { catchError, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -52,11 +53,42 @@ export class EvaluatorService {
     return this.http.get<{ isDispatch: boolean }>(`${this.baseUrl}/evaluators/${periodId}/is-dispatched`)
   }
 
-  isSelectorEvaluator() {
-    return this.http.get<{ isSelectorEvaluator: boolean }>(`${this.baseUrl}/evaluators/is-selector-evaluator`)
+  isSelectorEvaluator(periodId?: number | null) {
+    let params = new HttpParams();
+
+    // Ajouter periodId aux paramètres si fourni
+    if (periodId !== undefined && periodId !== null) {
+      params = params.set('periodId', periodId.toString());
+    }
+
+    return this.http.get<{ isSelectorEvaluator: boolean }>(
+      `${this.baseUrl}/evaluators/is-selector-evaluator`,
+      { params }
+    ).pipe(
+      catchError((error) => {
+        console.error('Error checking selector evaluator:', error);
+        // Retourner false en cas d'erreur
+        return of({ isSelectorEvaluator: false });
+      })
+    );
   }
 
-  isPreselectorEvaluator() {
-    return this.http.get<{ isPreselectorEvaluator: boolean }>(`${this.baseUrl}/evaluators/is-preselector-evaluator`)
+  isPreselectorEvaluator(periodId?: number | null) {
+    let params = new HttpParams();
+
+    if (periodId !== undefined && periodId !== null) {
+      params = params.set('periodId', periodId.toString());
+    }
+
+    return this.http.get<{ isPreselectorEvaluator: boolean }>(
+      `${this.baseUrl}/evaluators/is-preselector-evaluator`,
+      { params }
+    ).pipe(
+      catchError((error) => {
+        console.error('Error checking preselector evaluator:', error);
+        return of({ isPreselectorEvaluator: false });
+      })
+    );
   }
+
 }
