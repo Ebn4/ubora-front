@@ -25,6 +25,7 @@ import { BaseListWidget } from '../../../widgets/base-list-widget';
 import { Period } from '../../../models/period';
 import { Evaluator } from '../../../models/evaluator.model';
 import { PeriodStatus } from '../../../enum/period-status.enum';
+import { RoleChangeService } from '../../../services/role-change.service';
 
 @Component({
   selector: 'app-period-evaluateur',
@@ -40,6 +41,8 @@ export class PeriodEvaluateurComponent
   private dialog = inject(MatDialog);
   private evaluatorService = inject(EvaluatorService);
   private periodService = inject(PeriodService);
+  private roleChangeService = inject(RoleChangeService);
+  private listeningChangeService = inject(ListeningChangeService);
   private snackBar = inject(MatSnackBar);
   private destroy$ = new Subject<void>();
   private _snackBar = inject(MatSnackBar);
@@ -162,7 +165,7 @@ export class PeriodEvaluateurComponent
 
   @Output() statsChanged = new EventEmitter<void>();
 
-  deleteEvaluator(id: number) {
+    deleteEvaluator(id: number) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet évaluateur ?')) return;
 
     this.evaluatorService.deleteEvaluator(id).subscribe({
@@ -179,6 +182,12 @@ export class PeriodEvaluateurComponent
 
         // Notification propre des stats
         this.evaluatorAdded.emit();
+
+        // 🔥 IMPORTANT : Notifier que les rôles ont changé
+        this.roleChangeService.notifyRoleChanged();
+
+        // 🔥 Notifier également la fermeture de modal si nécessaire
+        this.listeningChangeService.notifyModalClosed();
       },
       error: err => {
         this._snackBar.open(
