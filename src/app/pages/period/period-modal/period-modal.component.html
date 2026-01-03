@@ -21,13 +21,13 @@
           <!-- afficher les erreurs -->
       <div class="mt-8 block text-sm font-semibold  text-red-500 space-y-1">
         @if (form.get('year')?.hasError('required') && form.get('year')?.touched) {
-          <p>❌ L'année est obligatoire.</p>
+          <p>L'année est obligatoire.</p>
         }
         @if (form.get('year')?.hasError('pattern') && form.get('year')?.touched) {
-          <p>❌ L'année doit être un nombre à 4 chiffres (ex: 2025).</p>
+          <p>L'année doit être un nombre à 4 chiffres (ex: 2025).</p>
         }
         @if (form.get('year')?.hasError('minYear') && form.get('year')?.touched) {
-          <p>❌ L'année doit être supérieure ou égale à {{ currentYear }}.</p>
+          <p>L'année doit être {{ currentYear - 1 }} ou {{ currentYear }} pour pouvoir créer la période..</p>
         }
       </div>
 

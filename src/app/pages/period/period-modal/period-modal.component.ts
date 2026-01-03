@@ -54,7 +54,11 @@ export class PeriodModalComponent {
   minYearValidator(minYear: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const year = control.value;
-      return year && year < minYear ? { minYear: { required: minYear, actual: year } } : null;
+      // Accepte minYear ou minYear-1
+      return year && year < (minYear - 1)
+        ? { minYear: { required: minYear - 1, actual: year } }
+        : null;
     };
   }
+
 }
