@@ -3,10 +3,15 @@
     <!-- Augmentation de la taille du titre et de l'espacement -->
     <h2 class="text-3xl font-bold mb-4 md:mb-0">Gestion des Evaluateurs</h2>
     <div class="flex items-center gap-4 flex-wrap justify-end">
-      @if (period?.status == dispatchStatus() && (candidatesCount != null && candidatesCount > 0)) {
+     @if (period?.status == dispatchStatus() && (candidatesCount != null && candidatesCount > 0)) {
         <button (click)="canDispatch() ? onDispatchEvaluator() : onCancelDispatch()"
-                [disabled]="!isDisableDispatchButton() || isLoading()"
-                [ngClass]="{'hover:bg-orange-600': isDisableDispatchButton()}"
+                [disabled]="!isDisableDispatchButton() || isLoading() || (canDispatch() && !canDispatchEvaluators())"
+                [ngClass]="{
+                  'hover:bg-orange-600': isDisableDispatchButton() && canDispatchEvaluators(),
+                  'opacity-70 cursor-not-allowed': canDispatch() && !canDispatchEvaluators()
+                }"
+                [matTooltip]="canDispatch() && !canDispatchEvaluators() ?
+                  'Ajoutez au moins un évaluateur de présélection ET de sélection' : ''"
                 class="bg-primary text-white font-semibold py-3 px-6 rounded-xl flex items-center gap-2 transition duration-300 shadow-md hover:shadow-lg disabled:opacity-50">
           {{ canDispatch() ? 'Dispatcher' : 'Supprimer Dispatche' }}
         </button>
