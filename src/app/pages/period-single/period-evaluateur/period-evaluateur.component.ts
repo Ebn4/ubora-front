@@ -26,11 +26,12 @@ import { Period } from '../../../models/period';
 import { Evaluator } from '../../../models/evaluator.model';
 import { PeriodStatus } from '../../../enum/period-status.enum';
 import { RoleChangeService } from '../../../services/role-change.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-period-evaluateur',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, NgForOf, NgClass],
+  imports: [FormsModule, ReactiveFormsModule, NgForOf, NgClass, MatTooltipModule],
   templateUrl: './period-evaluateur.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -58,6 +59,9 @@ export class PeriodEvaluateurComponent
   canDispatch = signal(true);
   isDisableDispatchButton = signal(false);
   dispatchStatus = signal(PeriodStatus.STATUS_DISPATCH);
+  hasPreselectionEvaluator = signal(false);
+  hasSelectionEvaluator = signal(false);
+  canDispatchEvaluators = signal(false);
 
   Math = Math;
 
@@ -109,6 +113,8 @@ export class PeriodEvaluateurComponent
           this.currentPage = state.pagination.current_page;
           this.lastPage = state.pagination.last_page;
 
+          this.calculateEvaluatorsByType(state.evaluators);
+
           this.canDispatch.set(!state.isDispatched);
           this.canValidateDispatch.emit(state.isDispatched);
           this.isDisableDispatchButton.set(state.hasEvaluators);
@@ -120,6 +126,17 @@ export class PeriodEvaluateurComponent
         this.snackBar.open('Erreur de chargement', 'Fermer', { duration: 3000 });
       }
     });
+  }
+
+  private calculateEvaluatorsByType(evaluators: Evaluator[]) {
+    const preselectionCount = evaluators.filter(e => e.type === 'PRESELECTION').length;
+    const selectionCount = evaluators.filter(e => e.type === 'SELECTION').length;
+
+    this.hasPreselectionEvaluator.set(preselectionCount > 0);
+    this.hasSelectionEvaluator.set(selectionCount > 0);
+
+    // Le dispatch est possible seulement si on a au moins un de chaque type
+    this.canDispatchEvaluators.set(preselectionCount > 0 && selectionCount > 0);
   }
 
   override loadData() {
@@ -201,16 +218,30 @@ export class PeriodEvaluateurComponent
 
 
   onDispatchEvaluator() {
-    if (!this.isDisableDispatchButton() || !this.period?.id) return;
+    // Vérification renforcée
+    if (!this.isDisableDispatchButton() || !this.period?.id || !this.canDispatchEvaluators()) {
+      if (!this.canDispatchEvaluators()) {
+        this.snackBar.open('Ajoutez au moins un évaluateur de présélection ET de sélection', 'Fermer', {
+          duration: 4000
+        });
+      }
+      return;
+    }
+
+    // Optionnel : Confirmation utilisateur
+    if (!confirm('Voulez-vous vraiment dispatcher les candidats ? Cette action est irréversible.')) {
+      return;
+    }
 
     this.evaluatorService.dispatchEvaluators(this.period.id.toString())
       .subscribe({
         next: () => {
-          this.snackBar.open('Candidats dispatchés', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Candidats dispatchés avec succès', 'Fermer', { duration: 3000 });
           this.loadPeriodState();
         },
-        error: () => {
-          this.snackBar.open('Erreur lors du dispatch', 'Fermer', { duration: 3000 });
+        error: (err) => {
+          const message = err.error?.message || 'Erreur lors du dispatch';
+          this.snackBar.open(message, 'Fermer', { duration: 3000 });
         }
       });
   }
