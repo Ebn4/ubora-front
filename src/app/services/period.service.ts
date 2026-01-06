@@ -1,5 +1,5 @@
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import {Period} from '../models/period';
 import {Observable} from 'rxjs';
 import {BASE_URL} from '../app.tokens';
@@ -16,6 +16,7 @@ export class PeriodService {
   private token = this.localStorageService.getData('token');
   currentPage: number = 1;
   lastPage: number = 1;
+  private activePeriodId = signal<number | null>(null);
 
   http = inject(HttpClient);
   baseUrl = inject(BASE_URL);
@@ -112,5 +113,13 @@ export class PeriodService {
       `${this.baseUrl}/periods/${periodId}/state`,
       { params }
     );
+  }
+
+  setActivePeriod(periodId: number): void {
+    this.activePeriodId.set(periodId);
+  }
+
+  getActivePeriod(): number | null {
+    return this.activePeriodId();
   }
 }
