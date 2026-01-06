@@ -77,7 +77,17 @@
                   </svg>
                   <div>
                     <p class="text-xs font-medium text-gray-500 mb-1">Téléphone</p>
-                    <p class="font-medium text-gray-800">{{ candidacy?.telephone || 'Non renseigné' }}</p>
+                    @if(candidacy?.telephone?.length! > 10){
+                      <p class="font-medium text-gray-800">
+                        +{{ candidacy?.telephone?.slice(0, 3) }}
+                        {{ candidacy?.telephone?.slice(3, 5) }}
+                        {{ candidacy?.telephone?.slice(5, 7) }}
+                        {{ candidacy?.telephone?.slice(7, 9) }}
+                        {{ candidacy?.telephone?.slice(9, 12) }}
+                      </p>
+                    }@else{
+                      <p class="font-medium text-gray-800">{{ candidacy?.telephone || 'Non renseigné' }}</p>
+                    }
                   </div>
                 </div>
 
