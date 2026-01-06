@@ -49,10 +49,13 @@ export default class LoginComponent {
 
         this.localStorageService.saveData("token", user.token)
 
+        // Sauvegarder les informations de l'utilisateur dans le localStorage
+        this.localStorageService.saveData("user", JSON.stringify(user))
+
         if (user.role === 'ADMIN') {
           this.router.navigate(['/period']);
         } else if (user.role === 'EVALUATOR') {
-          this.router.navigate(['/evaluator-candidacies']);
+          this.router.navigate(['']);
         } else {
           // rôle inconnu → déconnexion ou page par défaut
           this.router.navigate(['/login']);
