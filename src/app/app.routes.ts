@@ -17,6 +17,7 @@ import {CandidacySelectionComponent} from './pages/selections/candidacy-selectio
 import {IsSelectorEvaluatorGuard} from './middlewares/is-selector-evaluator.guard';
 import {DefaultLayoutComponent} from './pages/layout/default-layout/default-layout.component';
 import { EvaluatorHomeComponent } from './pages/evaluator-home/evaluator-home.component';
+import { RoleRedirectGuard } from './middlewares/role-redirect.guard';
 
 export const routes: Routes = [
   {
@@ -30,7 +31,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     component: DefaultLayoutComponent,
     children: [
-      {path: '', component: EvaluatorHomeComponent },
+      {path: '', component: EvaluatorHomeComponent, canActivate: [RoleRedirectGuard] },
       {path: 'users', component: UsersComponent, canActivate: [HasAdminRoleGuard]},
       {path: 'period', component: PeriodComponent, canActivate: [HasAdminRoleGuard]},
       {path: 'period-single/:id', component: PeriodSingleComponent, canActivate: [HasAdminRoleGuard]},
