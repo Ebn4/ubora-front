@@ -18,6 +18,7 @@ import {IsSelectorEvaluatorGuard} from './middlewares/is-selector-evaluator.guar
 import {DefaultLayoutComponent} from './pages/layout/default-layout/default-layout.component';
 import { EvaluatorHomeComponent } from './pages/evaluator-home/evaluator-home.component';
 import { RoleRedirectGuard } from './middlewares/role-redirect.guard';
+import { OtpComponent } from './pages/otp/otp.component';
 
 export const routes: Routes = [
   {
@@ -26,6 +27,10 @@ export const routes: Routes = [
     canActivate: [LoggedGuard],
     loadComponent: () => import('./pages/login/login.component')
   },
+  {
+        path: 'otp',
+        component: OtpComponent
+      },
   {
     path: '',
     canActivate: [AuthGuard],
