@@ -1,0 +1,236 @@
+<main>
+  <section class="bg-gray-50 bg-secondary">
+    <div
+      class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
+    >
+      <!-- Logo -->
+      <a
+        href="#"
+        class="flex items-center mb-6 text-2xl font-semibold text-gray-900"
+      >
+        <img
+          class="w-8 h-8 mr-2"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1200px-Orange_logo.svg.png"
+          alt="logo"
+        />
+        Ubora
+      </a>
+
+      <!-- Carte OTP -->
+      <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-10">
+        <div class="text-center mb-10">
+          <div
+            class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-10 w-10 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+          </div>
+          <h1 class="text-3xl font-bold text-slate-900 mb-2">
+            Vérification OTP
+          </h1>
+          <p class="text-slate-600">
+            Code envoyé à
+            <span class="font-medium text-slate-900">{{
+              emailMasque || "votre email"
+            }}</span>
+          </p>
+        </div>
+
+        <!-- Champ OTP - Design amélioré et plus visible -->
+        <div class="mb-8">
+          <label
+            class="block text-sm font-semibold text-slate-700 mb-4 text-center"
+          >
+            Entrez le code à 6 chiffres
+          </label>
+
+          <div class="flex justify-center space-x-3 mb-4">
+            <input
+              *ngFor="let digit of [0, 1, 2, 3, 4, 5]; let i = index"
+              type="text"
+              maxlength="1"
+              [(ngModel)]="otpDigits[i]"
+              name="otp-digit-{{ i }}"
+              (input)="onOTPInput($event, i)"
+              (keydown)="onOTPKeyDown($event, i)"
+              (paste)="onPaste($event)"
+              class="w-14 h-14 text-center text-3xl font-bold border-2 border-slate-300 rounded-lg focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-200 bg-white shadow-sm hover:shadow-md"
+              autocomplete="off"
+              inputmode="numeric"
+            />
+          </div>
+
+          <p class="text-sm text-slate-500 text-center">
+            Vérifiez votre boîte de réception et vos spams
+          </p>
+        </div>
+
+        <!-- Timer -->
+        <div class="text-center mb-8">
+          <div
+            *ngIf="tempsRestant > 0"
+            class="inline-flex items-center px-4 py-2 bg-slate-100 rounded-full mb-4"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-2 text-slate-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span class="text-sm font-medium text-slate-700">
+              Renvoyer dans
+              <span class="font-bold text-primary ml-1">{{
+                formatTempsRestant()
+              }}</span>
+            </span>
+          </div>
+
+          <button
+            type="button"
+            (click)="renvoyerCode()"
+            [disabled]="tempsRestant > 0 || envoiEnCours"
+            class="text-sm font-medium text-primary disabled:text-slate-400 disabled:cursor-not-allowed hover:text-primary-dark transition-colors duration-200"
+          >
+            <span *ngIf="envoiEnCours" class="flex items-center justify-center">
+              <svg
+                class="animate-spin h-4 w-4 mr-2 text-primary"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Envoi en cours...
+            </span>
+            <span
+              *ngIf="!envoiEnCours"
+              class="flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+              Renvoyer le code
+            </span>
+          </button>
+        </div>
+
+        <!-- Bouton principal -->
+        <button
+          type="button"
+          (click)="verifierOTP()"
+          [disabled]="!otpValide || verificationEnCours"
+          class="w-full flex items-center justify-center px-4 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl mb-6"
+        >
+          <span *ngIf="verificationEnCours" class="flex items-center">
+            <svg
+              class="animate-spin h-5 w-5 mr-3 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Vérification en cours...
+          </span>
+          <span *ngIf="!verificationEnCours" class="flex items-center text-lg">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Vérifier et continuer
+          </span>
+        </button>
+
+        <!-- Options secondaires -->
+        <div class="text-center space-y-4">
+          <button
+            type="button"
+            (click)="changerEmail()"
+            class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors duration-200"
+          >
+            Utiliser une autre adresse email
+          </button>
+
+          <div class="pt-6 border-t border-slate-200">
+            <p class="text-sm text-slate-500">
+              Vous n'avez pas reçu le code ?
+              <button
+                type="button"
+                (click)="renvoyerCode()"
+                [disabled]="tempsRestant > 0"
+                class="text-primary font-medium hover:underline ml-1 disabled:text-slate-400 disabled:cursor-not-allowed"
+              >
+                Renvoyer
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
