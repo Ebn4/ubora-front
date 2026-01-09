@@ -1,25 +1,26 @@
-import {inject} from '@angular/core';
-import {CanActivateFn, Router} from '@angular/router';
-import {catchError, map, of} from 'rxjs';
-import {UserService} from '../services/user.service';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { LocalStorageService } from '../services/local-storage.service';
 
-export const HasAdminRoleGuard: CanActivateFn = (route, state) => {
-  const userService = inject(UserService)
-  const router = inject(Router)
+export const HasAdminRoleGuard: CanActivateFn = () => {
+  const storage = inject(LocalStorageService);
+  const router = inject(Router);
 
-  return userService.hasAdminRole().pipe(
-    map(res => {
-      if (!res.hasAdminRole) {
-        return router.parseUrl('/login');
-      }
+  const userStr = storage.getData('user');
+
+  if (!userStr) {
+    return router.parseUrl('/login');
+  }
+
+  try {
+    const user = JSON.parse(userStr);
+
+    if (user.role === 'ADMIN') {
       return true;
-    }),
-    catchError(() => {
-      // On error, redirect to evaluator-candidacies instead of blocking the route
-      return of(router.parseUrl('/login'));
-    })
-  );
-}
+    }
 
-
-
+    return router.parseUrl('/');
+  } catch {
+    return router.parseUrl('/login');
+  }
+};
