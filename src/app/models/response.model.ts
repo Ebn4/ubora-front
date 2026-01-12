@@ -4,6 +4,11 @@ export interface ResponseInterface<T> {
   last_page: number;
 }
 
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
 
 export interface ResponseInterfaceE<T> {
   data: T;
