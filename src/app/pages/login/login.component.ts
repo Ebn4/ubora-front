@@ -36,6 +36,7 @@ export default class LoginComponent {
 
     this.isLoading = true;
     this.errorMessage = '';
+    this.isLoading = true;
 
     const {cuid, password} = this.formData.value;
     if (cuid == null || password == null) {
@@ -45,29 +46,26 @@ export default class LoginComponent {
     const res = await this.authService.login({cuid, password})
     res.subscribe({
       next: r => {
-        const user = r.data
-
-        this.localStorageService.saveData("token", user.token)
-
-        // Sauvegarder les informations de l'utilisateur dans le localStorage
-        this.localStorageService.saveData("user", JSON.stringify(user))
-
-        if (user.role === 'ADMIN') {
-          this.router.navigate(['/period']);
-        } else if (user.role === 'EVALUATOR') {
-          this.router.navigate(['']);
-        } else {
-          // rôle inconnu → déconnexion ou page par défaut
-          this.router.navigate(['/login']);
+        if(r.success && r.data){
+          this.isLoading = false
+          // Stocker CUID et email masqué pour OTP
+          this.localStorageService.saveData('user', JSON.stringify({
+            cuid,
+            emailMasque: r.data?.reference_masked || null,
+            channel : r.data?.channel
+          }));  
+          // Rediriger vers page OTP
+          this.router.navigate(['/otp']);
+        }else{
+           this.errorMessage = r.error || 'Erreur inconnue.';
         }
+          this.isLoading = false
       },
       error: err => {
-        this.isLoading = false
-        console.log(err)
-        this.errorMessage = 'Cuid ou mot de passe incorrect'
+        this.isLoading = false;
+        this.errorMessage = 'Cuid ou mot de passe incorrect';
       }
-    })
-
+  })
   }
 
 }

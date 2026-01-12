@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthServices } from '../../services/auth.service';
+import { LocalStorageService } from '../../services/local-storage.service';
 
 @Component({
   selector: 'app-connexion-otp',
@@ -10,27 +12,51 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, FormsModule]
 })
 export class OtpComponent implements OnInit, OnDestroy {
-  // Variables OTP
   otpDigits: string[] = ['', '', '', '', '', ''];
   otpValide: boolean = false;
-
-  // Variables de compte à rebours
-  tempsRestant: number = 180; // 10 minutes en secondes
+  tempsRestant: number = 180; // 3 minutes
   intervalId: any;
-
-  // État des opérations
   envoiEnCours: boolean = false;
   verificationEnCours: boolean = false;
 
-  // Messages
   errorMessage: string = '';
-  emailMasque: string = 'ex***@domaine.com';
+  successMessage: string = '';
+  destinataireMasque: string = '';
+  channel: 'email' | 'phone' = 'email'; 
+  cuid: string = '';
 
-  constructor(private router: Router) {}
+  // bloquer le formulaire
+  tentativesEchouees: number = 0;
+  maxTentatives: number = 5; 
+  formulaireBloque: boolean = false;
+  delaiBlocageMs: number = 5 * 60 * 1000; // 5 minutes 
+  
+  constructor(
+    private router: Router,
+    private authService: AuthServices,
+    private localStorageService: LocalStorageService
+  ) {}
 
   ngOnInit(): void {
+    const userData = this.localStorageService.getData('user');
+    if (!userData) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const parsed = JSON.parse(userData);
+    this.cuid = parsed.cuid || '';
+    this.channel = parsed.channel === 'phone' ? 'phone' : 'email';
+    this.destinataireMasque = parsed.emailMasque || (this.channel === 'email' ? 'votre email' : 'votre téléphone');
+
+    if (this.channel === 'email') {
+      this.successMessage = `Un code a été envoyé à l'adresse : ${this.destinataireMasque}`;
+    } else {
+      this.successMessage = `Un code a été envoyé par SMS au numéro : ${this.destinataireMasque}`;
+    }
+
     this.demarrerCompteRebours();
-    // Focus automatique sur le premier champ
+
     setTimeout(() => {
       const firstInput = document.querySelector('input[name="otp-digit-0"]') as HTMLInputElement;
       if (firstInput) firstInput.focus();
@@ -38,95 +64,63 @@ export class OtpComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
+    if (this.intervalId) clearInterval(this.intervalId);
   }
 
-  // Gestion de la saisie OTP
   onOTPInput(event: any, index: number): void {
     const input = event.target;
     let value = input.value;
+    // Effacer l'erreur dès qu'on tape
+    this.errorMessage = ''; 
 
-    // Effacer les messages d'erreur
-    this.errorMessage = '';
-
-    // Ne garder que les chiffres
     if (!/^\d$/.test(value) && value !== '') {
       this.otpDigits[index] = '';
       return;
     }
-
-    // Limiter à 1 caractère
-    if (value.length > 1) {
-      value = value.charAt(value.length - 1);
-    }
-
+    if (value.length > 1) value = value.charAt(value.length - 1);
     this.otpDigits[index] = value;
 
-    // Passer au champ suivant
     if (value && index < 5) {
       setTimeout(() => {
         const nextInput = document.querySelector(`input[name="otp-digit-${index + 1}"]`) as HTMLInputElement;
-        if (nextInput) {
-          nextInput.focus();
-        }
+        if (nextInput) nextInput.focus();
       }, 10);
     }
 
-    // Vérifier si l'OTP est complet
     this.verifierOTPComplet();
   }
 
-  // Gestion du collage
   onPaste(event: ClipboardEvent): void {
     event.preventDefault();
     const pastedData = event.clipboardData?.getData('text') || '';
     const digits = pastedData.replace(/\D/g, '').slice(0, 6);
-
-    // Remplir les champs
     digits.split('').forEach((digit, i) => {
-      if (i < 6) {
-        this.otpDigits[i] = digit;
-      }
+      if (i < 6) this.otpDigits[i] = digit;
     });
-
     this.verifierOTPComplet();
-
-    // Focus sur le dernier champ
     setTimeout(() => {
       const lastIndex = Math.min(5, digits.length - 1);
       const lastInput = document.querySelector(`input[name="otp-digit-${lastIndex}"]`) as HTMLInputElement;
-      if (lastInput) {
-        lastInput.focus();
-      }
+      if (lastInput) lastInput.focus();
     }, 10);
   }
 
   onOTPKeyDown(event: KeyboardEvent, index: number): void {
-    // Gestion de la touche Backspace
     if (event.key === 'Backspace') {
-      // Si le champ est vide, aller au champ précédent
       if (!this.otpDigits[index] && index > 0) {
         setTimeout(() => {
           this.otpDigits[index - 1] = '';
           const prevInput = document.querySelector(`input[name="otp-digit-${index - 1}"]`) as HTMLInputElement;
-          if (prevInput) {
-            prevInput.focus();
-          }
+          if (prevInput) prevInput.focus();
         }, 10);
       }
-      // Vider le champ actuel
       this.otpDigits[index] = '';
     }
-
-    // Gestion des flèches
     if (event.key === 'ArrowLeft' && index > 0) {
       event.preventDefault();
       const prevInput = document.querySelector(`input[name="otp-digit-${index - 1}"]`) as HTMLInputElement;
       if (prevInput) prevInput.focus();
     }
-
     if (event.key === 'ArrowRight' && index < 5) {
       event.preventDefault();
       const nextInput = document.querySelector(`input[name="otp-digit-${index + 1}"]`) as HTMLInputElement;
@@ -134,146 +128,159 @@ export class OtpComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Vérifier si l'OTP est complet
   verifierOTPComplet(): void {
-    this.otpValide = this.otpDigits.every(digit => /^\d$/.test(digit));
+    this.otpValide = this.otpDigits.every(d => /^\d$/.test(d));
   }
 
-  // Soumission du formulaire
   verifierOTP(): void {
+
+     if (this.formulaireBloque) {
+      this.errorMessage = 'Trop de tentatives échouées. Veuillez renvoyer un nouveau code.';
+      return;
+    }
+
     if (!this.otpValide) {
       this.errorMessage = 'Veuillez saisir un code OTP valide à 6 chiffres.';
+      return;
+    }
+    if (!this.cuid) {
+      this.errorMessage = 'Données utilisateur manquantes. Veuillez recommencer.';
       return;
     }
 
     this.verificationEnCours = true;
     this.errorMessage = '';
+    this.successMessage = "";
     const otp = this.otpDigits.join('');
 
-    console.log('OTP soumis:', otp);
+    this.authService.verifyOtp({ cuid: this.cuid, otp }).subscribe({
+      next: (response) => {
+        this.verificationEnCours = false;
 
-    // Simulation d'appel API
-    setTimeout(() => {
-      this.verificationEnCours = false;
+        if (response.success === true && response.user) {
+          this.localStorageService.saveData('user', JSON.stringify(response.user));
+          this.localStorageService.saveData('token', response.user.token);
 
-      // Simulation : vérifier si l'OTP est "123456" (pour test)
-      if (otp === '123456') {
-        // Redirection en cas de succès
-        this.router.navigate(['/dashboard']);
-      } else {
-        this.errorMessage = 'Code OTP incorrect. Veuillez réessayer.';
+          this.errorMessage = ''; 
+          this.successMessage = 'Code vérifié avec succès ! Connexion en cours…';
+          this.formulaireBloque = true;
+          setTimeout(() => {
+            if (response.user.role === 'ADMIN') {
+              this.router.navigate(['/period']);
+            } else if (response.user.role === 'EVALUATOR') {
+              this.router.navigate(['/']);
+            } else {
+              this.router.navigate(['/login']);
+            }
+          }, 2000)
+        }
+        else if (response.success === false) {
+          const errorMsg = response.error || 'Une erreur est survenue. Veuillez réessayer.';
+          this.errorMessage = errorMsg;
+          this.tentativesEchouees++;
+
+          if (this.tentativesEchouees >= this.maxTentatives) {
+            this.formulaireBloque = true;
+            this.errorMessage = 'Trop de tentatives échouées. Veuillez renvoyer un nouveau code.';
+
+            // Optionnel : réactiver automatiquement après X minutes
+            setTimeout(() => {
+              this.formulaireBloque = false;
+              this.tentativesEchouees = 0;
+            }, this.delaiBlocageMs);
+          }
+          // Redirection auto si session expirée
+          if (errorMsg.toLowerCase().includes('expire')) {
+            setTimeout(() => {
+              this.router.navigate(['/login']);
+            }, 4000);
+          }
+
+          this.reinitialiserOTP();
+        }
+        else {
+          this.errorMessage = 'Réponse invalide du serveur.';
+          this.reinitialiserOTP();
+        }
+      },
+      error: (err) => {
+        this.verificationEnCours = false;
+        this.errorMessage = 'Impossible de contacter le serveur. Vérifiez votre connexion.';
         this.reinitialiserOTP();
       }
-
-      // Pour un vrai appel API :
-      // this.authService.verifierOTP(otp).subscribe({
-      //   next: (response) => {
-      //     this.verificationEnCours = false;
-      //     if (response.success) {
-      //       this.router.navigate(['/dashboard']);
-      //     } else {
-      //       this.errorMessage = response.message || 'Code OTP incorrect.';
-      //       this.reinitialiserOTP();
-      //     }
-      //   },
-      //   error: (error) => {
-      //     this.verificationEnCours = false;
-      //     this.errorMessage = 'Erreur de connexion. Veuillez réessayer.';
-      //     this.reinitialiserOTP();
-      //   }
-      // });
-    }, 1500);
+    });
   }
 
-  // Réinitialiser l'OTP
   reinitialiserOTP(): void {
     this.otpDigits = ['', '', '', '', '', ''];
     this.otpValide = false;
-
-    // Remettre le focus sur le premier champ
     setTimeout(() => {
       const firstInput = document.querySelector('input[name="otp-digit-0"]') as HTMLInputElement;
-      if (firstInput) {
-        firstInput.focus();
-      }
+      if (firstInput) firstInput.focus();
     }, 100);
   }
 
-  // Renvoyer le code OTP
   renvoyerCode(): void {
-    if (this.tempsRestant > 0 || this.envoiEnCours) {
-      return;
-    }
+    if (this.tempsRestant > 0 || this.envoiEnCours) return;
+
+    this.errorMessage = '';
+    this.successMessage = '';
 
     this.envoiEnCours = true;
-    this.errorMessage = '';
+    
+    this.authService.resendOtp(this.cuid).subscribe({
+      next: (response) => {
+        this.envoiEnCours = false;
 
-    console.log('Demande de renvoi du code OTP...');
+        if (response?.success) {
+          // Réinitialiser les états de sécurité
+          this.tentativesEchouees = 0;
+          this.formulaireBloque = false;
 
-    // Simulation d'envoi
-    setTimeout(() => {
-      this.envoiEnCours = false;
+          // Redémarrer le timer (10 minutes)
+          this.tempsRestant = 180;
+          this.demarrerCompteRebours();
 
-      // Réinitialiser le compte à rebours
-      this.tempsRestant = 600;
-      this.demarrerCompteRebours();
+          // Vider les champs OTP
+          this.reinitialiserOTP();
 
-      // Réinitialiser les champs OTP
-      this.reinitialiserOTP();
+          if (this.channel === 'email') {
+            this.successMessage = `Un nouveau code a été envoyé à : ${this.destinataireMasque}`;
+          } else {
+            this.successMessage = `Un nouveau code a été envoyé au numéro : ${this.destinataireMasque}`;
+          }
 
-      // Message de succès (vous pouvez le remplacer par une notification toast)
-      alert('Un nouveau code OTP a été envoyé à votre adresse email.');
-
-      // Pour un vrai appel API :
-      // this.authService.renvoyerOTP().subscribe({
-      //   next: (response) => {
-      //     this.envoiEnCours = false;
-      //     if (response.success) {
-      //       this.tempsRestant = 600;
-      //       this.demarrerCompteRebours();
-      //       this.reinitialiserOTP();
-      //       // Afficher un message de succès
-      //     } else {
-      //       this.errorMessage = response.message || 'Erreur lors de l\'envoi du code.';
-      //     }
-      //   },
-      //   error: (error) => {
-      //     this.envoiEnCours = false;
-      //     this.errorMessage = 'Erreur de connexion. Veuillez réessayer.';
-      //   }
-      // });
-    }, 1000);
-  }
-
-  // Gestion du compte à rebours
-  demarrerCompteRebours(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
-
-    this.intervalId = setInterval(() => {
-      if (this.tempsRestant > 0) {
-        this.tempsRestant--;
-      } else {
-        clearInterval(this.intervalId);
+          // Masquer le message après 5 secondes
+          setTimeout(() => {
+            this.successMessage = '';
+          }, 5000);
+        } else {
+          // Gérer les erreurs métier (ex: session expirée)
+          this.errorMessage = response?.message || 'Impossible de renvoyer le code.';
+        }
+      },
+      error: (err) => {
+        this.envoiEnCours = false;
+        this.errorMessage = 'Erreur réseau. Veuillez vérifier votre connexion.';
       }
+    });  
+  }
+
+  demarrerCompteRebours(): void {
+    if (this.intervalId) clearInterval(this.intervalId);
+    this.intervalId = setInterval(() => {
+      if (this.tempsRestant > 0) this.tempsRestant--;
+      else clearInterval(this.intervalId);
     }, 1000);
   }
 
-  // Formater le temps restant
   formatTempsRestant(): string {
     const minutes = Math.floor(this.tempsRestant / 60);
     const secondes = this.tempsRestant % 60;
     return `${minutes}:${secondes.toString().padStart(2, '0')}`;
   }
 
-  // Navigation
   changerEmail(): void {
     this.router.navigate(['/login']);
-  }
-
-  // Méthode pour obtenir l'OTP complet
-  getOTPComplet(): string {
-    return this.otpDigits.join('');
   }
 }
