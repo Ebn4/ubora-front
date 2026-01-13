@@ -149,6 +149,10 @@ export class PdfService {
 
       const darkColor = 51;
       const borderColor = 200;
+      const pageWidth = doc.internal.pageSize.width;
+      const pageHeight = doc.internal.pageSize.height;
+      const margin = 15;
+      const contentWidth = pageWidth - 2 * margin;
 
       /* =========================
         EN-TÊTE AVEC IMAGES
@@ -206,7 +210,7 @@ export class PdfService {
           loadImage('/images/fondationOrange.png').catch(() => null)
         ]);
 
-        // Image Coeur à gauche
+        // Image Ubora à gauche
         if (uboraLogo) {
           doc.addImage(uboraLogo, 'JPEG', 15, 10, 25, 12);
         } else {
@@ -246,14 +250,13 @@ export class PdfService {
       /* =========================
         TITRES
       ========================== */
-
       // Titre principal
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
       doc.setTextColor(darkColor, darkColor, darkColor);
       doc.text(
         'GRILLE D\'ÉVALUATION DE L\'ENTRETIEN',
-        105,
+        pageWidth / 2,
         28,
         { align: 'center' }
       );
@@ -262,7 +265,7 @@ export class PdfService {
       doc.setFont('helvetica', 'normal');
       doc.text(
         'Bourses Ubora',
-        105,
+        pageWidth / 2,
         35,
         { align: 'center' }
       );
@@ -270,7 +273,7 @@ export class PdfService {
       // Ligne séparatrice
       doc.setDrawColor(borderColor, borderColor, borderColor);
       doc.setLineWidth(0.5);
-      doc.line(15, 40, 195, 40);
+      doc.line(margin, 40, pageWidth - margin, 40);
 
       /* =========================
         INFORMATIONS CANDIDAT
@@ -283,11 +286,8 @@ export class PdfService {
       doc.text('Candidat :', 20, y);
 
       doc.setFont('helvetica', 'normal');
-      doc.text(
-        `${candidateData.etn_nom} ${candidateData.etn_postnom} ${candidateData.etn_prenom}`,
-        50,
-        y
-      );
+      const candidateName = `${candidateData.etn_nom} ${candidateData.etn_postnom} ${candidateData.etn_prenom}`;
+      doc.text(candidateName, 50, y);
 
       y += 8;
       doc.setFont('helvetica', 'bold');
@@ -307,20 +307,19 @@ export class PdfService {
       doc.setFont('helvetica', 'normal');
       doc.text(this.getPromotionName(candidateData.promotion_academique) || '-', 50, y);
 
-      y += 8;
+      y += 15;
 
       /* =========================
-        TABLEAU DES CRITÈRES
+        CONFIGURATION DU TABLEAU POUR UNE SEULE PAGE
       ========================== */
-      y += 12;
 
-      // Déterminer la pondération maximale parmi les critères
+      // Calculer la hauteur disponible pour le tableau
+      const availableHeightForTable = pageHeight - y - 130; // 130 pour résultats + observation + pied de page
+
+      // Déterminer la pondération maximale
       const maxPonderation = Math.max(...criteriaList.map(criteria => criteria.ponderation || 5));
 
-      // Vérifier si on a des nombres à deux chiffres
-      const hasTwoDigitNumbers = maxPonderation >= 10;
-
-      // Créer les en-têtes dynamiques avec texte réduit pour nombres à deux chiffres
+      // Créer les en-têtes
       const headers = ['Critères'];
       for (let i = 1; i <= maxPonderation; i++) {
         headers.push(i.toString());
@@ -334,16 +333,12 @@ export class PdfService {
         const score = Number(result?.result || 0);
         const ponderation = criteria.ponderation || 5;
 
-        // Créer une ligne avec le nom du critère
         const row = [criteria.name];
 
-        // Ajouter les cases selon la pondération du critère
         for (let i = 1; i <= maxPonderation; i++) {
           if (i <= ponderation) {
-            // Si cette case est dans la plage de pondération
             row.push(score === i ? 'X' : '');
           } else {
-            // Si cette case dépasse la pondération, mettre vide ou symbole
             row.push('');
           }
         }
@@ -355,32 +350,30 @@ export class PdfService {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
-      doc.text('ÉVALUATION DES CRITÈRES', 20, y);
+      doc.text('ÉVALUATION DES CRITÈRES', margin, y);
 
       y += 6;
 
-      // Configuration des colonnes avec largeur fixe totale de 180mm
+      // Ajuster la taille de police en fonction du nombre de critères
+      const fontSizeForTable = criteriaList.length > 8 ? 8 : 9;
+      const rowHeight = criteriaList.length > 8 ? 8 : 10;
+
+      // Configuration des colonnes optimisée pour une seule page
       const columnStyles: any = {};
 
-      // Largeur totale disponible : 180mm (195 - 15)
-      const totalWidth = 180;
-
-      // Largeur pour la première colonne (Critères)
-      const firstColWidth = 80; // Réduit pour faire de la place
-
-      // Largeur restante pour les colonnes de score
-      const remainingWidth = totalWidth - firstColWidth;
-
-      // Largeur de chaque colonne de score
+      // Largeur de la colonne Critères (ajustable)
+      const criteriaColWidth = criteriaList.length > 8 ? 70 : 80;
+      const remainingWidth = contentWidth - criteriaColWidth;
       const scoreColWidth = remainingWidth / maxPonderation;
 
       // Configurer la première colonne
       columnStyles[0] = {
         halign: 'left',
-        cellWidth: firstColWidth,
+        cellWidth: criteriaColWidth,
         fontStyle: 'bold',
-        fontSize: hasTwoDigitNumbers ? 8 : 9, // Réduire la taille de police si nombres à deux chiffres
-        minCellHeight: 8 // Hauteur minimale pour éviter le débordement
+        fontSize: fontSizeForTable,
+        minCellHeight: rowHeight,
+        cellPadding: { top: 2, right: 2, bottom: 2, left: 2 }
       };
 
       // Configurer chaque colonne de score
@@ -388,93 +381,87 @@ export class PdfService {
         columnStyles[i] = {
           cellWidth: scoreColWidth,
           halign: 'center',
-          fontSize: hasTwoDigitNumbers ? 7 : 9, // Plus petit pour nombres à deux chiffres
-          minCellHeight: 8
+          fontSize: fontSizeForTable,
+          minCellHeight: rowHeight,
+          cellPadding: 2
         };
       }
 
-      // Utiliser autoTable avec configuration optimisée
+      // Utiliser autoTable avec configuration pour limiter à une page
       autoTable(doc, {
         startY: y,
         head: [headers],
         body: tableData,
         theme: 'grid',
         styles: {
-          fontSize: hasTwoDigitNumbers ? 8 : 9,
+          fontSize: fontSizeForTable,
           textColor: [51, 51, 51],
           lineColor: [200, 200, 200],
           lineWidth: 0.3,
-          cellPadding: 3, // Réduit pour économiser de l'espace
+          cellPadding: 2,
           valign: 'middle',
-          overflow: 'linebreak'
+          overflow: 'linebreak',
+          minCellHeight: rowHeight
         },
         headStyles: {
           fillColor: [245, 245, 245],
           textColor: [51, 51, 51],
           fontStyle: 'bold',
           halign: 'center',
-          fontSize: hasTwoDigitNumbers ? 8 : 9,
-          cellPadding: { top: 3, right: 2, bottom: 3, left: 2 }
+          fontSize: fontSizeForTable,
+          cellPadding: 2
         },
         columnStyles: columnStyles,
-        margin: { left: 15, right: 15 },
-        tableWidth: 'wrap',
-        didParseCell: function(data) {
-          // Pour éviter le débordement des nombres à deux chiffres
-          if (data.row.index === 0 && data.column.index > 0) {
-            // C'est une cellule d'en-tête avec un nombre
-            data.cell.styles.fontSize = hasTwoDigitNumbers ? 7 : 9;
-          }
+        margin: { left: margin, right: margin },
+        tableWidth: 'auto',
+        pageBreak: 'avoid', // Empêcher le saut de page
+        didDrawPage: () => {
+          // Empêcher l'ajout automatique de pages
+          return false;
         }
       });
 
       /* =========================
-        RÉSULTATS FINAUX - POSITIONNÉ DYNAMIQUEMENT
+        RÉSULTATS FINAUX
       ========================== */
-      const yAfterTable = (doc as any).lastAutoTable.finalY + 15;
+      let yAfterTable = (doc as any).lastAutoTable?.finalY || y;
+      yAfterTable += 10; // Espace après le tableau
 
-      // Calculer le score total et le score maximum possible
+      // Vérifier si on a assez d'espace pour les résultats
+      const spaceNeeded = 60; // Hauteur nécessaire pour résultats + observation
+      if (yAfterTable + spaceNeeded > pageHeight - 30) {
+        // Si pas assez d'espace, réduire l'espacement
+        yAfterTable -= 10;
+      }
+
+      // Calculer les scores
       const totalScore = evaluationResults.reduce(
         (sum: number, r: any) => sum + Number(r.result || 0),
         0
       );
 
-      // Calculer le score maximum basé sur les pondérations réelles
       const maxScore = criteriaList.reduce(
         (sum: number, criteria: any) => sum + (criteria.ponderation || 5),
         0
       );
 
-      // Cadre résultats - ajusté en fonction de l'espace
+      // Cadre résultats
       const cadreHeight = 35;
-
-      // Vérifier si on a assez d'espace avant la fin de page
-      const pageHeight = doc.internal.pageSize.height;
-      const spaceLeft = pageHeight - yAfterTable - 50; // 50 pour observation et pied de page
-
-      if (spaceLeft < cadreHeight + 50) {
-        // Pas assez d'espace, ajouter une nouvelle page
-        doc.addPage();
-        y = 20; // Recommencer en haut de la nouvelle page
-      } else {
-        y = yAfterTable;
-      }
-
       doc.setDrawColor(borderColor, borderColor, borderColor);
       doc.setLineWidth(0.5);
-      doc.rect(15, y, 180, cadreHeight);
+      doc.rect(margin, yAfterTable, contentWidth, cadreHeight);
 
       // Titre "RÉSULTATS"
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
       doc.setTextColor(0, 0, 0);
-      doc.text('RÉSULTATS', 105, y + 10, { align: 'center' });
+      doc.text('RÉSULTATS', pageWidth / 2, yAfterTable + 10, { align: 'center' });
 
-      // Calculer les positions pour alignement
+      // Positions pour alignement
       const leftColumnX = 30;
       const rightColumnX = 120;
-      const row1Y = y + 22;
-      const row2Y = y + 32;
+      const row1Y = yAfterTable + 22;
+      const row2Y = yAfterTable + 32;
 
       // Points
       doc.setFontSize(10);
@@ -490,71 +477,61 @@ export class PdfService {
       doc.setFont('helvetica', 'bold');
       doc.text(`${totalScore}/${maxScore}`, rightColumnX + 40, row1Y);
 
-
       /* =========================
-        OBSERVATION GÉNÉRALE - OPTIMISÉE
+        OBSERVATION GÉNÉRALE
       ========================== */
-      let observationY = y + cadreHeight + 15;
+      let observationY = yAfterTable + cadreHeight + 10;
 
-      // Vérifier l'espace pour l'observation
-      if (observationY > pageHeight - 60) {
-        // Pas assez d'espace, nouvelle page
-        doc.addPage();
-        observationY = 20;
+      // S'assurer qu'on a assez d'espace
+      if (observationY > pageHeight - 50) {
+        // Réduire l'espacement si nécessaire
+        observationY = yAfterTable + cadreHeight + 5;
       }
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
-      doc.text('OBSERVATION GÉNÉRALE', 15, observationY);
+      doc.text('OBSERVATION GÉNÉRALE', margin, observationY);
 
       // Préparer le texte de l'observation
       const observationText = candidateData.observation || 'Aucune observation saisie.';
       const lineHeight = 5;
-      const maxWidth = 175;
+      const maxTextWidth = contentWidth - 10;
 
-      // Diviser le texte en lignes
-      const splitObservation = doc.splitTextToSize(observationText, maxWidth);
+      // Diviser le texte
+      const splitObservation = doc.splitTextToSize(observationText, maxTextWidth);
 
-      // Calculer la hauteur nécessaire
-      const linesCount = splitObservation.length;
-      const textHeight = linesCount * lineHeight;
+      // Calculer la hauteur nécessaire et limiter si besoin
+      const maxLines = Math.floor((pageHeight - observationY - 40) / lineHeight);
+      const linesToShow = Math.min(splitObservation.length, maxLines);
+      const textHeight = linesToShow * lineHeight + 10;
 
-      // Déterminer la hauteur du cadre en fonction de l'espace restant
-      const maxAvailableHeight = pageHeight - observationY - 40; // 40 pour le pied de page
-      const calculatedCadreHeight = Math.min(textHeight + 15, maxAvailableHeight);
-
-      // Dessiner le cadre
+      // Cadre d'observation
       doc.setDrawColor(borderColor, borderColor, borderColor);
-      doc.rect(15, observationY + 5, 180, calculatedCadreHeight);
+      doc.rect(margin, observationY + 5, contentWidth, textHeight);
 
-      // Ajouter le texte dans le cadre
+      // Ajouter le texte
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(darkColor, darkColor, darkColor);
 
       let textY = observationY + 13;
-      const maxLinesInCadre = Math.floor((calculatedCadreHeight - 8) / lineHeight);
-      const linesToDisplay = Math.min(splitObservation.length, maxLinesInCadre);
-
-      for (let i = 0; i < linesToDisplay; i++) {
-        doc.text(splitObservation[i], 20, textY);
+      for (let i = 0; i < linesToShow; i++) {
+        doc.text(splitObservation[i], margin + 5, textY);
         textY += lineHeight;
       }
 
-      // Si le texte est trop long, ajouter "..." à la fin
-      if (splitObservation.length > maxLinesInCadre) {
-        doc.text('...', 20, textY);
+      // Ajouter "..." si le texte est trop long
+      if (splitObservation.length > maxLines) {
+        doc.text('...', margin + 5, textY);
       }
 
       /* =========================
-        PIED DE PAGE - TOUJOURS EN BAS
+        PIED DE PAGE
       ========================== */
-      const currentY = observationY + calculatedCadreHeight + 10;
-
-      // Toujours mettre le pied de page en bas de la page
+      const footerY = pageHeight - 20;
       doc.setDrawColor(borderColor, borderColor, borderColor);
-      doc.line(15, pageHeight - 20, 195, pageHeight - 20);
+      doc.line(margin, footerY, pageWidth - margin, footerY);
 
       doc.setFontSize(9);
       doc.setTextColor(120, 120, 120);
@@ -566,7 +543,7 @@ export class PdfService {
           hour: '2-digit',
           minute: '2-digit'
         })}`,
-        105,
+        pageWidth / 2,
         pageHeight - 15,
         { align: 'center' }
       );
@@ -575,7 +552,7 @@ export class PdfService {
       doc.setTextColor(150, 150, 150);
       doc.text(
         'Bourses Ubora',
-        105,
+        pageWidth / 2,
         pageHeight - 8,
         { align: 'center' }
       );
@@ -592,9 +569,6 @@ export class PdfService {
 
       const fileName = `EVALUATION_${safeFileName}_${new Date().toISOString().slice(0, 10)}.pdf`;
 
-      const pdfOutput = doc.output('arraybuffer');
-      console.log(`Taille PDF final: ${(pdfOutput.byteLength / 1024).toFixed(1)} KB`);
-
       doc.save(fileName);
 
     } catch (error) {
@@ -602,6 +576,7 @@ export class PdfService {
       throw new Error('Impossible de générer le rapport PDF');
     }
   }
+
 
   promotionMap: { [key: string]: string } = {
     'L0' : 'Préparatoire',
