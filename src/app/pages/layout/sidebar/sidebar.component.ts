@@ -31,10 +31,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
   isSelectorEvaluator = signal(false);
   isPreselectorEvaluator = signal(false);
   user = signal<User | null>(null);
+  userRoleFromStorage = signal<string | null>(null);
 
   currentPeriodId = signal<number | null>(null);
 
   activeTab:
+    | 'home'
     | 'allcandidacy'
     | 'import'
     | 'presection'
@@ -52,7 +54,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.updateActiveTab(this.router.url);
     this.extractPeriodIdFromUrl(this.router.url);
     this.checkRoles(this.currentPeriodId());
-
+    this.userRoleFromStorage.set(this.getUserFromLocalStorage())
     this.getCurrentUser();
 
     // Navigation
@@ -135,15 +137,28 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private updateActiveTab(url: string): void {
-    if (url.includes('allcandidacy')) this.setActiveTab('allcandidacy');
-    else if (url.includes('import')) this.setActiveTab('import');
-    else if (url.includes('presection')) this.setActiveTab('presection');
-    else if (url.includes('criteria')) this.setActiveTab('criteria');
-    else if (url.includes('users')) this.setActiveTab('users');
-    else if (url.includes('evaluator-candidacies')) this.setActiveTab('evaluator-candidacies');
-    else if (url.includes('preselection-admin')) this.setActiveTab('preselection-admin');
-    else if (url.includes('selections')) this.setActiveTab('selections');
-    else this.setActiveTab('period');
+    // D'abord vérifier si c'est la page d'accueil (racine)
+    if (url === '/' || url === '') {
+      this.setActiveTab('home');
+    } else if (url.includes('allcandidacy')) {
+      this.setActiveTab('allcandidacy');
+    } else if (url.includes('import')) {
+      this.setActiveTab('import');
+    } else if (url.includes('presection')) {
+      this.setActiveTab('presection');
+    } else if (url.includes('criteria')) {
+      this.setActiveTab('criteria');
+    } else if (url.includes('users')) {
+      this.setActiveTab('users');
+    } else if (url.includes('evaluator-candidacies')) {
+      this.setActiveTab('evaluator-candidacies');
+    } else if (url.includes('preselection-admin')) {
+      this.setActiveTab('preselection-admin');
+    } else if (url.includes('selections')) {
+      this.setActiveTab('selections');
+    } else {
+      this.setActiveTab('period');
+    }
   }
 
   private getCurrentUser(): void {
@@ -151,6 +166,19 @@ export class SidebarComponent implements OnInit, OnDestroy {
       next: user => this.user.set(user),
       error: err => console.error(err),
     });
+  }
+
+  getUserFromLocalStorage(){
+    try{
+      const userData = this.localStorageService.getData("user");
+      if(userData){
+        const user = JSON.parse(userData);
+        return user.role || null
+      }
+      return null
+    }catch(error){
+      console.error("Erreur lors de la lecture du localstorage : ",error)
+    }
   }
 
   logout(): void {
