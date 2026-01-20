@@ -236,7 +236,6 @@ export class PeriodEvaluateurComponent
     this.evaluatorService.dispatchEvaluators(this.period.id.toString())
       .subscribe({
         next: () => {
-          this.snackBar.open('Candidats dispatchés avec succès', 'Fermer', { duration: 3000 });
           this.loadPeriodState();
         },
         error: (err) => {

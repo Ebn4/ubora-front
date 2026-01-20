@@ -185,7 +185,7 @@ export class PeriodSingleComponent {
   }
 
   sendEmails() {
-    this.preselectionService.sendDispatchNotification().subscribe({
+    this.periodService.notifyPreselectionEvaluators(this.period?.id).subscribe({
       next: res => {
       },
       error: err => console.error(err)
@@ -267,18 +267,23 @@ export class PeriodSingleComponent {
     });
   }
 
-  validateDispatch() {
-    this.periodService
-      .changePeriodStatus(this.periodId, {status: PeriodStatus.STATUS_PRESELECTION})
-      .subscribe({
-        next: value => {
-          this.loadData()
-          this.sendEmails()
-        },
-        error: err => {
-          console.error(err)
-        }
-      })
+ validateDispatch() {
+    // envoyer les notifications (pendant que le statut est encore DISPATCH)
+    this.periodService.notifyPreselectionEvaluators(this.periodId).subscribe({
+      next: () => {
+        // changer le statut
+        this.periodService
+          .changePeriodStatus(this.periodId, { status: PeriodStatus.STATUS_PRESELECTION })
+          .subscribe({
+            next: () => {
+              this.snackBar.open('Candidats dispatchés avec succès', 'Fermer', { duration: 3000 });
+              this.loadData();
+            },
+            error: (err) => console.error('Erreur changement statut :', err)
+          });
+      },
+      error: (err) => console.error('Erreur envoi notifications :', err)
+    });
   }
 
   closeStatus() {

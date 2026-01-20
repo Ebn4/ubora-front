@@ -1,9 +1,9 @@
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {inject, Injectable, signal} from '@angular/core';
 import {Period} from '../models/period';
-import {Observable} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import {BASE_URL} from '../app.tokens';
-import {map} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 import {LocalStorageService} from './local-storage.service';
 import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
 import { PeriodStateResponse } from '../models/period-state';
@@ -122,4 +122,17 @@ export class PeriodService {
   getActivePeriod(): number | null {
     return this.activePeriodId();
   }
-}
+
+  notifyPreselectionEvaluators(periodId: number | undefined): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.baseUrl}/dispatch/notify-preselection-evaluators`,
+      { periodId }
+    ).pipe(
+      catchError(error => {
+        console.error('Erreur lors de l’envoi des notifications :', error);
+        // Relancez l’erreur pour qu’elle soit capturée dans le composant
+        return throwError(() => error);
+      })
+    );
+  }
+  }
