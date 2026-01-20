@@ -84,10 +84,12 @@ export class PreselectionComponent extends BaseListWidget {
       index = this.candidacies.findIndex(c => c.id === candidacie.id);
     }
 
+    // Ajouter l'année de période dans les données transmises
     this.preselectionService.setCandidacy({
       current: candidacie,
       all: this.allCandidacies,
-      currentIndex: index
+      currentIndex: index,
+      periodYear: this.periods.find(p => p.id === this.periodId)?.year || candidacie.period_year
     });
   }
 

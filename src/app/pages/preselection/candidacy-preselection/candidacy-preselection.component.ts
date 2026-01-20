@@ -13,6 +13,8 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DocPreviewComponent } from './doc-preview/doc-preview.component';
 import { TextPreviewDialogComponent } from '../../layout/shared/text-preview-dialog/text-preview-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-candidacy-preselection',
@@ -26,6 +28,9 @@ export class CandidacyPreselectionComponent {
   preselectionCheck = false
   period_status: string = PeriodStatus.STATUS_PRESELECTION
   period_status_true: boolean = false;
+  isLoading: boolean = true;
+  isLoadingCriteria: boolean = true;
+  isNavigating: boolean = false;
 
   candidacy?: Candidacy;
   candidacyService: CandidacyService = inject(CandidacyService);
@@ -34,8 +39,6 @@ export class CandidacyPreselectionComponent {
   importService: ImportService = inject(ImportService);
   preselectionService: PreselectionService = inject(PreselectionService);
   snackBar = inject(MatSnackBar);
-
-
 
   criterias: CriteriaPeriod[] = [];
   selectedCriteriaIds: any[] = [];
@@ -49,10 +52,13 @@ export class CandidacyPreselectionComponent {
   candidaciesList: any;
   currentIndex: number = 0;
   age! : number;
+  periodYear!: string;
 
   constructor(private router: Router, private _matDialog: MatDialog) { }
 
   ngOnInit() {
+    this.isLoading = true;
+    this.isLoadingCriteria = true;
     const navData = this.preselectionService.getCandidacy();
 
     // Vérification de sécurité
@@ -68,6 +74,9 @@ export class CandidacyPreselectionComponent {
     this.periodId = Number(this.route.snapshot.paramMap.get('periodId'));
     this.evaluateurId = Number(this.route.snapshot.paramMap.get('evaluateurId'));
 
+    // Récupérer l'année depuis les données de navigation
+    this.periodYear = navData.periodYear || '';
+
     // Charger la candidature + critères
     this.loadDataCandidacy();
     this.loadDataCriteria();
@@ -75,21 +84,28 @@ export class CandidacyPreselectionComponent {
 
   loadDataCandidacy() {
     const candidacyId = this.candidaciesList[this.currentIndex]?.id;
-    this.candidacyService.getOneCandidacy(candidacyId).subscribe({
-      next: (response) => {
-        this.candidacy = response.data;
-        this.period_status = this.candidacy.period_status;
-        if(this.period_status != PeriodStatus.STATUS_PRESELECTION) {
-          this.period_status_true = true;
-        }
 
-        if(this.candidacy?.etn_naissance) {
-          this.age = this.calculateAge(this.candidacy.etn_naissance);
-          console.log("L'âge du candidat :", this.age);
-        }
-      },
-      error: (error) => {
+    this.candidacyService.getOneCandidacy(candidacyId).pipe(
+      catchError((error) => {
         console.error('Erreur chargement candidature:', error);
+        return of(null); // Retourner une valeur nulle pour éviter de casser le flux
+      }),
+      finalize(() => {
+        this.isLoading = false; // Arrêter le loading quoi qu'il arrive
+      })
+    ).subscribe({
+      next: (response) => {
+        if (response?.data) {
+          this.candidacy = response.data;
+          this.period_status = this.candidacy.period_status;
+          if(this.period_status != PeriodStatus.STATUS_PRESELECTION) {
+            this.period_status_true = true;
+          }
+
+          if(this.candidacy?.etn_naissance) {
+            this.age = this.calculateAge(this.candidacy.etn_naissance);
+          }
+        }
       }
     });
   }
@@ -109,13 +125,17 @@ export class CandidacyPreselectionComponent {
   }
 
   updateRouteAndLoad() {
-     const candidacy = this.candidaciesList[this.currentIndex];
+    const candidacy = this.candidaciesList[this.currentIndex];
 
     // Mettre à jour l'URL sans recharger le composant
     this.router.navigate(
       ['/evaluator-candidacies-single', candidacy.id, candidacy.dispatch[0].pivot?.id || 0, this.periodId, this.evaluateurId],
-      { replaceUrl: true } // ← modifie l’URL sans push dans history
+      { replaceUrl: true }
     );
+
+    // Réinitialiser les états de chargement
+    this.isLoading = true;
+    this.isLoadingCriteria = true;
 
     // Mettre à jour les données locales
     this.loadDataCandidacy();
@@ -126,8 +146,18 @@ export class CandidacyPreselectionComponent {
     this.periodId = Number(this.route.snapshot.paramMap.get('periodId'));
     this.evaluateurId = Number(this.route.snapshot.paramMap.get('evaluateurId'));
     const candidacy = this.candidaciesList[this.currentIndex];
+
     this.criteriaService
       .getPeriodCriterias(this.periodId, this.search, candidacy.dispatch[0].pivot?.id, this.evaluateurId)
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching criteria:', error);
+          return of({ data: [] }); // Retourner un tableau vide en cas d'erreur
+        }),
+        finalize(() => {
+          this.isLoadingCriteria = false;
+        })
+      )
       .subscribe({
         next: (response) => {
           this.criterias = response.data
@@ -137,10 +167,7 @@ export class CandidacyPreselectionComponent {
               isChecked: c.valeur === 1 ? true : false,
             }));
           this.preselectionCheck = this.criterias.some(c => c.isChecked);
-        },
-        error: (error) => {
-          console.error('Error fetching criteria:', error);
-        },
+        }
       });
   }
 
@@ -163,11 +190,13 @@ export class CandidacyPreselectionComponent {
     this.preselectionService.preselectionCandidacy(data).subscribe({
       next: (res) => {
         this.preselectionCheck = true
-        if (this.currentIndex < this.candidaciesList.length - 1) {
-          this.goToNext();
-        } else {
-          this.router.navigate(['/evaluator-candidacies']);
-        }
+        setTimeout(() => {
+          if (this.currentIndex < this.candidaciesList.length - 1) {
+            this.goToNext();
+          } else {
+            this.router.navigate(['/evaluator-candidacies']);
+          }
+        },1000)
       },
       error: (err) => {
         console.error('Erreur lors de la préselection', err);
@@ -186,12 +215,25 @@ export class CandidacyPreselectionComponent {
         next: (result) => {
           const dialogConfig = new MatDialogConfig();
           dialogConfig.disableClose = true;
-          dialogConfig.data = { currentPreview: result };
+          dialogConfig.width = '90%';
+          dialogConfig.height = '90%';
+          dialogConfig.maxWidth = '1200px';
+
+          dialogConfig.hasBackdrop = true; // S'assurer que le backdrop est activé
+          dialogConfig.backdropClass = 'custom-backdrop'; // Classe personnalisée
+          dialogConfig.panelClass = 'custom-dialog'; // Classe pour le panel
+
+          // Passer plus de données
+          dialogConfig.data = {
+            currentPreview: result,
+            rotation: 0 // Rotation initiale
+          };
 
           const dialogRef = this._matDialog.open(DocPreviewComponent, dialogConfig);
 
           dialogRef.afterClosed().subscribe((result) => {
             if (result) {
+              console.log('Rotation finale:', result.rotation);
             }
           });
         },
@@ -199,6 +241,19 @@ export class CandidacyPreselectionComponent {
           console.log(error);
         }
       });
+    });
+  }
+
+  // Méthode pour télécharger directement depuis la liste
+  downloadDocument(fileName: string) {
+    this.importService.getDocument(fileName).subscribe((file) => {
+      const blob = new Blob([file], { type: file.type });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.click();
+      window.URL.revokeObjectURL(url);
     });
   }
 
@@ -256,8 +311,11 @@ export class CandidacyPreselectionComponent {
       }
 
       this._matDialog.open(TextPreviewDialogComponent, {
-        width: '600px',
-        maxHeight: '80vh',
+        width: '1200px',
+        maxWidth: '90vw',
+        height: '85vh',
+        panelClass: 'modern-dialog',
+        autoFocus: false,
         data: { content }
       });
     }

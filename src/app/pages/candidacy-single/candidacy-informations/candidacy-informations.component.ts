@@ -12,10 +12,14 @@ import { ImportService } from '../../../services/import.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DocPreviewComponent } from '../../preselection/candidacy-preselection/doc-preview/doc-preview.component';
 import { NgFor, NgIf } from '@angular/common';
+import { TextPreviewDialogComponent } from '../../layout/shared/text-preview-dialog/text-preview-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError, finalize, delay } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-candidacy-informations',
-  imports: [NgIf,NgFor],
+  imports: [NgIf, NgFor],
   templateUrl: './candidacy-informations.component.html',
 })
 export class CandidacyInformationsComponent extends BaseListWidget {
@@ -26,84 +30,124 @@ export class CandidacyInformationsComponent extends BaseListWidget {
 
   candidacyId!: number;
   candidacy?: Candidacy;
-  candidateHasSelected = signal(true)
+  candidateHasSelected = signal(true);
 
-  interview = signal<Interview | null>(null)
-  period = signal<Period | null>(null)
+  interview = signal<Interview | null>(null);
+  period = signal<Period | null>(null);
 
   rejectionReasonsList: string[] = [];
 
   candidacyService = inject(CandidacyService);
-  filePreviewService = inject(FilePreviewService)
+  filePreviewService = inject(FilePreviewService);
   periodService = inject(PeriodService);
   importService: ImportService = inject(ImportService);
   route: ActivatedRoute = inject(ActivatedRoute);
+  snackBar = inject(MatSnackBar);
 
-  age! : number;
+  age!: number;
+
+  // États de chargement
+  isLoading = true;
+  isLoadingInterview = true;
+  isLoadingPeriod = true;
 
   ngOnInit(): void {
     this.loadData();
-    this.loadCandidateInterviewInfo()
-    this.checkIfCandidateHasSelected()
   }
 
   override loadData() {
+    this.isLoading = true;
     this.candidacyId = Number(this.route.snapshot.paramMap.get('id'));
+
     this.candidacyService
       .getOneCandidacy(this.candidacyId)
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading candidacy:', error);
+          return of(null);
+        }),
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
       .subscribe({
         next: (response) => {
-          const candidate = response.data;
-          this.candidacy = candidate
+          if (response?.data) {
+            const candidate = response.data;
+            this.candidacy = candidate;
+            this.parseRejectionReasons();
+            this.age = this.calculateAge(this.candidacy?.etn_naissance ?? '');
 
-          this.parseRejectionReasons();
-
-          this.loadPeriodById(candidate.period_id)
-          this.age = this.calculateAge(this.candidacy?.etn_naissance ?? '');
+            // Charger les données supplémentaires
+            this.loadCandidateInterviewInfo();
+            this.loadPeriodById(candidate.period_id);
+            this.checkIfCandidateHasSelected();
+          }
         },
-        error: (error) => {
-          console.error('Error loading candidacies:', error);
-        }
       });
   }
 
   loadCandidateInterviewInfo() {
+    this.isLoadingInterview = true;
     this.candidacyService.getCandidateInterview(this.candidacyId ?? 0)
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading interview:', error);
+          return of(null);
+        }),
+        finalize(() => {
+          this.isLoadingInterview = false;
+        })
+      )
       .subscribe({
-        next: value => {
-          this.interview.set(value.data)
-        }, error: err => {
-          console.error(err)
+        next: (value) => {
+          if (value?.data) {
+            this.interview.set(value.data);
+          }
         }
-      })
+      });
   }
 
   loadPeriodById(periodId: number) {
+    this.isLoadingPeriod = true;
     this.periodService.getOnePeriod(periodId)
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading period:', error);
+          return of(null);
+        }),
+        finalize(() => {
+          this.isLoadingPeriod = false;
+        })
+      )
       .subscribe({
-        next: value => {
-          this.period.set(value)
-          console.log(value)
-        },
-        error: err => {
-          console.error(err)
+        next: (value) => {
+          if (value) {
+            this.period.set(value);
+          }
         }
-      })
+      });
   }
 
   checkIfCandidateHasSelected() {
     this.candidacyService
       .candidateHasSelected(this.candidacyId)
+      .pipe(
+        catchError((error) => {
+          console.error('Error checking selection:', error);
+          return of({ hasSelection: false });
+        })
+      )
       .subscribe({
-        next: value => {
-          this.candidateHasSelected.set(value.hasSelection)
+        next: (value) => {
+          this.candidateHasSelected.set(value.hasSelection);
         }
-      })
+      });
   }
 
   onEvaluated() {
-    this.loadData()
-    this.candidateHasSelected.set(true)
+    this.loadData();
+    this.candidateHasSelected.set(true);
   }
 
   docPreview(fileName: any) {
@@ -158,10 +202,6 @@ export class CandidacyInformationsComponent extends BaseListWidget {
     if (this.candidacy?.rejection_reasons) {
       const reasons = this.candidacy.rejection_reasons;
 
-      // Debug
-      console.log('Raw rejection reasons:', reasons);
-      console.log('Contains semicolon?', reasons.includes(';'));
-
       // Si la chaîne contient des points-virgules, séparer
       if (reasons.includes(';')) {
         this.rejectionReasonsList = reasons
@@ -173,9 +213,32 @@ export class CandidacyInformationsComponent extends BaseListWidget {
       else if (reasons.trim().length > 0) {
         this.rejectionReasonsList = [reasons.trim()];
       }
-
-      console.log('Parsed reasons list:', this.rejectionReasonsList);
     }
   }
 
+  openLetterDialog(content: string | null | undefined) {
+    if (!content) {
+      this.snackBar.open('Lettre de motivation indisponible', 'Fermer', {
+        duration: 3000
+      });
+      return;
+    }
+
+    this._matDialog.open(TextPreviewDialogComponent, {
+      width: '1200px',
+      maxWidth: '90vw',
+      height: '85vh',
+      panelClass: 'modern-dialog',
+      autoFocus: false,
+      data: { content }
+    });
+  }
+
+  isFile(value: string | null | undefined): boolean {
+    if (!value) return false;
+
+    // On considère que si c'est une URL ou un nom de fichier avec extension, c'est un "fichier"
+    const fileExtensions = ['.pdf', '.doc', '.docx', '.txt'];
+    return fileExtensions.some(ext => value.toLowerCase().endsWith(ext));
+  }
 }
