@@ -31,7 +31,7 @@ export class CandidacyService {
     search: string = '',
     ville: string = '',
     periodId: number | undefined,
-    per_page: number
+    per_page: any
   ) {
     let params = new HttpParams().set('page', page).set('per_page', per_page);
 
@@ -54,7 +54,7 @@ export class CandidacyService {
     search: string = '',
     ville: string = '',
     periodId: number | undefined,
-    per_page: number
+    per_page: any
   ) {
     let params = new HttpParams().set('page', page).set('per_page', per_page);
 
