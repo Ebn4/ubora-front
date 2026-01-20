@@ -38,3 +38,70 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Animation Shimmer Moderne */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Variantes de couleurs pour le shimmer */
+.shimmer-light {
+  background: linear-gradient(90deg,
+    #f8f9fa 25%,
+    #e9ecef 50%,
+    #f8f9fa 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.shimmer-dark {
+  background: linear-gradient(90deg,
+    #e9ecef 25%,
+    #dee2e6 50%,
+    #e9ecef 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Animation subtile */
+@keyframes shimmer-subtle {
+  0% {
+    background-position: -500px 0;
+  }
+  100% {
+    background-position: 500px 0;
+  }
+}
+
+.animate-shimmer-subtle {
+  background: linear-gradient(90deg,
+    #f5f5f5 0%,
+    #f0f0f0 50%,
+    #f5f5f5 100%);
+  background-size: 500px 100%;
+  animation: shimmer-subtle 1.5s infinite ease-in-out;
+}
+/* Dans votre styles.css global */
+.modern-dialog .mat-mdc-dialog-surface {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.modern-dialog .mat-mdc-dialog-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-height: none !important;
+}

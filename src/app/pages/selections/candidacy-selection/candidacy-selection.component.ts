@@ -524,26 +524,29 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
   }
 
   openLetterDialog(content: string | null | undefined) {
-    if (!content) {
-      this.snackBar.open('Lettre de motivation indisponible', 'Fermer', {
-        duration: 3000
+      if (!content) {
+        this.snackBar.open('Lettre de motivation indisponible', 'Fermer', {
+          duration: 3000
+        });
+        return;
+      }
+
+      this._matDialog.open(TextPreviewDialogComponent, {
+        width: '1200px',
+        maxWidth: '90vw',
+        height: '85vh',
+        panelClass: 'modern-dialog',
+        autoFocus: false,
+        data: { content }
       });
-      return;
     }
 
-    this._matDialog.open(TextPreviewDialogComponent, {
-      width: '600px',
-      maxHeight: '80vh',
-      data: { content }
-    });
-  }
+    isFile(value: string | null | undefined): boolean {
+      if (!value) return false;
 
-  isFile(value: string | null | undefined): boolean {
-    if (!value) return false;
-
-    // On considère que si c'est une URL ou un nom de fichier avec extension, c'est un "fichier"
-    const fileExtensions = ['.pdf', '.doc', '.docx', '.txt'];
-    return fileExtensions.some(ext => value.toLowerCase().endsWith(ext));
-  }
+      // On considère que si c'est une URL ou un nom de fichier avec extension, c'est un "fichier"
+      const fileExtensions = ['.pdf', '.doc', '.docx', '.txt'];
+      return fileExtensions.some(ext => value.toLowerCase().endsWith(ext));
+    }
 
 }
