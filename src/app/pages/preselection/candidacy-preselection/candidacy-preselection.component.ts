@@ -13,8 +13,8 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DocPreviewComponent } from './doc-preview/doc-preview.component';
 import { TextPreviewDialogComponent } from '../../layout/shared/text-preview-dialog/text-preview-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { catchError, finalize, takeUntil } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-candidacy-preselection',
@@ -53,6 +53,8 @@ export class CandidacyPreselectionComponent {
   currentIndex: number = 0;
   age! : number;
   periodYear!: string;
+  private destroy$ = new Subject<void>();
+  
 
   constructor(private router: Router, private _matDialog: MatDialog) { }
 
@@ -205,43 +207,36 @@ export class CandidacyPreselectionComponent {
   }
 
   docPreview(fileName: any) {
-    const actualFileName = fileName;
-
-    this.importService.getDocument(actualFileName).subscribe((file) => {
-      const blob = new Blob([file], { type: file.type });
-      const fileFromUrl = new File([blob], fileName, { type: blob.type });
-
-      this.filePreviewService.previewFile(fileFromUrl).subscribe({
-        next: (result) => {
-          const dialogConfig = new MatDialogConfig();
-          dialogConfig.disableClose = true;
-          dialogConfig.width = '90%';
-          dialogConfig.height = '90%';
-          dialogConfig.maxWidth = '1200px';
-
-          dialogConfig.hasBackdrop = true; // S'assurer que le backdrop est activé
-          dialogConfig.backdropClass = 'custom-backdrop'; // Classe personnalisée
-          dialogConfig.panelClass = 'custom-dialog'; // Classe pour le panel
-
-          // Passer plus de données
-          dialogConfig.data = {
-            currentPreview: result,
-            rotation: 0 // Rotation initiale
-          };
-
-          const dialogRef = this._matDialog.open(DocPreviewComponent, dialogConfig);
-
-          dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
-              console.log('Rotation finale:', result.rotation);
+      if (!fileName) return;
+  
+      this.importService.getDocument(fileName).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (file) => {
+          const blob = new Blob([file], { type: file.type });
+          const fileFromUrl = new File([blob], fileName, { type: blob.type });
+  
+          this.filePreviewService.previewFile(fileFromUrl).subscribe({
+            next: (result) => {
+              const dialogConfig = new MatDialogConfig();
+              dialogConfig.disableClose = true;
+              dialogConfig.data = { currentPreview: result };
+  
+              const dialogRef = this._matDialog.open(DocPreviewComponent, dialogConfig);
+  
+              dialogRef.afterClosed().pipe(
+                takeUntil(this.destroy$)
+              ).subscribe();
+            },
+            error: (error) => {
+              console.log('Erreur preview:', error);
             }
           });
         },
         error: (error) => {
-          console.log(error);
+          console.log('Erreur chargement document:', error);
         }
       });
-    });
   }
 
   // Méthode pour télécharger directement depuis la liste
