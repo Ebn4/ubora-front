@@ -44,6 +44,8 @@ export class AddEvaluatorDialogComponent {
   query = new FormControl('')
   form = new FormGroup({
     selectedUserCuid: new FormControl("", [Validators.required]),
+    selectedUserEmail: new FormControl("", [Validators.required]),
+    selectedUserName: new FormControl("", [Validators.required]),
     evaluatorType: new FormControl('SELECTION', [Validators.required])
   })
 
@@ -64,7 +66,10 @@ export class AddEvaluatorDialogComponent {
 
   ngOnInit() {
     this.query.valueChanges.subscribe(value => {
-      this.onSearchUser(value ?? '')
+      const search = typeof value === 'string' ? value.trim() : '';
+      if(search.length >= 2){
+        this.onSearchUser(value ?? '')
+      }
     });
   }
 
@@ -76,6 +81,8 @@ export class AddEvaluatorDialogComponent {
     this.userServices.searchUserFromLdap(query).subscribe({
       next: value => {
         this.users.set(value.data)
+        console.log(value.data)
+        console.log("La valeur de user ",this.users)
         this.filteredUsers = of(value.data)
       },
       error: err => {
@@ -90,10 +97,15 @@ export class AddEvaluatorDialogComponent {
     }
 
     const formData = this.form.value
+
+    console.log("Les valeurs du formulaire ",formData)
+
     this.evaluatorService.addEvaluator({
       periodId: this.data.periodId,
       type: formData.evaluatorType ?? '',
-      cuid: formData.selectedUserCuid ?? ''
+      cuid: formData.selectedUserCuid ?? '',
+      email: formData.selectedUserEmail ?? '',
+      name: formData.selectedUserName ?? ''
     }).subscribe({
       next: value => {
         this.snackbar.open("L'ajout de l'évaluateur s'est effectué avec succès", 'Fermer', {
@@ -121,7 +133,9 @@ export class AddEvaluatorDialogComponent {
 
   onSelectedUser(user: LdapUser) {
     this.form.patchValue({
-      selectedUserCuid: user.cuid
+      selectedUserCuid: user.cuid,
+      selectedUserEmail: user.email,
+      selectedUserName: user.name
     })
   }
 }

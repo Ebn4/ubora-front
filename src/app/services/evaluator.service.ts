@@ -35,8 +35,14 @@ export class EvaluatorService {
     return this.http.get<ResponseInterface<Evaluator>>(`${this.baseUrl}/evaluators/${id}`)
   }
 
-  addEvaluator(data: { periodId: number, cuid: string, type: string }) {
-    return this.http.post(`${this.baseUrl}/evaluators`, data)
+  addEvaluator(data: {
+    periodId: number;
+    cuid: string;
+    type: string;
+    email: string;
+    name: string;
+  }) {
+    return this.http.post(`${this.baseUrl}/evaluators`, data);
   }
 
   deleteEvaluator(evaluatorId: number) {
