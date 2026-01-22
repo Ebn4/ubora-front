@@ -10,15 +10,21 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-period',
-  imports: [NgFor, FormsModule, RouterLink, NgClass, ReactiveFormsModule],
+  imports: [NgFor, FormsModule, RouterLink, NgClass, ReactiveFormsModule, NgIf],
   templateUrl: './period.component.html',
 })
 export class PeriodComponent extends BaseListWidget {
   periodService: PeriodService = inject(PeriodService);
   periods: Period[] = [];
 
+  // Ajout de la propriété isLoading
+  isLoading: boolean = true;
+
   router: Router = inject(Router);
   showModal = false;
+
+  // Ajout de Math pour l'utilisation dans le template
+  protected readonly Math = Math;
 
   constructor(private _matDialog: MatDialog) {
     super();
@@ -29,6 +35,7 @@ export class PeriodComponent extends BaseListWidget {
   }
 
   override loadData() {
+    this.isLoading = true;
     this.periodService
       .getPeriod(this.currentPage, this.search, this.status, this.per_page)
       .subscribe({
@@ -36,7 +43,12 @@ export class PeriodComponent extends BaseListWidget {
           this.periods = response.data;
           this.currentPage = response.meta.current_page;
           this.lastPage = response.meta.last_page;
+          this.isLoading = false;
         },
+        error: (error) => {
+          console.error('Error loading periods:', error);
+          this.isLoading = false;
+        }
       });
   }
 

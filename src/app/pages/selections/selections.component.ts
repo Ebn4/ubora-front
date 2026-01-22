@@ -20,7 +20,8 @@ import { Period } from '../../models/period';
     FormsModule,
     RouterLink,
     MatIcon,
-    NgClass
+    NgClass,
+    NgIf
   ],
   templateUrl: './selections.component.html',
   styles: ``,
@@ -37,6 +38,8 @@ export class SelectionsComponent extends BaseListWidget {
   candidates = signal<Candidacy[]>([]);
   periods: Period[] = [];
 
+  // Ajout de la propriété isLoading
+  isLoading: boolean = true;
 
   totalCandidates = signal(0);
   evaluatedCandidates = signal(0);
@@ -46,8 +49,6 @@ export class SelectionsComponent extends BaseListWidget {
   userService: UserService = inject(UserService);
   user!: User
   evaluateurId!: number;
-
-
 
   protected readonly Math = Math;
 
@@ -62,6 +63,7 @@ export class SelectionsComponent extends BaseListWidget {
       },
       error: (error) => {
         console.error('Error fetching periods:', error);
+        this.isLoading = false;
       }
     });
   }
@@ -82,7 +84,7 @@ export class SelectionsComponent extends BaseListWidget {
   }
 
   override loadData() {
-    super.loadData();
+    this.isLoading = true;
     return this.candidateService
       .getPreselectedCandidates(
         this.currentPage,
@@ -99,9 +101,11 @@ export class SelectionsComponent extends BaseListWidget {
 
           // Charger les stats globales
           this.loadSelectionStats();
+          this.isLoading = false;
         },
         error: err => {
           console.error(err);
+          this.isLoading = false;
         }
       });
   }
@@ -192,6 +196,7 @@ export class SelectionsComponent extends BaseListWidget {
       },
       error: (error) => {
         console.error("Erreur lors de la récupération de l'utilisateur :", error);
+        this.isLoading = false;
       }
     });
   }

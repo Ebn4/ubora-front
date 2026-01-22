@@ -26,6 +26,7 @@ export class PreselectionComponent extends BaseListWidget {
   @Input() period?: Period;
   evaluateurId!: number;
   periodId!: number;
+  isLoading: boolean = true;
   user!: User
   ville: string = '';
   route: ActivatedRoute = inject(ActivatedRoute);
@@ -134,6 +135,7 @@ export class PreselectionComponent extends BaseListWidget {
   }
 
   override loadData() {
+    this.isLoading = true;
     this.candidacyService
       .CandidaciesDispatchEvaluator(
         this.periodId,
@@ -155,9 +157,11 @@ export class PreselectionComponent extends BaseListWidget {
             this.totalCandidats = 0;
             this.candidatsEvalues = 0;
           }
+          this.isLoading = false;
         },
         error: (error) => {
           console.error('Error loading candidacies:', error);
+          this.isLoading = false;
         },
       });
   }
