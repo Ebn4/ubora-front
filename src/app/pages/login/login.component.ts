@@ -52,7 +52,8 @@ export default class LoginComponent {
           this.localStorageService.saveData('user', JSON.stringify({
             cuid,
             emailMasque: r.data?.reference_masked || null,
-            channel : r.data?.channel
+            channel : r.data?.channel,
+            otpSent : true
           }));  
           // Rediriger vers page OTP
           this.router.navigate(['/otp']);

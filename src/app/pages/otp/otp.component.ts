@@ -49,13 +49,15 @@ export class OtpComponent implements OnInit, OnDestroy {
     this.channel = parsed.channel === 'phone' ? 'phone' : 'email';
     this.destinataireMasque = parsed.emailMasque || (this.channel === 'email' ? 'votre email' : 'votre téléphone');
 
-    if (this.channel === 'email') {
-      this.successMessage = `Un code a été envoyé à l'adresse : ${this.destinataireMasque}`;
-    } else {
-      this.successMessage = `Un code a été envoyé par SMS au numéro : ${this.destinataireMasque}`;
+    if(parsed.otpSent === true){
+      this.successMessage = this.channel === 'email' 
+        ? `Un code a été envoyé à l'adresse : ${this.destinataireMasque}`
+        : `Un code a été envoyé par SMS au numéro : ${this.destinataireMasque}`
     }
 
     this.demarrerCompteRebours();
+    parsed.otpSent = false
+    this.localStorageService.saveData('user',JSON.stringify(parsed))
 
     setTimeout(() => {
       const firstInput = document.querySelector('input[name="otp-digit-0"]') as HTMLInputElement;
