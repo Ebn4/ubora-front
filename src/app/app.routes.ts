@@ -23,12 +23,13 @@ import { OtpComponent } from './pages/otp/otp.component';
 export const routes: Routes = [
   {
     path: 'login',
-    title: 'Connexion',
+    title: 'Connexion - Ubora',
     canActivate: [LoggedGuard],
     loadComponent: () => import('./pages/login/login.component')
   },
   {
         path: 'otp',
+        title : "OTP verification - Ubora",
         component: OtpComponent
       },
   {
@@ -36,16 +37,16 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     component: DefaultLayoutComponent,
     children: [
-      {path: '', component: EvaluatorHomeComponent, canActivate: [RoleRedirectGuard] },
-      {path: 'users', component: UsersComponent, canActivate: [HasAdminRoleGuard]},
-      {path: 'period', component: PeriodComponent, canActivate: [HasAdminRoleGuard]},
-      {path: 'period-single/:id', component: PeriodSingleComponent, canActivate: [HasAdminRoleGuard]},
-      {path: 'criteria', component: CriteriaComponent, canActivate: [HasAdminRoleGuard]},
-      {path: 'selections', component: SelectionsComponent, canActivate: [IsSelectorEvaluatorGuard]},
-      {path: 'selections/candidates/:id', component: CandidacySelectionComponent},
+      {path: '', component: EvaluatorHomeComponent, canActivate: [RoleRedirectGuard] ,title : 'Accueil - Ubora'},
+      {path: 'users', component: UsersComponent, canActivate: [HasAdminRoleGuard], title : "Gestion des utilisateurs - Ubora"},
+      {path: 'period', component: PeriodComponent, canActivate: [HasAdminRoleGuard], title : "Gestion des périodes - - Ubora"},
+      {path: 'period-single/:id', component: PeriodSingleComponent, canActivate: [HasAdminRoleGuard], title : "Détails de la période - Ubora"},
+      {path: 'criteria', component: CriteriaComponent, canActivate: [HasAdminRoleGuard], title : "Gestion des critères - Ubora"},
+      {path: 'selections', component: SelectionsComponent, canActivate: [IsSelectorEvaluatorGuard], title : "Interviews - Ubora"},
+      {path: 'selections/candidates/:id', component: CandidacySelectionComponent, title : "Détail de la candidature - Ubora"},
       {path: 'candidacy', component: PeriodCandidacyComponent},
       {path: 'candidacy-single/:id/:period_id', component: CandidacySingleComponent},
-      {path: 'evaluator-candidacies', component: PreselectionComponent},
+      {path: 'evaluator-candidacies', component: PreselectionComponent , title : "Préselection des candidatures - Ubora"},
       {
         path: 'evaluator-candidacies-single/:id/:dispatchId/:periodId/:evaluateurId',
         component: CandidacyPreselectionComponent
