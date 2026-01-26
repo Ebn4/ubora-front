@@ -4,6 +4,7 @@ import {BASE_URL} from '../app.tokens';
 import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
 import {LdapUser} from '../models/ldap-user.model';
 import {User} from '../models/user.model';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,9 @@ export class UserService {
   }
 
   getUser() {
-    return this.http.get<User>(`${this.baseUrl}/user`)
+    return this.http.get<{data : User}>(`${this.baseUrl}/user`).pipe(
+      map(response => response.data)
+    )
   }
 
 }
