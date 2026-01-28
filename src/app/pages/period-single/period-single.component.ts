@@ -200,7 +200,7 @@ export class PeriodSingleComponent implements OnDestroy {
   }
 
   sendEmails() {
-    const emailSub = this.preselectionService.sendDispatchNotification().subscribe({
+    const emailSub = this.preselectionService.sendDispatchNotification(this.periodId).subscribe({
       next: res => {
         this.snackBar.open('Emails envoyés avec succès', 'Fermer', { duration: 3000 });
       },
@@ -282,25 +282,27 @@ export class PeriodSingleComponent implements OnDestroy {
   }
 
   validateDispatch() {
-    this.periodService
-      .changePeriodStatus(this.periodId, { status: PeriodStatus.STATUS_PRESELECTION })
-      .subscribe({
-        next: value => {
-          this.snackBar.open('Dispatch validé avec succès', 'Fermer', { duration: 3000 });
-          this.sendEmails();
-          // Délai avant rechargement
-          setTimeout(() => this.loadData(), 1000);
-        },
-        error: err => {
-          console.error(err);
-          this.snackBar.open(
-            err.error?.message || 'Erreur lors de la validation du dispatch',
-            'Fermer',
-            { duration: 3000 }
-          );
-        }
-      });
+    this.preselectionService.sendDispatchNotification(this.periodId).subscribe({
+      next: () => {
+        this.periodService
+          .changePeriodStatus(this.periodId, { status: PeriodStatus.STATUS_PRESELECTION })
+          .subscribe({
+            next: () => {
+              this.snackBar.open('Dispatch validé et emails envoyés', 'Fermer', { duration: 3000 });
+              setTimeout(() => this.loadData(), 1000);
+            }
+          });
+      },
+      error: err => {
+        this.snackBar.open(
+          err.error?.message || 'Erreur lors de l’envoi des emails',
+          'Fermer',
+          { duration: 3000 }
+        );
+      }
+    });
   }
+
 
   closeStatus() {
     if (this.period) {
