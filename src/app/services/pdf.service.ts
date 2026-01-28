@@ -74,7 +74,6 @@ export class PdfService {
       canvas.height = viewport.height;
       canvas.width = viewport.width;
 
-      console.log('Canvas dimensions set:', canvas.width, 'x', canvas.height, 'scale:', scale);
 
       const renderContext = {
         canvasContext: context,
@@ -82,7 +81,6 @@ export class PdfService {
       };
 
       await page.render(renderContext).promise;
-      console.log('PDF page rendered to canvas successfully');
     } catch (error) {
       console.error('Error rendering PDF page:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -225,7 +223,6 @@ export class PdfService {
           try {
             doc.addImage(fondationOrange, 'PNG', 170, 12, 25, 8);
           } catch (e) {
-            console.log('PNG échoué, essaye JPEG pour fondationOrange');
             doc.addImage(fondationOrange, 'JPEG', 170, 10, 25, 8);
           }
         } else {

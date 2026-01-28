@@ -118,8 +118,7 @@ downloadImage() {
   img.src = imgUrl;
 }
 
-// Mettez à jour la méthode downloadFile()
-downloadFile() {
+  downloadFile() {
     if (!this.previewResult) return;
 
     this.onDownload.emit();
@@ -313,6 +312,7 @@ downloadFile() {
 
       this.pdfBlobUrl = this.pdfService.createBlobUrl(arrayBuffer, 'application/pdf');
       this.blobUrls.push(this.pdfBlobUrl);
+      this.cdr.detectChanges();
 
       this.pdfDocument = await this.pdfService.loadPdfDocument(arrayBuffer);
       this.totalPages = this.pdfDocument.numPages;
