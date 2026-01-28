@@ -8,12 +8,14 @@ export class LoadingService {
   active$ = this._active$.asObservable();
 
   show() {
-    if (++this.pendingRequests === 1) this._active$.next(true);
+    if (++this.pendingRequests === 1){
+      setTimeout(() => this._active$.next(true))
+    } 
   }
 
   hide() {
     if (this.pendingRequests > 0 && --this.pendingRequests === 0) {
-      this._active$.next(false);
+      setTimeout(() => this._active$.next(false))
     }
   }
   reset() {
