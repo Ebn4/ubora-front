@@ -70,7 +70,7 @@ export class PeriodEvaluateurComponent
     { name: 'Preselection', type: 'PRESELECTION' }
   ];
 
-  typeForm = new FormControl('');
+  typeForm = new FormControl<string>({value : '', disabled : false});
 
   ngOnInit() {
     this.typeForm.valueChanges
@@ -98,6 +98,9 @@ export class PeriodEvaluateurComponent
 
     this.isLoading.set(true);
 
+    // desactiver le formulaire pendant le chargement
+    this.typeForm.disable({ emitEvent : false })
+
     this.periodService.getPeriodState(
       this.period.id,
       this.currentPage,
@@ -120,9 +123,13 @@ export class PeriodEvaluateurComponent
           this.isDisableDispatchButton.set(state.hasEvaluators);
         }
         this.isLoading.set(false);
+        // reactiver le formulaire après le chargement
+        this.typeForm.enable({ emitEvent : false})
       },
       error: () => {
         this.isLoading.set(false);
+        // réactiver le formulaire après le chargement
+        this.typeForm.enable({ emitEvent : false })
         this.snackBar.open('Erreur de chargement', 'Fermer', { duration: 3000 });
       }
     });
@@ -200,10 +207,10 @@ export class PeriodEvaluateurComponent
         // Notification propre des stats
         this.evaluatorAdded.emit();
 
-        // 🔥 IMPORTANT : Notifier que les rôles ont changé
+        //  IMPORTANT : Notifier que les rôles ont changé
         this.roleChangeService.notifyRoleChanged();
 
-        // 🔥 Notifier également la fermeture de modal si nécessaire
+        //  Notifier également la fermeture de modal si nécessaire
         this.listeningChangeService.notifyModalClosed();
       },
       error: err => {
