@@ -118,7 +118,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private checkIfIsSelectorEvaluator(periodId?: number | null): void {
-    console.log('SELECTOR periodId:', periodId);
     this.evaluatorService.isSelectorEvaluator(periodId).subscribe({
       next: res => this.isSelectorEvaluator.set(res.isSelectorEvaluator),
       error: err => console.error(err),

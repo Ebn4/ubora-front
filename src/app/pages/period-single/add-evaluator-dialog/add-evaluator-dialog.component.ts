@@ -81,8 +81,6 @@ export class AddEvaluatorDialogComponent {
     this.userServices.searchUserFromLdap(query).subscribe({
       next: value => {
         this.users.set(value.data)
-        console.log(value.data)
-        console.log("La valeur de user ",this.users)
         this.filteredUsers = of(value.data)
       },
       error: err => {
@@ -98,7 +96,6 @@ export class AddEvaluatorDialogComponent {
 
     const formData = this.form.value
 
-    console.log("Les valeurs du formulaire ",formData)
 
     this.evaluatorService.addEvaluator({
       periodId: this.data.periodId,

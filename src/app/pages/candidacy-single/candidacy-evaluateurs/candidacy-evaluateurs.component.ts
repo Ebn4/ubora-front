@@ -27,14 +27,12 @@ export class CandidacyEvaluateursComponent {
   }
 
   loadData() {
-    console.log(this.candidateId())
     if (this.candidateId() > 0) {
       this.candidacyService
         .getCandidateEvaluators(this.candidateId())
         .subscribe({
           next: value => {
             this.evaluators.set(value.data)
-            console.log(value)
           },
           error: err => {
             console.error(err)

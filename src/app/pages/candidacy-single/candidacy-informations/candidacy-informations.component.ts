@@ -79,7 +79,7 @@ export class CandidacyInformationsComponent extends BaseListWidget {
             this.age = this.calculateAge(this.candidacy?.etn_naissance ?? '');
 
             // Charger les données supplémentaires
-            this.loadCandidateInterviewInfo();
+            // this.loadCandidateInterviewInfo();
             this.loadPeriodById(candidate.period_id);
             this.checkIfCandidateHasSelected();
           }

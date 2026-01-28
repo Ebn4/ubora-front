@@ -292,7 +292,6 @@ export class PeriodCandidaciesSelectedComponent extends BaseListWidget {
     this.periodService.getSelectionCriteriaMaxScore(this.period.id)
       .subscribe({
         next: (maxScoreValue: number) => {
-          console.log('Score max récupéré:', maxScoreValue);
           this.maxScore.set(maxScoreValue);
         },
         error: (error) => {
