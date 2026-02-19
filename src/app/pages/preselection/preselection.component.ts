@@ -126,7 +126,6 @@ export class PreselectionComponent extends BaseListWidget {
         }
 
         this.allCandidacies = candidacies;
-        console.log('✅ Liste complète chargée:', this.allCandidacies.length, 'candidats');
       },
       error: (error) => {
         console.error('Erreur chargement liste complète:', error);

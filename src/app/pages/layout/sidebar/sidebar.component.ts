@@ -1,10 +1,7 @@
+// sidebar.component.ts
 import { NgClass } from '@angular/common';
 import { Component, inject, signal, OnDestroy, OnInit, computed } from '@angular/core';
-import { Component, inject, signal, OnDestroy, OnInit, computed } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { filter, Subscription, of, timer } from 'rxjs';
-import { catchError, timeout } from 'rxjs/operators';
-import { FormsModule } from '@angular/forms';
 import { filter, Subscription, of, timer } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
@@ -18,12 +15,10 @@ import { ListeningChangeService } from '../../../services/listening-change.servi
 
 import { User } from '../../../models/user.model';
 import { AuthStateService } from '../../../services/auth-state.service';
-import { AuthStateService } from '../../../services/auth-state.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, NgClass, FormsModule],
   imports: [RouterLink, NgClass, FormsModule],
   templateUrl: './sidebar.component.html',
 })
@@ -36,26 +31,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private roleChangeService = inject(RoleChangeService);
   private listeningChangeService = inject(ListeningChangeService);
   authState = inject(AuthStateService);
-
-  private router = inject(Router);
-  private authService = inject(AuthServices);
-  private userService = inject(UserService);
-  private evaluatorService = inject(EvaluatorService);
-  private localStorageService = inject(LocalStorageService);
-  private roleChangeService = inject(RoleChangeService);
-  private listeningChangeService = inject(ListeningChangeService);
-  authState = inject(AuthStateService);
-
   user = signal<User | null>(null);
   userRoleFromStorage = signal<string | null>(null);
-
   currentPeriodId = signal<number | null>(null);
   availablePeriods = signal<any[]>([]);
   selectedPeriodId = signal<number | null>(null);
-  availablePeriods = signal<any[]>([]);
-  selectedPeriodId = signal<number | null>(null);
 
-  // Active tab
   // Active tab
   activeTab:
     | 'home'
@@ -99,17 +80,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.getCurrentUser(() => {
       // Trouver ou déterminer le periodId
       this.findAndSetPeriodId(() => {
-        this.authState.loadRolesForPeriod(this.currentPeriodId());
-      });
-    });
-  }
-
-  private setupNavigationListener(): void {
-
-    // Récupérer l'utilisateur (priorité au cache, puis API)
-    this.getCurrentUser(() => {
-      // Trouver ou déterminer le periodId
-      this.findAndSetPeriodId(() => {
+        // ⭐ Utiliser AuthStateService pour charger les rôles
         this.authState.loadRolesForPeriod(this.currentPeriodId());
       });
     });
@@ -121,6 +92,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         .pipe(filter(event => event instanceof NavigationEnd))
         .subscribe((event: NavigationEnd) => {
           const url = event.urlAfterRedirects;
+
           this.updateActiveTab(url);
 
           // Extraire periodId de la nouvelle URL si présent
@@ -130,6 +102,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
             this.selectedPeriodId.set(urlPeriodId);
             this.storePeriodId(urlPeriodId);
 
+            // Recharger les rôles avec le nouveau periodId
             timer(100).subscribe(() => {
               this.authState.loadRolesForPeriod(urlPeriodId);
             });
@@ -156,16 +129,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.roleChangeService.roleChanged$.subscribe(changed => {
         if (changed) {
-          this.authState.reloadPeriodRoles(this.currentPeriodId());
+          //  Invalider le cache et recharger
           this.authState.reloadPeriodRoles(this.currentPeriodId());
           this.roleChangeService.resetNotification();
         }
       })
     );
   }
-  }
 
-  private setupModalCloseListener(): void {
   private setupModalCloseListener(): void {
     this.subscriptions.add(
       this.listeningChangeService.modalClosed$.subscribe(closed => {
@@ -184,6 +155,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       this.user.set(cachedUser);
       this.userRoleFromStorage.set(cachedUser.role);
 
+      //  Charger le rôle admin dans AuthState
       this.authState.loadAdminRole();
 
       if (callback) callback();
@@ -341,6 +313,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     return match ? Number(match[1]) : null;
   }
 
+  // MÉTHODES PUBLIQUES utilisant AuthState
   onPeriodChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     const periodId = Number(select.value);
@@ -348,6 +321,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     if (periodId && periodId !== this.currentPeriodId()) {
       this.setPeriodId(periodId);
 
+      // Recharger les rôles avec la nouvelle période
       this.authState.loadRolesForPeriod(periodId);
 
       if (this.router.url.includes('/period/')) {
@@ -377,42 +351,21 @@ export class SidebarComponent implements OnInit, OnDestroy {
     else if (url.includes('preselection-admin')) this.setActiveTab('preselection-admin');
     else if (url.includes('selections')) this.setActiveTab('selections');
     else this.setActiveTab('period');
-    if (url === '/' || url === '') this.setActiveTab('home');
-    else if (url.includes('allcandidacy')) this.setActiveTab('allcandidacy');
-    else if (url.includes('import')) this.setActiveTab('import');
-    else if (url.includes('presection')) this.setActiveTab('presection');
-    else if (url.includes('criteria')) this.setActiveTab('criteria');
-    else if (url.includes('users')) this.setActiveTab('users');
-    else if (url.includes('evaluator-candidacies')) this.setActiveTab('evaluator-candidacies');
-    else if (url.includes('preselection-admin')) this.setActiveTab('preselection-admin');
-    else if (url.includes('selections')) this.setActiveTab('selections');
-    else this.setActiveTab('period');
   }
 
   isEvaluatorUser = computed(() => this.user()?.role === 'EVALUATOR');
-  isEvaluatorUser = computed(() => this.user()?.role === 'EVALUATOR');
 
   logout(): void {
-    console.log('Déconnexion...');
     this.authService.logout().subscribe({
       next: () => {
-        this.authState.reset();
-
         this.authState.reset();
 
         this.localStorageService.removeData('token');
         this.localStorageService.removeData('user');
         this.localStorageService.removeData('currentPeriodId');
-        this.localStorageService.removeData('currentPeriodId');
         this.router.navigate(['/login']);
-        console.log('Déconnexion réussie');
       },
       error: (err) => {
-        console.error('Erreur lors de la déconnexion:', err);
-        this.router.navigate(['/login']);
-      }
-      error: (err) => {
-        console.error('Erreur lors de la déconnexion:', err);
         this.router.navigate(['/login']);
       }
     });

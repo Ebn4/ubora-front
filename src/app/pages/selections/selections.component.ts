@@ -111,7 +111,6 @@ export class SelectionsComponent extends BaseListWidget {
   }
 
   goToCandidateDetail(candidate: Candidacy) {
-    console.log("Navigation vers détail du candidat:", candidate.id, candidate.etn_nom);
 
     // Trouver l'index dans la liste complète
     const allCandidates = this.allCandidates();
@@ -132,7 +131,6 @@ export class SelectionsComponent extends BaseListWidget {
       }
     } else {
       // Mode navigation fluide avec liste complète
-      console.log('Navigation fluide avec index:', index);
       this.selectionService.setCandidate({
         current: candidate,
         all: allCandidates,
@@ -161,7 +159,6 @@ export class SelectionsComponent extends BaseListWidget {
         }
 
         this.allCandidates.set(candidates);
-        console.log('Liste complète chargée (sélection):', candidates.length, 'candidats');
       },
       error: (err) => {
         console.error('Erreur chargement liste complète (sélection):', err);
