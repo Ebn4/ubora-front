@@ -1,7 +1,9 @@
 import { NgClass } from '@angular/common';
-import { Component, inject, signal, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, signal, OnDestroy, OnInit, computed } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { filter, Subscription } from 'rxjs';
+import { filter, Subscription, of, timer } from 'rxjs';
+import { catchError, timeout } from 'rxjs/operators';
+import { FormsModule } from '@angular/forms';
 
 import { AuthServices } from '../../../services/auth.service';
 import { LocalStorageService } from '../../../services/local-storage.service';
@@ -11,30 +13,32 @@ import { RoleChangeService } from '../../../services/role-change.service';
 import { ListeningChangeService } from '../../../services/listening-change.service';
 
 import { User } from '../../../models/user.model';
+import { AuthStateService } from '../../../services/auth-state.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, NgClass],
+  imports: [RouterLink, NgClass, FormsModule],
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent implements OnInit, OnDestroy {
-  router = inject(Router);
-  authService = inject(AuthServices);
-  userService = inject(UserService);
-  evaluatorService = inject(EvaluatorService);
-  localStorageService = inject(LocalStorageService);
-  roleChangeService = inject(RoleChangeService);
-  listeningChangeService = inject(ListeningChangeService);
+  private router = inject(Router);
+  private authService = inject(AuthServices);
+  private userService = inject(UserService);
+  private evaluatorService = inject(EvaluatorService);
+  private localStorageService = inject(LocalStorageService);
+  private roleChangeService = inject(RoleChangeService);
+  private listeningChangeService = inject(ListeningChangeService);
+  authState = inject(AuthStateService);
 
-  hasAdminRole = signal(false);
-  isSelectorEvaluator = signal(false);
-  isPreselectorEvaluator = signal(false);
   user = signal<User | null>(null);
   userRoleFromStorage = signal<string | null>(null);
 
   currentPeriodId = signal<number | null>(null);
+  availablePeriods = signal<any[]>([]);
+  selectedPeriodId = signal<number | null>(null);
 
+  // Active tab
   activeTab:
     | 'home'
     | 'allcandidacy'
@@ -50,85 +54,294 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
 
   ngOnInit(): void {
-    // Initial
-    this.updateActiveTab(this.router.url);
-    this.extractPeriodIdFromUrl(this.router.url);
-    this.checkRoles(this.currentPeriodId());
-    this.userRoleFromStorage.set(this.getUserFromLocalStorage())
-    this.getCurrentUser();
+    console.log('=== SIDEBAR INITIALISATION ===');
 
-    // Navigation
+    // Initialiser le rôle depuis le stockage (instantané)
+    this.userRoleFromStorage.set(this.getUserRoleFromStorage());
+
+    // Attendre un peu pour laisser la navigation se stabiliser
+    timer(200).subscribe(() => {
+      this.initializeSidebar();
+    });
+
+    // Écouter la navigation
+    this.setupNavigationListener();
+
+    // Écouter les changements de rôle
+    this.setupRoleChangeListener();
+
+    // Écouter la fermeture de modals
+    this.setupModalCloseListener();
+  }
+
+  private initializeSidebar(): void {
+    console.log('Initialisation du sidebar');
+    console.log('URL actuelle:', this.router.url);
+
+    this.updateActiveTab(this.router.url);
+
+    // Récupérer l'utilisateur (priorité au cache, puis API)
+    this.getCurrentUser(() => {
+      // Trouver ou déterminer le periodId
+      this.findAndSetPeriodId(() => {
+        this.authState.loadRolesForPeriod(this.currentPeriodId());
+      });
+    });
+  }
+
+  private setupNavigationListener(): void {
     this.subscriptions.add(
       this.router.events
         .pipe(filter(event => event instanceof NavigationEnd))
         .subscribe((event: NavigationEnd) => {
           const url = event.urlAfterRedirects;
-
           this.updateActiveTab(url);
-          this.extractPeriodIdFromUrl(url);
-          this.checkRoles(this.currentPeriodId());
+
+          // Extraire periodId de la nouvelle URL si présent
+          const urlPeriodId = this.extractPeriodIdFromUrl(url);
+          if (urlPeriodId && urlPeriodId !== this.currentPeriodId()) {
+            console.log('PeriodId mis à jour depuis navigation:', urlPeriodId);
+            this.currentPeriodId.set(urlPeriodId);
+            this.selectedPeriodId.set(urlPeriodId);
+            this.storePeriodId(urlPeriodId);
+
+            timer(100).subscribe(() => {
+              this.authState.loadRolesForPeriod(urlPeriodId);
+            });
+          }
         })
     );
+  }
 
-    // Changement de rôle
+  getUserRoleFromStorage(): string | null {
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        return user.data?.role || user.role || null;
+      }
+      return null;
+    } catch (error) {
+      console.error('Erreur lors de la lecture du localStorage:', error);
+      return null;
+    }
+  }
+
+  private setupRoleChangeListener(): void {
     this.subscriptions.add(
       this.roleChangeService.roleChanged$.subscribe(changed => {
         if (changed) {
-          this.checkRoles(this.currentPeriodId());
+          this.authState.reloadPeriodRoles(this.currentPeriodId());
           this.roleChangeService.resetNotification();
         }
       })
     );
+  }
 
-    // Fermeture modal
+  private setupModalCloseListener(): void {
     this.subscriptions.add(
       this.listeningChangeService.modalClosed$.subscribe(closed => {
         if (closed) {
-          this.checkRoles(this.currentPeriodId());
+          console.log('=== MODAL FERMÉ DÉTECTÉ ===');
+          this.authState.reloadPeriodRoles(this.currentPeriodId());
           this.listeningChangeService.resetNotification();
         }
       })
     );
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  private getCurrentUser(callback?: () => void): void {
+    console.log('Récupération de l\'utilisateur courant...');
+
+    const cachedUser = this.getCachedUser();
+    if (cachedUser) {
+      this.user.set(cachedUser);
+      this.userRoleFromStorage.set(cachedUser.role);
+
+      this.authState.loadAdminRole();
+
+      if (callback) callback();
+      return;
+    }
+
+    this.loadUserFromAPI(callback);
   }
 
-  private extractPeriodIdFromUrl(url: string): void {
-    const match = url.match(/period\/(\d+)/);
-    if (match) {
-      this.currentPeriodId.set(Number(match[1]));
-    } else {
-      this.currentPeriodId.set(null);
+  private getCachedUser(): User | null {
+    try {
+      const userStr = this.localStorageService.getData('user');
+      if (!userStr) return null;
+
+      const user = JSON.parse(userStr) as User;
+      const token = this.localStorageService.getData('token');
+      if (!token) {
+        return null;
+      }
+
+      return user;
+    } catch (error) {
+      return null;
     }
   }
 
-  private checkRoles(periodId?: number | null): void {
-    this.checkIfUserHasAdminRole();
-    this.checkIfIsSelectorEvaluator(periodId);
-    this.checkIfIsPreselectorEvaluator(periodId);
-  }
+  private loadUserFromAPI(callback?: () => void): void {
+    this.userService.getUser().pipe(
+      timeout(5000),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe({
+      next: (user) => {
+        if (user) {
+          this.user.set(user);
+          this.userRoleFromStorage.set(user.role);
 
-  private checkIfUserHasAdminRole(): void {
-    this.userService.hasAdminRole().subscribe({
-      next: res => this.hasAdminRole.set(res.hasAdminRole),
-      error: err => console.error(err),
+          this.authState.loadAdminRole();
+
+          this.localStorageService.saveData('user', JSON.stringify(user));
+        } else {
+          this.user.set(null);
+          this.userRoleFromStorage.set(null);
+        }
+
+        if (callback) callback();
+      },
+      error: (err) => {
+        this.user.set(null);
+        this.userRoleFromStorage.set(null);
+        if (callback) callback();
+      }
     });
   }
 
-  private checkIfIsSelectorEvaluator(periodId?: number | null): void {
-    this.evaluatorService.isSelectorEvaluator(periodId).subscribe({
-      next: res => this.isSelectorEvaluator.set(res.isSelectorEvaluator),
-      error: err => console.error(err),
+  private findAndSetPeriodId(callback: () => void): void {
+
+    // 1. Extraire de l'URL
+    const urlPeriodId = this.extractPeriodIdFromUrl(this.router.url);
+    if (urlPeriodId) {
+      console.log('PeriodId trouvé dans URL:', urlPeriodId);
+      this.setPeriodId(urlPeriodId);
+      callback();
+      return;
+    }
+
+    // 2. Chercher dans localStorage
+    const storedPeriodId = this.localStorageService.getData('currentPeriodId');
+    if (storedPeriodId) {
+      const periodId = Number(storedPeriodId);
+      console.log('PeriodId trouvé dans localStorage:', periodId);
+      this.setPeriodId(periodId);
+      callback();
+      return;
+    }
+
+    // 3. Chercher dans les données utilisateur
+    const userData = this.localStorageService.getData('user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        if (user.lastPeriodId) {
+          console.log('PeriodId trouvé dans user data:', user.lastPeriodId);
+          this.setPeriodId(user.lastPeriodId);
+          callback();
+          return;
+        }
+      } catch (e) {
+        console.error('Erreur parsing user data:', e);
+      }
+    }
+
+    // 4. Si admin, charger la dernière période
+    if (this.user()?.role === 'ADMIN' || this.authState.hasAdminRole()) {
+      this.loadLatestPeriod(callback);
+      return;
+    }
+
+    // 5. Pas de periodId trouvé
+    console.log('Aucun periodId trouvé');
+    this.currentPeriodId.set(null);
+    this.selectedPeriodId.set(null);
+    callback();
+  }
+
+  private setPeriodId(periodId: number): void {
+    this.currentPeriodId.set(periodId);
+    this.selectedPeriodId.set(periodId);
+    this.storePeriodId(periodId);
+  }
+
+  private storePeriodId(periodId: number): void {
+    this.localStorageService.saveData('currentPeriodId', periodId.toString());
+
+    const userData = this.localStorageService.getData('user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        user.lastPeriodId = periodId;
+        this.localStorageService.saveData('user', JSON.stringify(user));
+      } catch (e) {
+        console.error('Erreur mise à jour user data:', e);
+      }
+    }
+  }
+
+  private loadLatestPeriod(callback: () => void): void {
+    console.log('Chargement de la dernière période...');
+
+    this.evaluatorService.getEvaluatorPeriods().pipe(
+      timeout(5000),
+      catchError(() => {
+        console.warn('Timeout chargement périodes');
+        return of({ success: false, periods: [], count: 0 });
+      })
+    ).subscribe({
+      next: (response) => {
+        if (response.success && response.periods.length > 0) {
+          const latestPeriod = response.periods[0];
+          console.log('Dernière période trouvée:', latestPeriod);
+          this.setPeriodId(latestPeriod.id);
+          this.availablePeriods.set(response.periods);
+        } else {
+          console.log('Aucune période trouvée');
+          this.currentPeriodId.set(null);
+          this.selectedPeriodId.set(null);
+        }
+        callback();
+      },
+      error: (err) => {
+        console.error('Erreur chargement périodes:', err);
+        this.currentPeriodId.set(null);
+        this.selectedPeriodId.set(null);
+        callback();
+      }
     });
   }
 
-  private checkIfIsPreselectorEvaluator(periodId?: number | null): void {
-    this.evaluatorService.isPreselectorEvaluator(periodId).subscribe({
-      next: res => this.isPreselectorEvaluator.set(res.isPreselectorEvaluator),
-      error: err => console.error(err),
-    });
+  private extractPeriodIdFromUrl(url: string): number | null {
+    const match = url.match(/period\/(\d+)/);
+    return match ? Number(match[1]) : null;
+  }
+
+  onPeriodChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const periodId = Number(select.value);
+
+    if (periodId && periodId !== this.currentPeriodId()) {
+      console.log('Changement manuel de période:', periodId);
+      this.setPeriodId(periodId);
+
+      this.authState.loadRolesForPeriod(periodId);
+
+      if (this.router.url.includes('/period/')) {
+        this.router.navigate([`/period/${periodId}`]);
+      }
+    }
+  }
+
+  getPeriodName(periodId: number | null): string {
+    if (!periodId) return 'Sélectionner une période';
+    const period = this.availablePeriods().find(p => p.id === periodId);
+    return period ? `${period.year}${period.name ? ' - ' + period.name : ''}` : `Période #${periodId}`;
   }
 
   setActiveTab(tab: typeof this.activeTab): void {
@@ -136,58 +349,41 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private updateActiveTab(url: string): void {
-    // D'abord vérifier si c'est la page d'accueil (racine)
-    if (url === '/' || url === '') {
-      this.setActiveTab('home');
-    } else if (url.includes('allcandidacy')) {
-      this.setActiveTab('allcandidacy');
-    } else if (url.includes('import')) {
-      this.setActiveTab('import');
-    } else if (url.includes('presection')) {
-      this.setActiveTab('presection');
-    } else if (url.includes('criteria')) {
-      this.setActiveTab('criteria');
-    } else if (url.includes('users')) {
-      this.setActiveTab('users');
-    } else if (url.includes('evaluator-candidacies')) {
-      this.setActiveTab('evaluator-candidacies');
-    } else if (url.includes('preselection-admin')) {
-      this.setActiveTab('preselection-admin');
-    } else if (url.includes('selections')) {
-      this.setActiveTab('selections');
-    } else {
-      this.setActiveTab('period');
-    }
+    if (url === '/' || url === '') this.setActiveTab('home');
+    else if (url.includes('allcandidacy')) this.setActiveTab('allcandidacy');
+    else if (url.includes('import')) this.setActiveTab('import');
+    else if (url.includes('presection')) this.setActiveTab('presection');
+    else if (url.includes('criteria')) this.setActiveTab('criteria');
+    else if (url.includes('users')) this.setActiveTab('users');
+    else if (url.includes('evaluator-candidacies')) this.setActiveTab('evaluator-candidacies');
+    else if (url.includes('preselection-admin')) this.setActiveTab('preselection-admin');
+    else if (url.includes('selections')) this.setActiveTab('selections');
+    else this.setActiveTab('period');
   }
 
-  private getCurrentUser(): void {
-    this.userService.getUser().subscribe({
-      next: user => this.user.set(user),
-      error: err => console.error(err),
-    });
-  }
-
-  getUserFromLocalStorage(){
-    try{
-      const userData = this.localStorageService.getData("user");
-      if(userData){
-        const user = JSON.parse(userData);
-        return user.role || null
-      }
-      return null
-    }catch(error){
-      console.error("Erreur lors de la lecture du localstorage : ",error)
-    }
-  }
+  isEvaluatorUser = computed(() => this.user()?.role === 'EVALUATOR');
 
   logout(): void {
+    console.log('Déconnexion...');
     this.authService.logout().subscribe({
       next: () => {
+        this.authState.reset();
+
         this.localStorageService.removeData('token');
         this.localStorageService.removeData('user');
+        this.localStorageService.removeData('currentPeriodId');
         this.router.navigate(['/login']);
+        console.log('Déconnexion réussie');
       },
-      error: err => console.error('Logout failed', err),
+      error: (err) => {
+        console.error('Erreur lors de la déconnexion:', err);
+        this.router.navigate(['/login']);
+      }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+    console.log('Sidebar détruit');
   }
 }
