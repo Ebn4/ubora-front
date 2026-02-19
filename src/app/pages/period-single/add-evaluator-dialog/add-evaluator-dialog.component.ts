@@ -12,6 +12,7 @@ import {AsyncPipe} from '@angular/common';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ListeningChangeService } from '../../../services/listening-change.service';
+import { AuthStateService } from '../../../services/auth-state.service';
 
 @Component({
   selector: 'app-add-evaluator-dialog',
@@ -32,6 +33,7 @@ export class AddEvaluatorDialogComponent {
   readonly snackbar = inject(MatSnackBar)
   readonly dialogRef = inject(MatDialogRef<AddEvaluatorDialogComponent>);
   readonly listeningChangeService = inject(ListeningChangeService);
+  readonly authState = inject(AuthStateService)
 
   evaluators = signal<Evaluator[]>([])
   error = signal<string | null>(null)
@@ -109,9 +111,18 @@ export class AddEvaluatorDialogComponent {
           duration: 3000,
         });
 
-        // Notifier le service que le modal est fermé avec succès
-        this.listeningChangeService.notifyModalClosed();
+        // SI l'utilisateur est l'admin connecté
+        const currentUserEmail = this.getCurrentUserEmail()
+        if(formData.selectedUserEmail === currentUserEmail){
+          // Invalider le cache pour la periode
+          this.authState.reloadPeriodRoles(this.data.periodId)
 
+          // notifier le modal pour les autres cas
+          this.listeningChangeService.notifyModalClosed()
+        }else{
+          // Notifier le service que le modal est fermé avec succès
+          this.listeningChangeService.notifyModalClosed();
+        }
         // Fermer le modal avec un résultat true
         this.dialogRef.close(true);
       },
@@ -122,6 +133,20 @@ export class AddEvaluatorDialogComponent {
         });
       }
     })
+  }
+
+  private getCurrentUserEmail(): string | null{
+    try{
+      const userData = localStorage.getItem("user");
+      if(userData){
+        const user = JSON.parse(userData);
+        return user.email || null
+      }
+      return null;
+    }catch(e){
+      console.error("Erreur de recuperation de l'email : ",e)
+      return null;
+    }
   }
 
   displayFn(user: LdapUser): string {

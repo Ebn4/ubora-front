@@ -27,6 +27,7 @@ import { Evaluator } from '../../../models/evaluator.model';
 import { PeriodStatus } from '../../../enum/period-status.enum';
 import { RoleChangeService } from '../../../services/role-change.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ConfirmDispatchDialogComponent } from '../confirm-dispatch-dialog/confirm-dispatch-dialog.component';
 
 @Component({
   selector: 'app-period-evaluateur',
@@ -62,6 +63,7 @@ export class PeriodEvaluateurComponent
   hasPreselectionEvaluator = signal(false);
   hasSelectionEvaluator = signal(false);
   canDispatchEvaluators = signal(false);
+
 
   Math = Math;
 
@@ -225,32 +227,40 @@ export class PeriodEvaluateurComponent
 
 
   onDispatchEvaluator() {
-    // Vérification renforcée
+
     if (!this.isDisableDispatchButton() || !this.period?.id || !this.canDispatchEvaluators()) {
       if (!this.canDispatchEvaluators()) {
-        this.snackBar.open('Ajoutez au moins un évaluateur de présélection ET de sélection', 'Fermer', {
-          duration: 4000
-        });
+        this.snackBar.open(
+          'Ajoutez au moins un évaluateur de présélection ET de sélection',
+          'Fermer',
+          { duration: 4000 }
+        );
       }
       return;
     }
 
-    // Optionnel : Confirmation utilisateur
-    if (!confirm('Voulez-vous vraiment dispatcher les candidats ? Cette action est irréversible.')) {
-      return;
-    }
+    const periodId = this.period.id; // ✅ maintenant TS sait que ce n'est plus undefined
 
-    this.evaluatorService.dispatchEvaluators(this.period.id.toString())
-      .subscribe({
-        next: () => {
-          this.loadPeriodState();
-        },
-        error: (err) => {
-          const message = err.error?.message || 'Erreur lors du dispatch';
-          this.snackBar.open(message, 'Fermer', { duration: 3000 });
-        }
-      });
+    const dialogRef = this.dialog.open(ConfirmDispatchDialogComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+
+      this.evaluatorService.dispatchEvaluators(periodId.toString())
+        .subscribe({
+          next: () => {
+            this.loadPeriodState();
+          },
+          error: (err) => {
+            const message = err.error?.message || 'Erreur lors du dispatch';
+            this.snackBar.open(message, 'Fermer', { duration: 3000 });
+          }
+        });
+    });
   }
+
 
   onCancelDispatch() {
     if (!this.period?.id) return;

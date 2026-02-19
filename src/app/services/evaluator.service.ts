@@ -3,7 +3,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {BASE_URL} from '../app.tokens';
 import {ResponseInterface, ResponseInterfaceE} from '../models/response.model';
 import {Evaluator} from '../models/evaluator.model';
-import { catchError, of } from 'rxjs';
+import { catchError, Observable, of, timeout } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -94,6 +94,15 @@ export class EvaluatorService {
         console.error('Error checking preselector evaluator:', error);
         return of({ isPreselectorEvaluator: false });
       })
+    );
+  }
+
+  getEvaluatorPeriods(): Observable<{ success: boolean; periods: any[]; count: number }> {
+    const url = `${this.baseUrl}/evaluator/periods`;
+
+    return this.http.get<{ success: boolean; periods: any[]; count: number }>(url).pipe(
+      timeout(5000),
+      catchError(() => of({ success: false, periods: [], count: 0 }))
     );
   }
 
