@@ -81,7 +81,6 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
   }
 
   private loadCandidateData(candidateId: number) {
-    console.log('Chargement candidat ID:', candidateId);
 
     // Vérifier le cache du service d'abord
     const navData = this.selectionService.getCandidate();
@@ -97,7 +96,6 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
     const index = navData.all.findIndex((c: Candidacy) => c.id === candidateId);
 
     if (index !== -1) {
-      console.log('Candidat trouvé dans cache service, index:', index);
       this.candidatesList = navData.all;
       this.currentIndex = index;
       this.loadCurrentCandidate();
@@ -114,7 +112,6 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
     if (this.candidatesList.length > 0) {
       const index = this.candidatesList.findIndex(c => c.id === candidateId);
       if (index !== -1) {
-        console.log('Candidat trouvé dans cache local');
         this.currentIndex = index;
         this.loadCurrentCandidate();
         return;
@@ -156,7 +153,6 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
 
   private processCandidateList(candidates: Candidacy[], candidateId: number) {
     this.candidatesList = candidates;
-    console.log('Liste chargée:', candidates.length, 'candidats');
 
     const index = this.candidatesList.findIndex(c => c.id === candidateId);
 
@@ -236,9 +232,7 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
     this.candidacy = candidate;
     if (candidate.etn_naissance) {
         this.age = this.calculateAge(candidate.etn_naissance);
-        console.log('Âge du candidat:', this.age);
     }
-    console.log('Chargement candidat:', candidate.id, 'Index:', this.currentIndex + 1, '/', this.candidatesList.length);
 
     this.resetEvaluationForm.update(v => v + 1);
     this.loadCandidateDetails();
@@ -358,7 +352,6 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
 
   // Évaluation soumise
   onEvaluated() {
-    console.log('🎯 Évaluation soumise pour:', this.candidacy?.id);
     this.candidateHasSelected.set(true);
 
     if (this.candidacy) {
@@ -441,7 +434,6 @@ export class CandidacySelectionComponent implements OnInit, OnDestroy {
 
   // Modifiez la méthode onEvaluated pour gérer le message de succès
   onEvaluationSubmitted(event: { success: boolean; candidateId: number; autoNavigate?: boolean }) {
-    console.log('🎯 Évaluation soumise pour:', event.candidateId, 'Succès:', event.success);
 
     if (event.success) {
       // Afficher le message de succès
